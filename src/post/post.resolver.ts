@@ -1,10 +1,20 @@
-import { Resolver, Query } from '@nestjs/graphql';
-import { PostObjectType } from './post.model';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Post, PostInputType } from './post.model';
+import { input } from 'src/common/consts';
 
-@Resolver()
+@Resolver('Post')
 export class PostResolver {
-  @Query(() => PostObjectType)
-  readPost(): PostObjectType {
+  @Query(() => Post)
+  readPost(): Post {
+    return {
+      id: 1,
+      title: '1',
+      content: '1',
+    };
+  }
+
+  @Mutation(() => Post)
+  createPost(@Args(input) input: PostInputType): Post {
     return {
       id: 1,
       title: '1',
