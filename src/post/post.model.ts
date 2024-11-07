@@ -1,7 +1,8 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType({ isAbstract: true })
-export class Post {
+@InputType({ isAbstract: true })
+abstract class IPost {
   @Field(() => Int, { description: '게시글의 id' })
   id: number;
 
@@ -13,4 +14,7 @@ export class Post {
 }
 
 @ObjectType()
-export class PostObjectType extends Post {}
+export class Post extends IPost {}
+
+@InputType()
+export class PostInputType extends IPost {}
