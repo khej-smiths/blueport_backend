@@ -29,3 +29,9 @@ $ yarn run test:e2e
 # test coverage
 $ yarn run test:cov
 ```
+
+## Note
+
+```
+1. swc compiler - tsc보다 속도가 빠른 swc 컴파일러 적용
+```
