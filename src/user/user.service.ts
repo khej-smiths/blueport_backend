@@ -13,7 +13,6 @@ export class UserService {
     if (keyListLength === 0) {
       throw new Error('키가 필수로 들어가야함');
     } else if (keyListLength > 1) {
-      // throw new Error('옵션이 잘못 설정됨');
       throw new CustomGraphQLError('옵션이 잘못 설정됨', {
         extensions: { code: 'ERR_NO_USER' },
       });
