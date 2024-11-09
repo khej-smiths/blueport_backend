@@ -37,6 +37,7 @@ export class PostResolver {
     console.log(post);
     return await this.userService.readUserByOption({
       postId: post.id,
+      userId: 3,
     });
   }
 }
