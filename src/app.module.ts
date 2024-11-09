@@ -8,15 +8,32 @@ import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
 import { formatError } from './common/error';
 import { GraphQLError } from 'graphql';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [
+        () => {
+          return { INCLUDE_STACKTRACE: true };
+        },
+      ],
+    }),
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      formatError: (error: GraphQLError) => {
-        const includeStackTrace = false;
-        return formatError(error, includeStackTrace);
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        console.log(configService);
+        return {
+          autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+          formatError: (error: GraphQLError) => {
+            const includeStackTrace =
+              configService.get<boolean>('INCLUDE_STACKTRACE') ?? false;
+            return formatError(error, includeStackTrace);
+          },
+        };
       },
     }),
     PostModule,
