@@ -29,7 +29,10 @@ export class PostResolver {
     return await this.postService.createPost(input);
   }
 
-  @ResolveField('writer', () => User, { nullable: true })
+  @ResolveField('writer', () => User, {
+    nullable: true,
+    description: '게시글 작성자',
+  })
   async readUser(@Parent() post: Post): Promise<User | null> {
     console.log(post);
     return await this.userService.readUserByOption({
