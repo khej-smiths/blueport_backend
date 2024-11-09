@@ -14,8 +14,15 @@ export class CustomGraphQLError extends GraphQLError {
 }
 
 // 에러 처리
-export const formatError = (error: GraphQLError) => {
-  console.log(error);
+export const formatError = (
+  error: GraphQLError,
+  includeStackTrace: boolean,
+) => {
+  console.log(error, includeStackTrace);
+
+  if (includeStackTrace === true) {
+    delete error.extensions.stacktrace;
+  }
 
   return error;
 };

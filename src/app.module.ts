@@ -7,13 +7,17 @@ import { join } from 'path';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
 import { formatError } from './common/error';
+import { GraphQLError } from 'graphql';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      formatError: formatError,
+      formatError: (error: GraphQLError) => {
+        const includeStackTrace = false;
+        return formatError(error, includeStackTrace);
+      },
     }),
     PostModule,
     UserModule,
