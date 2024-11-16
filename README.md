@@ -30,6 +30,13 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
+## Rule
+
+```
+- 주석은 최대한 라인마다 작성
+- Entity의 역할을 하는 클래스는 Abstract Class로 선언하고 클래스를 상속받아 Gql의 InputType 클래스와 ObjectType 클래스를 구현
+```
+
 ## Note
 
 ```
