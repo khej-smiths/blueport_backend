@@ -1,6 +1,6 @@
 import { GraphQLError, GraphQLErrorExtensions } from 'graphql';
 
-// 에러 메세짖
+// 에러 메세지
 export namespace ERR_MSG {
   const ERR_NO_USER = 'ERR_NO_USER';
 }
