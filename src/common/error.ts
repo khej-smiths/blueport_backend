@@ -2,7 +2,7 @@ import { GraphQLError, GraphQLErrorExtensions } from 'graphql';
 
 // 에러 메세지
 export namespace ERR_MSG {
-  const ERR_NO_USER = 'ERR_NO_USER';
+  const ERR_OPTION_FOR_USER = 'ERR_OPTION_FOR_USER';
 }
 
 // 에러 메세지 객체를 에러 코드 타입으로 전환
