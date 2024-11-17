@@ -1,16 +1,8 @@
 import { GraphQLError, GraphQLErrorExtensions } from 'graphql';
 
-// 에러 메세지
-export namespace ERR_MSG {
-  const ERR_OPTION_FOR_USER = 'ERR_OPTION_FOR_USER';
-}
-
-// 에러 메세지 객체를 에러 코드 타입으로 전환
-type ERROR_CODE = typeof ERR_MSG;
-
 // 에러 객체
 export class CustomGraphQLError extends GraphQLError {
-  extensions: GraphQLErrorExtensions & { code: ERROR_CODE };
+  extensions: GraphQLErrorExtensions & { code: string };
 }
 
 // 에러 처리
@@ -20,11 +12,16 @@ export const formatError = (
 ) => {
   console.log(error, includeStackTrace);
 
-  if (includeStackTrace === true) {
+  if (includeStackTrace === false) {
     delete error.extensions.stacktrace;
   }
 
   return error;
 };
 
-export default { formatError, ERR_MSG };
+// 게시글 조회 에러 케이스
+export const ERROR_CODE_READ_POST = {
+  NO_DATA: 'NO_DATA',
+  MULTIPLE_DATA: 'MULTIPLE_DATA',
+  UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
+} as const;
