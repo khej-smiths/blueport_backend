@@ -52,12 +52,6 @@ export class CustomLogger extends ConsoleLogger {
   // }
 
   async destroy() {
-    function delay(ms: number) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    await delay(5000);
-
     this.customLog(this.logList, {
       className: this.constructor.name,
       functionName: this.destroy.name,

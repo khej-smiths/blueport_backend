@@ -23,8 +23,8 @@ export class LoggerInterceptor implements NestInterceptor {
     const email = gqlContext.email;
     if (email) logger.setEmail(email);
     return next.handle().pipe(
-      tap(async () => {
-        await logger.destroy();
+      tap(() => {
+        logger.destroy();
       }),
     );
   }
