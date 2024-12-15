@@ -10,6 +10,7 @@ import { formatError } from './common/error';
 import { GraphQLError } from 'graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './logger/logger.middleware';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
     }),
     PostModule,
     UserModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
