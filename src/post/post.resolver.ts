@@ -39,11 +39,9 @@ export class PostResolver {
   }
 
   @ResolveField('writer', () => User, {
-    nullable: true,
     description: '게시글 작성자',
   })
-  async readUser(@Parent() post: Post): Promise<User | null> {
-    console.log(post);
+  async readUser(@Parent() post: Post): Promise<User> {
     return await this.userService.readUserByOption({
       userId: post.writerId,
     });
