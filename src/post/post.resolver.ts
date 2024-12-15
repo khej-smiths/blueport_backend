@@ -45,8 +45,7 @@ export class PostResolver {
   async readUser(@Parent() post: Post): Promise<User | null> {
     console.log(post);
     return await this.userService.readUserByOption({
-      postId: post.id,
-      userId: 3,
+      userId: post.writerId,
     });
   }
 }
