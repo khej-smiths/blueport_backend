@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from './post.model';
+import { getObjectKeysByGeneric } from 'src/common/consts';
 
 type ReadPostOption = {
   id: number;
@@ -9,26 +10,26 @@ type ReadPostOption = {
 export class PostRepository {
   private readonly POST_LIST: Array<Post> = Array.from(
     { length: 100 },
-    (index: number) => {
+    (_, index: number) => {
       return {
         id: index,
         title: `title ${index}`,
         content: `content ${index}`,
+        writerId: Math.floor(index % 10),
       };
     },
   );
 
   async readPostList(option: ReadPostOption): Promise<Array<Post>> {
-    const optionKeyList = this.getObjectKeysByGeneric<ReadPostOption>(option);
+    const optionKeyList = getObjectKeysByGeneric<ReadPostOption>(option);
 
     return this.POST_LIST.filter((post) => {
-      optionKeyList.filter((optionKey) => {
-        return post[optionKey] === option[optionKey];
-      }).length === optionKeyList.length;
+      return (
+        optionKeyList.filter((optionKey) => {
+          console.log(optionKey, option[optionKey]);
+          return post[optionKey] === option[optionKey];
+        }).length === optionKeyList.length
+      );
     });
-  }
-
-  private getObjectKeysByGeneric<T extends object>(object: T): Array<keyof T> {
-    return Object.keys(object) as unknown as Array<keyof T>;
   }
 }

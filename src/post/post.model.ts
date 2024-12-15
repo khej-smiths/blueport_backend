@@ -11,6 +11,9 @@ abstract class IPost {
 
   @Field(() => String, { description: '게시글 내용' })
   content: string;
+
+  @Field(() => Int, { description: '게시글 작성자의 id' })
+  writerId: number;
 }
 
 @ObjectType()
