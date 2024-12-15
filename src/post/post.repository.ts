@@ -26,7 +26,6 @@ export class PostRepository {
     return this.POST_LIST.filter((post) => {
       return (
         optionKeyList.filter((optionKey) => {
-          console.log(optionKey, option[optionKey]);
           return post[optionKey] === option[optionKey];
         }).length === optionKeyList.length
       );
