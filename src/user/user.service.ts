@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.model';
-import { CustomGraphQLError, ERR_MSG } from 'src/common/error';
+import { CustomGraphQLError } from 'src/common/error';
+import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  async readUserByOption(option: {
-    postId?: number;
-    userId?: number;
-  }): Promise<User> {
+  constructor(private readonly userRepository: UserRepository) {}
+
+  async readUserByOption(option: { userId?: number }): Promise<User> {
     const keyListLength = Object.keys(option).length;
 
     if (keyListLength === 0) {
@@ -18,9 +18,10 @@ export class UserService {
       });
     }
 
-    return {
-      id: 3,
-      name: 'name',
-    };
+    const userList = await this.userRepository.readUserList({
+      id: option.userId,
+    });
+
+    return userList[0];
   }
 }
