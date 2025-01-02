@@ -11,19 +11,19 @@ import { GraphQLError } from 'graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { LoggerModule } from './logger/logger.module';
+import Joi from 'joi';
 
 @Module({
   imports: [
     // 환경변수 설정 모듈
     ConfigModule.forRoot({
       isGlobal: true, // 해당 모듈을 전역에서 접근할 수 있도록 isGlobal: true로 설정
-      // 환경변수 목록
-      load: [
-        () => {
-          // TODO .env 파일로 분리 필요
-          return { INCLUDE_STACKTRACE: true };
-        },
-      ],
+      envFilePath: '.env.dev', // 환경변수 파일
+      // 환경변수 셋팅 확인
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+        INCLUDE_STACKTRACE: Joi.boolean().required(),
+      }),
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
