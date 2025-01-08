@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from './post.model';
 import { getObjectKeysByGeneric } from 'src/common/consts';
+import { CreatePostInputDto } from './dtos/create-post.dto';
 
 type ReadPostOption = {
   id: number;
@@ -19,6 +20,30 @@ export class PostRepository {
       };
     },
   );
+
+  /**
+   * @description 게시글을 추가하기
+   * @param option
+   */
+  async createPost(option: CreatePostInputDto): Promise<Post> {
+    try {
+      // option을 이용해 POST_LIST에 넣을 객체 셋팅하기
+      const newPostId =
+        Math.max(...this.POST_LIST.map((per) => per.id).sort()) + 1;
+
+      const newPost: Post = {
+        ...option,
+        id: newPostId,
+        writerId: newPostId,
+      };
+
+      this.POST_LIST.push(newPost);
+
+      return newPost;
+    } catch (e) {
+      throw e;
+    }
+  }
 
   async readPostList(option: ReadPostOption): Promise<Array<Post>> {
     const optionKeyList = getObjectKeysByGeneric<ReadPostOption>(option);
