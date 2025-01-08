@@ -2,16 +2,44 @@ import { Injectable } from '@nestjs/common';
 import { Post, PostInputType } from './post.model';
 import { ReadPostInputDto } from './dtos/read-post.dto';
 import { PostRepository } from './post.repository';
-import { CustomGraphQLError, ERROR_CODE_READ_POST } from 'src/common/error';
+import {
+  CustomGraphQLError,
+  ERROR_CODE_CREATE_POST,
+  ERROR_CODE_READ_POST,
+} from 'src/common/error';
+import { CreatePostInputDto } from './dtos/create-post.dto';
 
 @Injectable()
 export class PostService {
-  private readonly ERROR_CODE: Record<string, typeof ERROR_CODE_READ_POST>;
+  private readonly ERROR_CODE: Record<
+    string,
+    typeof ERROR_CODE_READ_POST | typeof ERROR_CODE_CREATE_POST
+  >;
 
   constructor(private readonly postRepository: PostRepository) {
     this.ERROR_CODE = {
       ERROR_CODE_READ_POST,
+      ERROR_CODE_CREATE_POST,
     };
+  }
+
+  /**
+   * @description: 게시글 작성하기
+   * @param input
+   * @returns
+   */
+  async createPost(input: CreatePostInputDto): Promise<Post | undefined> {
+    let post: Post;
+    try {
+      post = await this.postRepository.createPost(input);
+    } catch (e) {
+      throw new CustomGraphQLError('게시글을 작성하다가 오류가 발생했습니다.', {
+        extensions: {
+          code: this.ERROR_CODE.ERROR_CODE_CREATE_POST.UNEXPECTED_ERROR,
+        },
+      });
+    }
+    return post;
   }
 
   async readPost(input: ReadPostInputDto): Promise<Post> {
@@ -50,9 +78,5 @@ export class PostService {
         });
       }
     }
-  }
-
-  async createPost(input: PostInputType): Promise<Post> {
-    return input;
   }
 }
