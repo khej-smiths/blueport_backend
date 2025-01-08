@@ -6,13 +6,14 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Post, PostInputType } from './post.model';
+import { Post } from './post.model';
 import { input } from 'src/common/consts';
 import { PostService } from './post.service';
 import { ReadPostInputDto } from './dtos/read-post.dto';
 import { User } from 'src/user/user.model';
 import { UserService } from 'src/user/user.service';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
+import { CreatePostInputDto } from './dtos/create-post.dto';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -20,6 +21,11 @@ export class PostResolver {
     private readonly postService: PostService,
     private readonly userService: UserService,
   ) {}
+
+  @Mutation(() => Post, { description: '게시글 작성하기' })
+  async createPost(@Args(input) input: CreatePostInputDto): Promise<Post> {
+    return await this.postService.createPost(input);
+  }
 
   @Query(() => [Post])
   async readPostList(
@@ -31,11 +37,6 @@ export class PostResolver {
   @Query(() => Post)
   async readPost(@Args(input) input: ReadPostInputDto): Promise<Post> {
     return await this.postService.readPost(input);
-  }
-
-  @Mutation(() => Post)
-  async createPost(@Args(input) input: PostInputType): Promise<Post> {
-    return await this.postService.createPost(input);
   }
 
   @ResolveField('writer', () => User, {
