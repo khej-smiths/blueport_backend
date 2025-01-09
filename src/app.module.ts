@@ -13,6 +13,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
 import { LoggerModule } from './logger/logger.module';
 import Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './user/user.model';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         port: +configService.get('MYSQL_PORT'),
         username: configService.get('MYSQL_USERNAME'),
         password: configService.get('MYSQL_PASSWORD'),
-        entities: [],
+        database: configService.get('MYSQL_DATABASE'),
+        entities: [User],
         synchronize: true,
       }),
     }),
