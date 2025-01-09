@@ -2,10 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { CustomGraphQLError } from 'src/common/error';
 import { UserRepository } from './user.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserInputDto } from './dtos/create-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    @InjectRepository(UserRepository)
+    private readonly userRepository: UserRepository,
+  ) {}
+
+  async createUser(input: CreateUserInputDto): Promise<User> {
+    try {
+      const user = await this.userRepository.createUser(input);
+      return user;
+    } catch (e) {
+      // user 테이블에서 email을 고유키로 설정해둠
+      if (e.code === 'ER_DUP_ENTRY') {
+        throw new CustomGraphQLError(
+          '유저의 이메일이 중복되어 확인이 필요합니다.',
+          {
+            extensions: { code: 'ERR_DUPLICATION_EMAIL' },
+          },
+        );
+      }
+      // 잡지못한 에러는 아래와 같은 형태로 날리기
+      throw new CustomGraphQLError(e, {
+        extensions: { code: 'ERR_UNEXPECTED' },
+      });
+    }
+  }
 
   /**
    * @description 옵션에 맞게 유저 조회
