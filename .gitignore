@@ -37,3 +37,6 @@ lerna-debug.log*
 # CUSTOM
 launch.json
 schema.gql
+
+# db
+db/
