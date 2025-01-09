@@ -1,30 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { getObjectKeysByGeneric } from 'src/common/consts';
-
-type ReadUserOption = {
-  id?: number;
-};
+import { FindManyOptions, Repository } from 'typeorm';
 
 @Injectable()
-export class UserRepository {
-  // private readonly USER_LIST: Array<User> = Array.from(
-  //   { length: 10 },
-  //   (_, index: number) => {
-  //     return {
-  //       id: index,
-  //       name: `name ${index}`,
-  //     };
-  //   },
-  // );
-  // async readUserList(option: ReadUserOption): Promise<Array<User>> {
-  //   const optionKeyList = getObjectKeysByGeneric<ReadUserOption>(option);
-  //   return this.USER_LIST.filter((user) => {
-  //     return (
-  //       optionKeyList.filter((optionKey) => {
-  //         return user[optionKey] === option[optionKey];
-  //       }).length === optionKeyList.length
-  //     );
-  //   });
-  // }
+export class UserRepository extends Repository<User> {
+  /**
+   * @description: 조건에 따라 유저 조회
+   * @param option
+   * @returns
+   */
+  async readUserList(option: FindManyOptions<User>): Promise<Array<User>> {
+    const userList = await this.find(option);
+    return userList;
+  }
 }

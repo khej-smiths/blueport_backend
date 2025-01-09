@@ -11,18 +11,29 @@ export class UserService {
     const keyListLength = Object.keys(option).length;
 
     if (keyListLength === 0) {
-      throw new Error('키가 필수로 들어가야함');
+      throw new CustomGraphQLError('유저 조회를 위한 옵션이 설정되지 않음', {
+        extensions: { code: 'ERR_OPTION_FOR_USER' },
+      });
     } else if (keyListLength > 1) {
       throw new CustomGraphQLError('유저 조회를 위한 옵션이 잘못 설정됨', {
         extensions: { code: 'ERR_OPTION_FOR_USER' },
       });
     }
 
-    // const userList = await this.userRepository.readUserList({
-    //   id: option.userId,
-    // });
+    const userList = await this.userRepository.readUserList({
+      where: { id: option.userId },
+    });
 
-    // return userList[0];
-    return {} as User;
+    if (!userList || userList.length === 0) {
+      throw new CustomGraphQLError('유저가 조회되지 않음', {
+        extensions: { code: 'NO_USER' },
+      });
+    } else if (userList.length > 1) {
+      throw new CustomGraphQLError('유저가 여러명 조회됨', {
+        extensions: { code: 'MULTIPLE_USER' },
+      });
+    } else {
+      return userList[0];
+    }
   }
 }
