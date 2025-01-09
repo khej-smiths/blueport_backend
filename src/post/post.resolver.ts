@@ -6,11 +6,11 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Post } from './post.model';
+import { Post } from './post.entity';
 import { input } from 'src/common/consts';
 import { PostService } from './post.service';
 import { ReadPostInputDto } from './dtos/read-post.dto';
-import { User } from 'src/user/user.model';
+import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';

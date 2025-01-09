@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Post } from './post.model';
+import { Post } from './post.entity';
 import { getObjectKeysByGeneric } from 'src/common/consts';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 

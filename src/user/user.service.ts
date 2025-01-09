@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user.model';
+import { User } from './user.entity';
 import { CustomGraphQLError } from 'src/common/error';
 import { UserRepository } from './user.repository';
 
@@ -18,10 +18,11 @@ export class UserService {
       });
     }
 
-    const userList = await this.userRepository.readUserList({
-      id: option.userId,
-    });
+    // const userList = await this.userRepository.readUserList({
+    //   id: option.userId,
+    // });
 
-    return userList[0];
+    // return userList[0];
+    return {} as User;
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Post, PostInputType } from './post.model';
+import { Post, PostInputType } from './post.entity';
 import { ReadPostInputDto } from './dtos/read-post.dto';
 import { PostRepository } from './post.repository';
 import {
@@ -11,15 +11,11 @@ import { CreatePostInputDto } from './dtos/create-post.dto';
 
 @Injectable()
 export class PostService {
-  private readonly ERROR_CODE: Record<
-    string,
-    typeof ERROR_CODE_READ_POST | typeof ERROR_CODE_CREATE_POST
-  >;
+  private readonly ERROR_CODE: Record<string, typeof ERROR_CODE_READ_POST>;
 
   constructor(private readonly postRepository: PostRepository) {
     this.ERROR_CODE = {
       ERROR_CODE_READ_POST,
-      ERROR_CODE_CREATE_POST,
     };
   }
 
@@ -28,7 +24,7 @@ export class PostService {
    * @param input
    * @returns
    */
-  async createPost(input: CreatePostInputDto): Promise<Post | undefined> {
+  async createPost(input: CreatePostInputDto): Promise<Post> {
     let post: Post;
     try {
       post = await this.postRepository.createPost(input);

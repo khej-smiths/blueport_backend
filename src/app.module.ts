@@ -13,7 +13,7 @@ import { LoggerMiddleware } from './logger/logger.middleware';
 import { LoggerModule } from './logger/logger.module';
 import Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/user.model';
+import { User } from './user/user.entity';
 
 @Module({
   imports: [
