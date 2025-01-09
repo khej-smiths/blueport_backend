@@ -10,7 +10,7 @@ export const formatError = (
   error: GraphQLError,
   includeStackTrace: boolean,
 ) => {
-  console.log(error, includeStackTrace);
+  console.log('error format: ', error);
 
   if (includeStackTrace === false) {
     delete error.extensions.stacktrace;
