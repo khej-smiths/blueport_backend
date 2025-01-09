@@ -30,6 +30,12 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
+## DB
+
+```
+$ docker-compose -f mysql-docker-compose.yml up -d
+```
+
 ## Rule
 
 ```
