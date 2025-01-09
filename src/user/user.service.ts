@@ -7,6 +7,11 @@ import { UserRepository } from './user.repository';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
+  /**
+   * @description 옵션에 맞게 유저 조회
+   * @param option: userId
+   * @returns: User
+   */
   async readUserByOption(option: { userId?: number }): Promise<User> {
     const keyListLength = Object.keys(option).length;
 
