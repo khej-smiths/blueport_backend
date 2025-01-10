@@ -1,4 +1,4 @@
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CommonEntity } from 'src/common/common.entity';
 import { Column, Entity, Unique } from 'typeorm';
 
