@@ -8,7 +8,7 @@ import { CreateUserInputDto } from './dtos/create-user.dto';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Mutation(() => User)
+  @Mutation(() => User, { description: '유저 생성' })
   async createUser(@Args(input) input: CreateUserInputDto): Promise<User> {
     return await this.userService.createUser(input);
   }
