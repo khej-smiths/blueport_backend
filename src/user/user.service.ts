@@ -4,12 +4,16 @@ import { CustomGraphQLError } from 'src/common/error';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserInputDto } from './dtos/create-user.dto';
+import { CustomLogger } from 'src/logger/logger';
+import { IOLogger } from 'src/logger/log.decorator';
 
 @Injectable()
+@IOLogger()
 export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
+    private readonly logger: CustomLogger,
   ) {}
 
   async createUser(input: CreateUserInputDto): Promise<User> {
