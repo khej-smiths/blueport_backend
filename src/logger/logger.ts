@@ -12,7 +12,7 @@ export class CustomLogger extends ConsoleLogger {
     this.requestId = uuidv4();
     this.customLog('start', {
       className: this.constructor.name,
-      functionName: 'constructor',
+      methodName: 'constructor',
     });
   }
 
@@ -20,13 +20,13 @@ export class CustomLogger extends ConsoleLogger {
     this.email = email;
     this.customLog('set email', {
       className: this.constructor.name,
-      functionName: this.setEmail.name,
+      methodName: this.setEmail.name,
     });
   }
 
   customLog(
     message: any,
-    option?: { className?: string; functionName?: string },
+    option?: { className?: string; methodName?: string },
   ) {
     const prefix = this.getPrefix(option);
     const processedMessage = this.processMessage(message);
@@ -54,7 +54,7 @@ export class CustomLogger extends ConsoleLogger {
   async destroy() {
     this.customLog(this.logList, {
       className: this.constructor.name,
-      functionName: this.destroy.name,
+      methodName: this.destroy.name,
     });
     this.logList = [];
   }
