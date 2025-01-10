@@ -14,6 +14,7 @@ import { LoggerModule } from './logger/logger.module';
 import Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { User } from './user/user.entity';
         synchronize: true,
       }),
     }),
+    AuthModule,
     PostModule,
     UserModule,
     LoggerModule,
