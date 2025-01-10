@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Field, Int } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 
+@InputType({ isAbstract: true })
+@ObjectType({ isAbstract: true })
 export abstract class CommonEntity {
   @PrimaryGeneratedColumn()
   @Field(() => Int, { description: 'id' })
