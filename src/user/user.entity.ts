@@ -19,7 +19,7 @@ abstract class IUser extends CommonEntity {
 }
 
 @ObjectType()
-@Entity()
+@Entity('user')
 @Unique('unique_email_for_user', ['email']) // email을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
 export class User extends IUser {}
 
