@@ -15,6 +15,7 @@ import Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { Post } from './post/post.entity';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { AuthModule } from './auth/auth.module';
         username: configService.get('MYSQL_USERNAME'),
         password: configService.get('MYSQL_PASSWORD'),
         database: configService.get('MYSQL_DATABASE'),
-        entities: [User],
+        entities: [User, Post],
         synchronize: true,
       }),
     }),
