@@ -1,6 +1,7 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CommonEntity } from 'src/common/common.entity';
-import { Column, Entity } from 'typeorm';
+import { User } from 'src/user/user.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -13,8 +14,11 @@ abstract class IPost extends CommonEntity {
   @Column({ type: 'longtext', comment: '게시글 내용' })
   content: string;
 
-  // @Field(() => Int, { description: '게시글 작성자의 id' })
-  // writerId: number;
+  @Field(() => Int, { description: '게시글 작성자의 id' })
+  @Column({ type: 'int', name: 'writer_id' })
+  writerId: number;
+
+  writer: User;
 }
 
 @ObjectType()
