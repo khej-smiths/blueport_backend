@@ -25,8 +25,19 @@ import { Post } from './post/post.entity';
       envFilePath: '.env.dev', // 환경변수 파일
       // 환경변수 셋팅 확인
       validationSchema: Joi.object({
+        // 환경
         NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+        // 로그 stacktrace 포함 여부
         INCLUDE_STACKTRACE: Joi.boolean().required(),
+        // mysql
+        MYSQL_HOST: Joi.string().required(),
+        MYSQL_PORT: Joi.number().required(),
+        MYSQL_USERNAME: Joi.string().required(),
+        MYSQL_PASSWORD: Joi.string().required(),
+        MYSQL_DATABASE: Joi.string().required(),
+        // jwt
+        JWT_SECRET: Joi.string().required(),
+        JWT_EXPIRES_IN: Joi.string().required(), // 만료시간
       }),
     }),
     // GraphQL 설정 모듈
