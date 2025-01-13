@@ -1,8 +1,16 @@
-import { GraphQLError, GraphQLErrorExtensions } from 'graphql';
+import {
+  GraphQLError,
+  GraphQLErrorExtensions,
+  GraphQLErrorOptions,
+} from 'graphql';
 
 // 에러 객체
 export class CustomGraphQLError extends GraphQLError {
   extensions: GraphQLErrorExtensions & { code: string };
+  constructor(message: string, options?: GraphQLErrorOptions) {
+    super(message, options);
+    // Object.setPrototypeOf(this, CustomGraphQLError.prototype);
+  }
 }
 
 // 에러 처리
