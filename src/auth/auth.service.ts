@@ -17,6 +17,7 @@ export class AuthService {
 
     try {
       // 유저 정보 가져오기
+      // TODO 없는 이메일인 경우에도 데이터를 조회하고 있어서 로직 수정 필요
       const user = await this.userService.readUserByOption({
         email: input.email,
       });

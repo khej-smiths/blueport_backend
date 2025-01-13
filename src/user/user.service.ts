@@ -58,6 +58,7 @@ export class UserService {
       });
     }
 
+    // TODO 입력받은 user 정보 활용하도록 수정
     const userList = await this.userRepository.readUserList({
       where: { id: option.userId },
     });
