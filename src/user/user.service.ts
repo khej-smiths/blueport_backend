@@ -42,7 +42,10 @@ export class UserService {
    * @param option: userId
    * @returns: User
    */
-  async readUserByOption(option: { userId?: number }): Promise<User> {
+  async readUserByOption(option: {
+    userId?: number;
+    email?: string;
+  }): Promise<User> {
     const keyListLength = Object.keys(option).length;
 
     if (keyListLength === 0) {
