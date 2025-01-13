@@ -25,7 +25,15 @@ export class PostService {
     try {
       post = await this.postRepository.createPost(input);
     } catch (e) {
-      throw new CustomGraphQLError('게시글을 작성하다가 오류가 발생했습니다.', {
+      if (e.code === 'ER_NO_DEFAULT_FOR_FIELD') {
+        throw new CustomGraphQLError(
+          '유저의 게시글을 작성하기 위한 정보가 부족합니다.',
+          {
+            extensions: { code: 'ERR_NO_DEFAULT_FOR_FIELD' },
+          },
+        );
+      }
+      throw new CustomGraphQLError(e, {
         extensions: {
           code: this.ERROR_CODE.ERROR_CODE_CREATE_POST.UNEXPECTED_ERROR,
         },
