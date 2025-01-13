@@ -50,7 +50,7 @@ export class UserService {
     const keyListLength = Object.keys(option).length;
 
     // 옵션이 1개도 선택되지 않은 경우 에러 처리
-    if (keyListLength === 0) {
+    if (!option || keyListLength === 0) {
       throw new CustomGraphQLError(
         '유저 조회를 위한 옵션이 설정되지 않았습니다.',
         {
@@ -67,13 +67,18 @@ export class UserService {
       },
     });
 
-    // 유저가 없는 경우 에러 처리
-    if (!userList || userList.length === 0) {
+    if (
+      // 유저가 없는 경우 에러 처리
+      !userList ||
+      userList.length === 0
+    ) {
       throw new CustomGraphQLError('유저가 조회되지 않습니다.', {
         extensions: { code: 'NO_USER' },
       });
-    } // 유저가 여러개인 경우 에러 처리
-    else if (userList.length > 1) {
+    } else if (
+      // 유저가 여러개인 경우 에러 처리
+      userList.length > 1
+    ) {
       throw new CustomGraphQLError('조건에 맞는 유저가 여러명입니다.', {
         extensions: { code: 'MULTIPLE_USER' },
       });
