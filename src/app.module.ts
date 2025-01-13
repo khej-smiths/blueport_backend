@@ -38,6 +38,8 @@ import { Post } from './post/post.entity';
         // jwt
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRES_IN: Joi.string().required(), // 만료시간
+        JWT_ISSUER: Joi.string().required(), // 토큰 발급자
+        JWT_SUBJECT: Joi.string().required(), // 토큰 발급자
       }),
     }),
     // GraphQL 설정 모듈
