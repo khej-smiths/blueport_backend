@@ -49,26 +49,28 @@ export class UserService {
     const keyListLength = Object.keys(option).length;
 
     if (keyListLength === 0) {
-      throw new CustomGraphQLError('유저 조회를 위한 옵션이 설정되지 않음', {
-        extensions: { code: 'ERR_OPTION_FOR_USER' },
-      });
-    } else if (keyListLength > 1) {
-      throw new CustomGraphQLError('유저 조회를 위한 옵션이 잘못 설정됨', {
-        extensions: { code: 'ERR_OPTION_FOR_USER' },
-      });
+      throw new CustomGraphQLError(
+        '유저 조회를 위한 옵션이 설정되지 않았습니다.',
+        {
+          extensions: { code: 'NO_OPTION' },
+        },
+      );
     }
 
     // TODO 입력받은 user 정보 활용하도록 수정
     const userList = await this.userRepository.readUserList({
-      where: { id: option.userId },
+      where: {
+        ...(option.userId && { id: option.userId }),
+        ...(option.email && { email: option.email }),
+      },
     });
 
     if (!userList || userList.length === 0) {
-      throw new CustomGraphQLError('유저가 조회되지 않음', {
+      throw new CustomGraphQLError('유저가 조회되지 않습니다.', {
         extensions: { code: 'NO_USER' },
       });
     } else if (userList.length > 1) {
-      throw new CustomGraphQLError('유저가 여러명 조회됨', {
+      throw new CustomGraphQLError('조건에 맞는 유저가 여러명입니다.', {
         extensions: { code: 'MULTIPLE_USER' },
       });
     } else {
