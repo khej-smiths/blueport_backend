@@ -18,6 +18,7 @@ abstract class IPost extends CommonEntity {
   @Column({ type: 'int', name: 'writer_id' })
   writerId: number;
 
+  @ManyToOne(() => User, (user) => user.postList)
   writer: User;
 }
 
