@@ -6,8 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
-import { formatError } from './common/error';
-import { GraphQLError } from 'graphql';
+import { CustomGraphQLError } from './common/error';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { LoggerModule } from './logger/logger.module';
@@ -50,11 +49,29 @@ import { Post } from './post/post.entity';
       useFactory: async (configService: ConfigService) => {
         return {
           autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // 스키마 파일 생성 방식 선언
-          formatError: (error: GraphQLError) => {
+          formatError: (error: any) => {
             // 'INCLUDE_STACKTRACE' 가 true인 경우는 STACKTRACE를 남기도록 셋팅
             const includeStackTrace =
               configService.get<boolean>('INCLUDE_STACKTRACE') ?? false;
-            return formatError(error, includeStackTrace);
+
+            // 에러 로그
+            // TODO 만들어둔 custom logger 사용하기
+            console.log('error format: ', error);
+
+            // TODO instanceof, constructor.name 으로도 다 잡히지 않아서 에러 해결 방식 찾아봐야한다.
+            if (!(error instanceof CustomGraphQLError)) {
+              return new CustomGraphQLError(error.message, {
+                extensions: {
+                  code: 'UNEXPECTED_ERR',
+                },
+              });
+            }
+
+            if (includeStackTrace === false) {
+              delete error.extensions.stacktrace;
+            }
+
+            return error;
           },
         };
       },
