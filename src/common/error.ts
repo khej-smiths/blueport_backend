@@ -6,10 +6,14 @@ import {
 
 // 에러 객체
 export class CustomGraphQLError extends GraphQLError {
-  extensions: GraphQLErrorExtensions & { code: string };
+  extensions: GraphQLErrorExtensions & { code: string; customFlag: true };
   constructor(message: string, options?: GraphQLErrorOptions) {
-    super(message, options);
-    // Object.setPrototypeOf(this, CustomGraphQLError.prototype);
+    super(message, {
+      ...options,
+      // customFlag: GraphQLError의 경우 직렬화의 과정을 거치기 때문에 CustomGraphQLError의 객체인지 여부를 'instanceof' 로 확인할 수 없다.
+      // 그래서 확인을 위해 customFlag 를 추가해서 CustomGraphQLError 여부를 customFlag 필드로 확인
+      extensions: { ...options?.extensions, customFlag: true },
+    });
   }
 }
 
