@@ -73,7 +73,9 @@ export class UserService {
       userList.length === 0
     ) {
       throw new CustomGraphQLError('유저가 조회되지 않습니다.', {
-        extensions: { code: 'NO_USER' },
+        extensions: {
+          code: `[${this.constructor.name}-${this.readUserByOption.name}] > NO_USER`,
+        },
       });
     } else if (
       // 유저가 여러개인 경우 에러 처리
