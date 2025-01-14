@@ -58,8 +58,7 @@ import { Post } from './post/post.entity';
             // TODO 만들어둔 custom logger 사용하기
             console.log('error format: ', error);
 
-            // TODO instanceof, constructor.name 으로도 다 잡히지 않아서 에러 해결 방식 찾아봐야한다.
-            if (!(error instanceof CustomGraphQLError)) {
+            if (error.extensions?.customFlag !== true) {
               return new CustomGraphQLError(error.message, {
                 extensions: {
                   code: 'UNEXPECTED_ERR',
