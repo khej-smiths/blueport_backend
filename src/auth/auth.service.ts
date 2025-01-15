@@ -45,7 +45,7 @@ export class AuthService {
       return accessToken;
     } catch (error) {
       if (error.extensions.customFlag === true) {
-        error.extensions.code = `[${errPrefix}] > ${error.extensions.code}`;
+        error.addBriefStacktraceToCode(errPrefix);
       }
       throw error;
     }
