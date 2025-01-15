@@ -31,6 +31,8 @@ export class UserService {
     try {
       // 유저 생성
       const user = await this.userRepository.createUser(input);
+
+      // 유저 리턴
       return user;
     } catch (error) {
       // user 테이블에서 email을 고유키로 설정해둠
@@ -43,6 +45,7 @@ export class UserService {
         );
       }
 
+      // 유저 생성 후 나온 에러가 커스텀 에러인 경우 prefix 추가
       if (error.extensions?.customFlag) {
         error.addBriefStacktraceToCode(errPrefix);
       }
