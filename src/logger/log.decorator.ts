@@ -35,6 +35,7 @@ export const IOLogger: () => ClassDecorator = () => {
           );
         }
 
+        // this 바인딩
         Object.defineProperty(target.prototype[method], 'name', {
           value: method,
         });
