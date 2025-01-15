@@ -6,7 +6,10 @@ import {
 
 // 에러 객체
 export class CustomGraphQLError extends GraphQLError {
-  extensions: GraphQLErrorExtensions & { code: string; customFlag: true };
+  extensions: GraphQLErrorExtensions & {
+    code: string;
+    customFlag: true;
+  };
 
   constructor(message: string, options?: GraphQLErrorOptions) {
     super(message, {
@@ -16,6 +19,7 @@ export class CustomGraphQLError extends GraphQLError {
       // 맨 마지막의 GraphQLModule에서 formatError를 통해 처리될 때는 customFlag를 false로 처리하기위해 ?? 로 수정함
       extensions: {
         ...options?.extensions,
+        code: `${options?.extensions?.code} - ${new Date()}`,
         customFlag: options?.extensions?.customFlag ?? true,
       },
     });
