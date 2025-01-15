@@ -8,6 +8,12 @@ export class UserRepository extends Repository<User> {
   constructor(private dataSource: DataSource) {
     super(User, dataSource.createEntityManager());
   }
+
+  /**
+   * @description 유저 생성
+   * @param input name, email
+   * @returns
+   */
   async createUser(input: CreateUserInputDto): Promise<User> {
     const creation = await this.create(input);
     const user = await this.save(creation);
