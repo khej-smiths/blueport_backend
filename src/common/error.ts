@@ -7,6 +7,7 @@ import {
 // 에러 객체
 export class CustomGraphQLError extends GraphQLError {
   extensions: GraphQLErrorExtensions & { code: string; customFlag: true };
+
   constructor(message: string, options?: GraphQLErrorOptions) {
     super(message, {
       ...options,
@@ -14,6 +15,10 @@ export class CustomGraphQLError extends GraphQLError {
       // 그래서 확인을 위해 customFlag 를 추가해서 CustomGraphQLError 여부를 customFlag 필드로 확인
       extensions: { ...options?.extensions, customFlag: true },
     });
+  }
+
+  addBriefStacktraceToCode(briefStackTrace: string) {
+    this.extensions.code = `[${briefStackTrace}] > ${this.extensions.code}`;
   }
 }
 
