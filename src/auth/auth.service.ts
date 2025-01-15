@@ -39,9 +39,9 @@ export class AuthService {
       };
 
       // 토큰 생성하기
+      // TODO 나중에 필요할 경우 refreshToken 생성
       const accessToken = await this.jwtService.signAsync(payload);
 
-      // return
       return accessToken;
     } catch (error) {
       if (error.extensions.customFlag === true) {
