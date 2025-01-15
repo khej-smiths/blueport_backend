@@ -13,6 +13,10 @@ export class AuthService {
   ) {}
 
   async login(input: LoginInputDto): Promise<string> {
+    // 에러의 앞에 달 prefix 선언
+    const errPrefix = `${this.constructor.name} - ${this.login.name}`;
+
+    // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_DELETED_USER = 'ERR_DELETED_USER';
 
     try {
@@ -41,7 +45,7 @@ export class AuthService {
       return accessToken;
     } catch (error) {
       if (error.extensions.customFlag === true) {
-        error.extensions.code = `[${this.constructor.name}-${this.login.name}] > ${error.extensions.code}`;
+        error.extensions.code = `[${errPrefix}] > ${error.extensions.code}`;
       }
       throw error;
     }
