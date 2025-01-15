@@ -13,7 +13,11 @@ export class CustomGraphQLError extends GraphQLError {
       ...options,
       // customFlag: GraphQLError의 경우 직렬화의 과정을 거치기 때문에 CustomGraphQLError의 객체인지 여부를 'instanceof' 로 확인할 수 없다.
       // 그래서 확인을 위해 customFlag 를 추가해서 CustomGraphQLError 여부를 customFlag 필드로 확인
-      extensions: { ...options?.extensions, customFlag: true },
+      // 맨 마지막의 GraphQLModule에서 formatError를 통해 처리될 때는 customFlag를 false로 처리하기위해 ?? 로 수정함
+      extensions: {
+        ...options?.extensions,
+        customFlag: options?.extensions?.customFlag ?? true,
+      },
     });
   }
 
