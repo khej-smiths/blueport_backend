@@ -61,7 +61,8 @@ import { Post } from './post/post.entity';
             if (error.extensions?.customFlag !== true) {
               return new CustomGraphQLError(error.message, {
                 extensions: {
-                  code: 'UNEXPECTED_ERR',
+                  code: 'ERR_UNEXPECTED',
+                  customFlag: false,
                 },
               });
             }
@@ -87,6 +88,7 @@ import { Post } from './post/post.entity';
         database: configService.get('MYSQL_DATABASE'),
         entities: [User, Post],
         synchronize: true,
+        logging: true,
       }),
     }),
     AuthModule,
