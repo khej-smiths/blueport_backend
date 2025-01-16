@@ -15,6 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { Post } from './post/post.entity';
+import { Request } from 'express';
 
 @Module({
   imports: [
@@ -49,6 +50,12 @@ import { Post } from './post/post.entity';
       useFactory: async (configService: ConfigService) => {
         return {
           autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // 스키마 파일 생성 방식 선언
+          // headers를 graphql context에 직접 추가
+          context: ({ req }: { req: Request }) => {
+            return {
+              access_token: req.headers['access_token'],
+            };
+          },
           formatError: (error: any) => {
             // 'INCLUDE_STACKTRACE' 가 true인 경우는 STACKTRACE를 남기도록 셋팅
             const includeStackTrace =
