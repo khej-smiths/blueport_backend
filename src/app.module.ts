@@ -58,6 +58,7 @@ import { Post } from './post/post.entity';
             // TODO 만들어둔 custom logger 사용하기
             console.log('error format: ', error);
 
+            // 커스텀 에러가 아닌 경우 커스텀 에러로 감싸기
             if (error.extensions?.customFlag !== true) {
               return new CustomGraphQLError(error.message, {
                 extensions: {
@@ -88,7 +89,7 @@ import { Post } from './post/post.entity';
         database: configService.get('MYSQL_DATABASE'),
         entities: [User, Post],
         synchronize: true,
-        logging: true,
+        // logging: true,
       }),
     }),
     AuthModule,
