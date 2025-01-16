@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LoginInputDto } from './dtos/login.dto';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { CustomGraphQLError } from 'src/common/error';
 import { JWT_PRIVATE_CLAIMS } from './types';
@@ -12,6 +12,11 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
+  /**
+   * @description: 로그인
+   * @param input
+   * @returns
+   */
   async login(input: LoginInputDto): Promise<string> {
     // 에러의 앞에 달 prefix 선언
     const errPrefix = `${this.constructor.name} - ${this.login.name}`;
