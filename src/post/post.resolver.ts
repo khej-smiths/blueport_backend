@@ -14,6 +14,7 @@ import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';
+import { AuthUser } from 'src/auth/auth.decorator';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -23,8 +24,11 @@ export class PostResolver {
   ) {}
 
   @Mutation(() => Post, { description: '게시글 작성하기' })
-  async createPost(@Args(input) input: CreatePostInputDto): Promise<Post> {
-    return await this.postService.createPost(input);
+  async createPost(
+    @Args(input) input: CreatePostInputDto,
+    @AuthUser() user: User,
+  ): Promise<Post> {
+    return await this.postService.createPost(user, input);
   }
 
   @Query(() => [Post])
