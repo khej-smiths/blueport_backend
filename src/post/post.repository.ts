@@ -29,8 +29,11 @@ export class PostRepository extends Repository<Post> {
   //  * @param option
   //  */
 
-  async createPost(option: CreatePostInputDto): Promise<Post> {
-    const creation = await this.create(option);
+  async createPost(
+    option: CreatePostInputDto,
+    userInfo: { id: string },
+  ): Promise<Post> {
+    const creation = await this.create({ ...option, writerId: userInfo.id });
     const post = await this.save(creation);
 
     return post;
