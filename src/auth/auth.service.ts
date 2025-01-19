@@ -3,13 +3,15 @@ import { LoginInputDto } from './dtos/login.dto';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { CustomGraphQLError } from 'src/common/error';
-import { JWT_PRIVATE_CLAIMS } from './types';
+import { JWT_PRIVATE_CLAIMS, JWT_TOKEN_PAYLOAD } from './types';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -49,9 +51,112 @@ export class AuthService {
 
       return accessToken;
     } catch (error) {
-      if (error.extensions.customFlag === true) {
+      if (error.extensions?.customFlag === true) {
         error.addBriefStacktraceToCode(errPrefix);
       }
+      throw error;
+    }
+  }
+
+  /**
+   * @description 토큰 해독하기
+   * @param token
+   * @returns
+   */
+  validateToken(token: string): { uid: number; email: string } {
+    const ERR_EXPIRED_TOKEN = 'ERR_EXPIRED_TOKEN';
+    const ERR_NOT_VALID_EMAIL = 'ERR_NOT_VALID_EMAIL';
+    const ERR_NOT_VALID_USER_ID = 'ERR_NOT_VALID_USER_ID';
+    const ERR_NOT_VALID_ISSUER = 'ERR_NOT_VALID_ISSUER';
+    const ERR_NOT_VALID_TIME = 'ERR_NOT_VALID_TIME';
+    const ERR_NOT_VALID_SUBJECT = 'ERR_NOT_VALID_SUBJECT';
+
+    const prefix = `${this.constructor.name} - ${this.validateToken.name}`;
+
+    try {
+      // 토큰 검증 - 토큰 만료
+      const payload = this.jwtService.verify<JWT_TOKEN_PAYLOAD>(token);
+
+      // 페이로드 필수값 확인 1. email이 없거나 email이 string이 아니거나 email이 email의 형태가 아닌 경우 에러처리
+      if (
+        !payload.email ||
+        typeof payload.email !== 'string' ||
+        !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(payload.email)
+      ) {
+        throw new CustomGraphQLError('이메일이 부정확합니다.', {
+          extensions: {
+            code: ERR_NOT_VALID_EMAIL,
+          },
+        });
+      }
+
+      // 페이로드 필수값 확인 2. 유저 아이디가 부정확한 경우
+      if (!payload.uid || typeof payload.uid !== 'number') {
+        throw new CustomGraphQLError('유저 아이디가 부정확합니다.', {
+          extensions: {
+            code: ERR_NOT_VALID_USER_ID,
+          },
+        });
+      }
+
+      // 페이로드 필수값 확인 3. 토큰 발급자가 부정확한 경우
+      if (
+        !payload.iss ||
+        payload.iss !== this.configService.get('JWT_ISSUER')
+      ) {
+        throw new CustomGraphQLError('토큰의 발급자가 부정확합니다.', {
+          extensions: {
+            code: ERR_NOT_VALID_ISSUER,
+          },
+        });
+      }
+
+      // 페이로드 필수값 확인 4. 토큰의 발급 및 만료 시간이 부정확한 경우
+      if (
+        !payload.iat ||
+        typeof payload.iat !== 'number' ||
+        !payload.exp ||
+        typeof payload.exp !== 'number'
+      ) {
+        throw new CustomGraphQLError(
+          '토큰의 발급 및 만료 시간이 부정확합니다.',
+          {
+            extensions: {
+              code: ERR_NOT_VALID_TIME,
+            },
+          },
+        );
+      }
+
+      // 페이로드 필수값 확인 5. 토큰의 제목이 부정확한 경우
+      if (
+        !payload.sub ||
+        payload.sub !== this.configService.get('JWT_SUBJECT')
+      ) {
+        throw new CustomGraphQLError('토큰의 제목이 부정확합니다.', {
+          extensions: {
+            code: ERR_NOT_VALID_SUBJECT,
+          },
+        });
+      }
+
+      return { uid: payload.uid, email: payload.email };
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        error = new CustomGraphQLError(
+          '토큰이 만료되었습니다. 다시 로그인해주세요.',
+          {
+            extensions: {
+              code: ERR_EXPIRED_TOKEN,
+            },
+          },
+        );
+      }
+
+      if (error instanceof CustomGraphQLError) {
+        error.addBriefStacktraceToCode(prefix);
+      }
+
       throw error;
     }
   }
