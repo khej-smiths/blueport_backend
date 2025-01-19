@@ -1,6 +1,23 @@
-import { SetMetadata } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  SetMetadata,
+} from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { User } from 'src/user/user.entity';
 
-export type ACCESS_ROLE = 'PUBLIC' | 'USER' | 'OPTIONAL';
+export type AccessRoleType = 'PUBLIC' | 'USER' | 'OPTIONAL';
 
-export const Roles = (role?: ACCESS_ROLE) =>
-  SetMetadata('ROLE', role || 'USER');
+export const AccessRole = (role?: AccessRoleType) =>
+  SetMetadata('AccessRole', role || 'USER');
+
+export const AuthUser = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const gqlContext = GqlExecutionContext.create(context).getContext();
+
+    // * graphql context user
+    const user: User = gqlContext?.user;
+
+    return user;
+  },
+);
