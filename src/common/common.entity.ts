@@ -9,9 +9,9 @@ import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 @InputType({ isAbstract: true })
 @ObjectType({ isAbstract: true })
 export abstract class CommonEntity {
-  @PrimaryGeneratedColumn()
-  @Field(() => Int, { description: 'id' })
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  @Field(() => String, { description: 'id' })
+  id: string;
 
   @CreateDateColumn({ name: 'created_at' })
   @Field(() => Date, { description: '데이터의 생성 날짜' })

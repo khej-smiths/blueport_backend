@@ -14,9 +14,9 @@ abstract class IPost extends CommonEntity {
   @Column({ type: 'longtext', comment: '게시글 내용' })
   content: string;
 
-  @Field(() => Int, { description: '게시글 작성자의 id' })
-  @Column({ type: 'int', name: 'writer_id' })
-  writerId: number;
+  @Field(() => String, { description: '게시글 작성자의 id' })
+  @Column({ type: 'uuid', name: 'writer_id' })
+  writerId: string;
 
   @ManyToOne(() => User, (user) => user.postList)
   writer: User;
