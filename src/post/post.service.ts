@@ -4,6 +4,7 @@ import { ReadPostInputDto } from './dtos/read-post.dto';
 import { PostRepository } from './post.repository';
 import { CustomGraphQLError, ERROR_CODE_READ_POST } from 'src/common/error';
 import { CreatePostInputDto } from './dtos/create-post.dto';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class PostService {
@@ -20,10 +21,10 @@ export class PostService {
    * @param input
    * @returns
    */
-  async createPost(input: CreatePostInputDto): Promise<Post> {
+  async createPost(user: User, input: CreatePostInputDto): Promise<Post> {
     let post: Post;
     try {
-      post = await this.postRepository.createPost(input);
+      post = await this.postRepository.createPost(input, { id: user.id });
     } catch (e) {
       if (e.code === 'ER_NO_DEFAULT_FOR_FIELD') {
         throw new CustomGraphQLError(
