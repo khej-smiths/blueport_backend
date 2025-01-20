@@ -14,7 +14,7 @@ import { User } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';
-import { AuthUser } from 'src/auth/auth.decorator';
+import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -23,6 +23,7 @@ export class PostResolver {
     private readonly userService: UserService,
   ) {}
 
+  @AccessRole('USER')
   @Mutation(() => Post, { description: '게시글 작성하기' })
   async createPost(
     @Args(input) input: CreatePostInputDto,
