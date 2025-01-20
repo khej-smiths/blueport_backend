@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from './post.entity';
-import { getObjectKeysByGeneric } from 'src/common/consts';
 import { CreatePostInputDto } from './dtos/create-post.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
 
 type ReadPostOption = {
-  id: number;
+  id: string;
 };
 
 @Injectable()
@@ -29,18 +28,20 @@ export class PostRepository extends Repository<Post> {
     return post;
   }
 
+  /**
+   * @description 조건에 맞춰서 게시글 목록 조회하기
+   * @param option
+   * @returns
+   */
   async readPostList(option: ReadPostOption): Promise<Array<Post>> {
-    return [{}] as Array<Post>;
-  }
+    const where: FindOptionsWhere<Post> = {
+      ...(option.id && { id: option.id }),
+    };
 
-  // async readPostList(option: ReadPostOption): Promise<Array<Post>> {
-  //   const optionKeyList = getObjectKeysByGeneric<ReadPostOption>(option);
-  //   return this.POST_LIST.filter((post) => {
-  //     return (
-  //       optionKeyList.filter((optionKey) => {
-  //         return post[optionKey] === option[optionKey];
-  //       }).length === optionKeyList.length
-  //     );
-  //   });
-  // }
+    const postList = await this.find({
+      where,
+    });
+
+    return postList;
+  }
 }
