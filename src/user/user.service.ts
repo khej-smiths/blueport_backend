@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserInputDto } from './dtos/create-user.dto';
 import { CustomLogger } from 'src/logger/logger';
 import { IOLogger } from 'src/logger/log.decorator';
+import { FindOptionsWhere } from 'typeorm';
 
 @Injectable()
 @IOLogger()
@@ -90,7 +91,7 @@ export class UserService {
         where: {
           ...(option.userId && { id: option.userId }),
           ...(option.email && { email: option.email }),
-        },
+        } as FindOptionsWhere<User>,
       });
 
       if (
