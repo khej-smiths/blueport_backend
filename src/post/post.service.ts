@@ -16,25 +16,30 @@ export class PostService {
    * @returns
    */
   async createPost(user: User, input: CreatePostInputDto): Promise<Post> {
-    let post: Post;
+    const prefix = `${this.constructor.name} - ${this.createPost.name}`;
+
+    const ERR_NO_FIELD = 'ERR_NO_FIELD';
+
     try {
-      post = await this.postRepository.createPost(input, { id: user.id });
-    } catch (e) {
-      if (e.code === 'ER_NO_DEFAULT_FOR_FIELD') {
-        throw new CustomGraphQLError(
+      const post = await this.postRepository.createPost(input, { id: user.id });
+
+      return post;
+    } catch (error) {
+      if (error.code === 'ER_NO_DEFAULT_FOR_FIELD') {
+        error = new CustomGraphQLError(
           '유저의 게시글을 작성하기 위한 정보가 부족합니다.',
           {
-            extensions: { code: 'ERR_NO_DEFAULT_FOR_FIELD' },
+            extensions: { code: ERR_NO_FIELD },
           },
         );
       }
-      throw new CustomGraphQLError(e, {
-        extensions: {
-          code: this.ERROR_CODE.ERROR_CODE_CREATE_POST.UNEXPECTED_ERROR,
-        },
-      });
+
+      if (error.extensions?.customFlag) {
+        error.addBriefStacktraceToCode(prefix);
+      }
+
+      throw error;
     }
-    return post;
   }
 
   async readPost(input: ReadPostInputDto): Promise<Post> {
