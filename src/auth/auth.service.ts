@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   /**
-   * @description 토큰 해독하기
+   * @description 토큰 검증
    * @param token
    * @returns
    */
@@ -91,7 +91,7 @@ export class AuthService {
       }
 
       // 페이로드 필수값 확인 2. 유저 아이디가 부정확한 경우
-      if (!payload.uid || typeof payload.uid !== 'number') {
+      if (!payload.uid || typeof payload.uid !== 'string') {
         throw new CustomGraphQLError('유저 아이디가 부정확합니다.', {
           extensions: {
             code: ERR_NOT_VALID_USER_ID,
