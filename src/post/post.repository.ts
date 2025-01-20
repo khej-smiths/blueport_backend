@@ -10,25 +10,15 @@ type ReadPostOption = {
 
 @Injectable()
 export class PostRepository extends Repository<Post> {
+  // constructor 로직의 경우 보여지는 코드 상으로 직접 사용하지는 않으나, 부모 클래스에 필요하다
   constructor(private dataSource: DataSource) {
     super(Post, dataSource.createEntityManager());
   }
-  // private readonly POST_LIST: Array<Post> = Array.from(
-  //   { length: 100 },
-  //   (_, index: number) => {
-  //     return {
-  //       id: index,
-  //       title: `title ${index}`,
-  //       content: `content ${index}`,
-  //       writerId: Math.floor(index % 10),
-  //     };
-  //   },
-  // );
-  /**
-  //  * @description 게시글을 추가하기
-  //  * @param option
-  //  */
 
+  /**
+   * @description 게시글을 추가하기
+   * @param option
+   */
   async createPost(
     option: CreatePostInputDto,
     userInfo: { id: string },
