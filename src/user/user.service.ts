@@ -61,7 +61,7 @@ export class UserService {
    * @returns: User
    */
   async readUserByOption(option: {
-    userId?: number;
+    userId?: string;
     email?: string;
   }): Promise<User> {
     // 에러의 앞에 달 prefix 선언
