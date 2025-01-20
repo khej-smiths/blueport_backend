@@ -1,7 +1,7 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CommonEntity } from 'src/common/common.entity';
 import { User } from 'src/user/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -19,6 +19,7 @@ abstract class IPost extends CommonEntity {
   writerId: string;
 
   @ManyToOne(() => User, (user) => user.postList)
+  @JoinColumn({ name: 'writer_id' })
   writer: User;
 }
 
