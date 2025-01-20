@@ -5,7 +5,7 @@ export type JWT_PRIVATE_CLAIMS = Record<
 > &
   Record<
     'uid', // 유저의 아이디
-    number
+    string
   >;
 
 // 생성된 토큰의 payload
