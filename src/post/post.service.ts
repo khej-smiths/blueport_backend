@@ -42,6 +42,11 @@ export class PostService {
     }
   }
 
+  /**
+   * @description 게시글 조회하기
+   * @param input
+   * @returns
+   */
   async readPost(input: ReadPostInputDto): Promise<Post> {
     const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
@@ -67,22 +72,6 @@ export class PostService {
         return postList[0];
       }
     } catch (error) {
-      // if (
-      //   // 예측한 에러케이스인 경우, 위에서 잡은 에러를 그대로 던지기
-      //   // 그 외 케이스인 경우 그대로 던지기
-      //   Object.keys(this.ERROR_CODE.ERROR_CODE_READ_POST).includes(
-      //     e.extensions?.code,
-      //   )
-      // ) {
-      //   throw e;
-      // } else {
-      //   throw new CustomGraphQLError(e, {
-      //     extensions: {
-      //       code: 'UNEXPECTED_ERROR',
-      //     },
-      //   });
-      // }
-
       if (error.extensions?.customFlag) {
         error.addBriefStacktraceToCode(prefix);
       }
