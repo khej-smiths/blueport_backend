@@ -6,6 +6,7 @@ import { Reflector } from '@nestjs/core';
 import { UserService } from 'src/user/user.service';
 import { AccessRoleType } from 'src/auth/auth.decorator';
 import { CustomGraphQLError } from 'src/common/error';
+import { JWT_PRIVATE_CLAIMS } from './types';
 
 @Injectable()
 export class GlobalGuard implements CanActivate {
@@ -27,7 +28,7 @@ export class GlobalGuard implements CanActivate {
 
       const accessToken = gqlContext['access_token'];
 
-      let validationResult!: { email: string; uid: number };
+      let validationResult!: JWT_PRIVATE_CLAIMS;
 
       // 토큰이 있는 경우 유효한 토큰인지 확인하기
       if (accessToken) {

@@ -63,7 +63,7 @@ export class AuthService {
    * @param token
    * @returns
    */
-  validateToken(token: string): { uid: number; email: string } {
+  validateToken(token: string): JWT_PRIVATE_CLAIMS {
     const ERR_EXPIRED_TOKEN = 'ERR_EXPIRED_TOKEN';
     const ERR_NOT_VALID_EMAIL = 'ERR_NOT_VALID_EMAIL';
     const ERR_NOT_VALID_USER_ID = 'ERR_NOT_VALID_USER_ID';
