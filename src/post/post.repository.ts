@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from './post.entity';
 import { CreatePostInputDto } from './dtos/create-post.dto';
-import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  DataSource,
+  FindManyOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 type ReadPostOption = {
-  id: string;
+  id?: string;
+  skip?: number;
+  take?: number;
 };
 
 @Injectable()
@@ -38,9 +45,13 @@ export class PostRepository extends Repository<Post> {
       ...(option.id && { id: option.id }),
     };
 
-    const postList = await this.find({
+    const findOption: FindManyOptions<Post> = {
       where,
-    });
+      ...(option.skip && { skip: option.skip }),
+      ...(option.take && { take: option.take }),
+    };
+
+    const postList = await this.find(findOption);
 
     return postList;
   }
