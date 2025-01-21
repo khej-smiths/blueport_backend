@@ -67,7 +67,13 @@ import { Request } from 'express';
 
             // 커스텀 에러가 아닌 경우 커스텀 에러로 감싸기
             if (error.extensions?.customFlag !== true) {
-              return new CustomGraphQLError(error.message, {
+              const errorRawMessageList: Array<string> = [
+                error.message,
+                ...error.extensions?.originalError?.message,
+              ];
+              const errorMessage = `[${errorRawMessageList.join('] - [')}]`;
+
+              return new CustomGraphQLError(errorMessage, {
                 extensions: {
                   code: 'ERR_UNEXPECTED',
                   customFlag: false,
