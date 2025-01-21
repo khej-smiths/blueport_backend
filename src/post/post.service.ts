@@ -5,6 +5,7 @@ import { PostRepository } from './post.repository';
 import { CustomGraphQLError } from 'src/common/error';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import { User } from 'src/user/user.entity';
+import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 
 @Injectable()
 export class PostService {
@@ -78,5 +79,14 @@ export class PostService {
 
       throw error;
     }
+  }
+
+  async readPostList(input: ReadPostListInputDto): Promise<Array<Post>> {
+    const postList = await this.postRepository.readPostList({
+      skip: input.limit * (input.pageNumber - 1),
+      take: input.limit,
+    });
+
+    return postList;
   }
 }
