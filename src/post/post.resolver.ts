@@ -36,7 +36,7 @@ export class PostResolver {
   async readPostList(
     @Args(input) input: ReadPostListInputDto,
   ): Promise<Array<Post>> {
-    return [];
+    return await this.postService.readPostList(input);
   }
 
   @Query(() => Post)
