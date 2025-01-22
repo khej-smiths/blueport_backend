@@ -15,6 +15,7 @@ import { UserService } from 'src/user/user.service';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
+import { UpdatePostInputDto } from './dtos/update-post.dto';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -42,6 +43,11 @@ export class PostResolver {
   @Query(() => Post, { description: '게시글 조회하기' })
   async readPost(@Args(input) input: ReadPostInputDto): Promise<Post> {
     return await this.postService.readPost(input);
+  }
+
+  @Mutation(() => Post, { description: '게시글 수정하기' })
+  async updatePost(@Args('input') input: UpdatePostInputDto) {
+    return await this.postService.updatePost(input);
   }
 
   @ResolveField('writer', () => User, {

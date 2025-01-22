@@ -6,8 +6,11 @@ import { CustomGraphQLError } from 'src/common/error';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import { User } from 'src/user/user.entity';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
+import { UpdatePostInputDto } from './dtos/update-post.dto';
+import { IOLogger } from 'src/logger/log.decorator';
 
 @Injectable()
+@IOLogger()
 export class PostService {
   constructor(private readonly postRepository: PostRepository) {}
 
@@ -88,5 +91,9 @@ export class PostService {
     });
 
     return postList;
+  }
+
+  async updatePost(input: UpdatePostInputDto): Promise<Post> {
+    return {} as Post;
   }
 }
