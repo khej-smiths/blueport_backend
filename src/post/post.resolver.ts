@@ -32,14 +32,14 @@ export class PostResolver {
     return await this.postService.createPost(user, input);
   }
 
-  @Query(() => [Post])
+  @Query(() => [Post], { description: '게시글 목록 조회하기' })
   async readPostList(
     @Args(input) input: ReadPostListInputDto,
   ): Promise<Array<Post>> {
     return await this.postService.readPostList(input);
   }
 
-  @Query(() => Post)
+  @Query(() => Post, { description: '게시글 조회하기' })
   async readPost(@Args(input) input: ReadPostInputDto): Promise<Post> {
     return await this.postService.readPost(input);
   }
