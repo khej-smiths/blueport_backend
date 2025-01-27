@@ -65,13 +65,28 @@ import { Request } from 'express';
             // TODO 만들어둔 custom logger 사용하기
             console.log('error format: ', error);
 
-            // 커스텀 에러가 아닌 경우 커스텀 에러로 감싸기
+            // 커스텀 에러가 아닌 경우 커스텀 에러로 감싸기. 단, 에러 문구 및 코드값을 같이 표현하기 위해 아래 로직 추가함
             if (error.extensions?.customFlag !== true) {
               const errorRawMessageList: Array<string> = [
                 error.message,
-                ...error.extensions?.originalError?.message,
+                error.extensions?.code,
+                error.extensions?.originalError?.message,
               ];
-              const errorMessage = `[${errorRawMessageList.join('] - [')}]`;
+              const errorMessageList: Array<string> = [];
+
+              if (errorRawMessageList.length > 0) {
+                for (const rawError of errorRawMessageList) {
+                  if (Array.isArray(rawError)) {
+                    errorMessageList.push(...rawError.filter((per) => !per));
+                  } else {
+                    if (rawError) {
+                      errorMessageList.push(rawError);
+                    }
+                  }
+                }
+              }
+
+              const errorMessage = `[${errorMessageList.join('] - [')}]`;
 
               return new CustomGraphQLError(errorMessage, {
                 extensions: {
@@ -102,7 +117,7 @@ import { Request } from 'express';
         database: configService.get('MYSQL_DATABASE'),
         entities: [User, Post],
         synchronize: true,
-        // logging: true,
+        logging: true,
       }),
     }),
     AuthModule,
