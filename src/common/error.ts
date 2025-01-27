@@ -38,21 +38,3 @@ export class CustomGraphQLError extends GraphQLError {
     this.extensions.code = `[${briefStackTrace}] > ${this.extensions.code}`;
   }
 }
-
-// 에러 처리
-export const formatError = (
-  error: GraphQLError,
-  includeStackTrace: boolean,
-) => {
-  console.log('error format: ', error);
-
-  if (includeStackTrace === false) {
-    delete error.extensions.stacktrace;
-  }
-
-  return error;
-};
-
-export const ERROR_CODE_CREATE_POST = {
-  UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
-} as const;
