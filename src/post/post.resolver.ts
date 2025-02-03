@@ -45,9 +45,13 @@ export class PostResolver {
     return await this.postService.readPost(input);
   }
 
+  @AccessRole('USER')
   @Mutation(() => Post, { description: '게시글 수정하기' })
-  async updatePost(@Args('input') input: UpdatePostInputDto) {
-    return await this.postService.updatePost(input);
+  async updatePost(
+    @Args('input') input: UpdatePostInputDto,
+    @AuthUser() writer: User,
+  ) {
+    return await this.postService.updatePost(input, writer);
   }
 
   @ResolveField('writer', () => User, {

@@ -6,7 +6,10 @@ import {
   FindManyOptions,
   FindOptionsWhere,
   Repository,
+  UpdateResult,
 } from 'typeorm';
+import { UpdatePostInputDto } from './dtos/update-post.dto';
+import { User } from 'src/user/user.entity';
 
 type ReadPostOption = {
   id?: string;
@@ -54,5 +57,19 @@ export class PostRepository extends Repository<Post> {
     const postList = await this.find(findOption);
 
     return postList;
+  }
+
+  /**
+   * @description 게시글 id를 받아서 게시글을 수정하기
+   * @param option
+   * @returns
+   */
+  async updatePost(
+    option: UpdatePostInputDto,
+    writer: User,
+  ): Promise<UpdateResult> {
+    const { id, ...content } = option;
+
+    return await this.update({ id: option.id, writerId: writer.id }, content);
   }
 }

@@ -93,7 +93,74 @@ export class PostService {
     return postList;
   }
 
-  async updatePost(input: UpdatePostInputDto): Promise<Post> {
-    return {} as Post;
+  async updatePost(input: UpdatePostInputDto, writer: User): Promise<Post> {
+    const ERR_NO_DATA = 'ERR_NO_DATA';
+    const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
+    const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
+    const ERR_NOT_WRITER = 'ERR_NOT_WRITER';
+
+    const prefix = `${this.constructor.name} - ${this.updatePost.name}`;
+
+    try {
+      // 게시글을 업데이트하기 위한 조건 확인하기 위해 게시글을 우선 조회하기
+      const postList = await this.postRepository.readPostList({ id: input.id });
+
+      // 조회된 게시글이 없는 경우 오류처리
+      if (!postList || postList.length === 0) {
+        throw new CustomGraphQLError('게시글을 조회할 수 없습니다.', {
+          extensions: {
+            code: ERR_NO_DATA,
+          },
+        });
+      }
+
+      // 조회된 게시글이 여러개인 경우 오류 처리
+      if (postList && postList.length > 1) {
+        throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
+          extensions: {
+            code: ERR_MULTIPLE_DATA,
+          },
+        });
+      }
+
+      // 조회된 게시글은 1개이기 때문에 postList > post로 변수 변경
+      const post = postList[0];
+
+      // 게시글의 작성자는 본인이어야한다
+      if (post.writerId !== writer.id) {
+        throw new CustomGraphQLError(
+          '본인이 작성한 게시글만 업데이트할 수 있습니다.',
+          {
+            extensions: {
+              code: ERR_NOT_WRITER,
+            },
+          },
+        );
+      }
+
+      // 업데이트하기
+      const updateResult = await this.postRepository.updatePost(input, writer);
+
+      // 업데이트에 성공한 row가 없는 경우 오류
+      if (updateResult.affected === 0) {
+        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
+          extensions: {
+            code: ERR_NO_UPDATE,
+          },
+        });
+      }
+
+      return {
+        ...post,
+        ...(input.content && { content: input.content }),
+        ...(input.title && { title: input.title }),
+      };
+    } catch (error) {
+      if (error.extensions?.customFlag) {
+        error.addBriefStacktraceToCode(prefix);
+      }
+
+      throw error;
+    }
   }
 }
