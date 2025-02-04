@@ -3,6 +3,7 @@ import { Post } from './post.entity';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import {
   DataSource,
+  DeleteResult,
   FindManyOptions,
   FindOptionsWhere,
   Repository,
@@ -10,6 +11,7 @@ import {
 } from 'typeorm';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { User } from 'src/user/user.entity';
+import { DeletePostInputDto } from './dtos/delete-post.dto';
 
 type ReadPostOption = {
   id?: string;
@@ -71,5 +73,16 @@ export class PostRepository extends Repository<Post> {
     const { id, ...content } = option;
 
     return await this.update({ id: option.id, writerId: writer.id }, content);
+  }
+
+  async deletePost(
+    option: DeletePostInputDto,
+    writer: User,
+  ): Promise<DeleteResult> {
+    // TODO 정상 동작여부 확인하기
+    return await this.softDelete({
+      id: option.id,
+      writerId: writer.id,
+    });
   }
 }
