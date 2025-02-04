@@ -102,8 +102,55 @@ export class PostService {
     const prefix = `${this.constructor.name} - ${this.updatePost.name}`;
 
     try {
+      const post = await this.getEditablePost({
+        postId: input.id,
+        editorId: writer.id,
+      });
+
+      // 업데이트하기
+      const updateResult = await this.postRepository.updatePost(input, writer);
+
+      // 업데이트에 성공한 row가 없는 경우 오류
+      if (updateResult.affected === 0) {
+        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
+          extensions: {
+            code: ERR_NO_UPDATE,
+          },
+        });
+      }
+
+      return {
+        ...post,
+        ...(input.content && { content: input.content }),
+        ...(input.title && { title: input.title }),
+      };
+    } catch (error) {
+      if (error.extensions?.customFlag) {
+        error.addBriefStacktraceToCode(prefix);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * @description 게시글 id, 게시글 수정을 요청한 유저의 id를 유효하게 수정할 수 있는 게시글인지 확인한 후 수정할 게시글 객체를 반환
+   */
+  private async getEditablePost(input: {
+    postId: string;
+    editorId: string;
+  }): Promise<Post> {
+    const ERR_NO_DATA = 'ERR_NO_DATA';
+    const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
+    const ERR_NOT_WRITER = 'ERR_NOT_WRITER';
+
+    const prefix = `${this.constructor.name} - ${this.getEditablePost.name}`;
+
+    try {
       // 게시글을 업데이트하기 위한 조건 확인하기 위해 게시글을 우선 조회하기
-      const postList = await this.postRepository.readPostList({ id: input.id });
+      const postList = await this.postRepository.readPostList({
+        id: input.postId,
+      });
 
       // 조회된 게시글이 없는 경우 오류처리
       if (!postList || postList.length === 0) {
@@ -127,9 +174,9 @@ export class PostService {
       const post = postList[0];
 
       // 게시글의 작성자는 본인이어야한다
-      if (post.writerId !== writer.id) {
+      if (post.writerId !== input.editorId) {
         throw new CustomGraphQLError(
-          '본인이 작성한 게시글만 업데이트할 수 있습니다.',
+          '본인이 작성한 게시글만 업데이트/삭제할 수 있습니다.',
           {
             extensions: {
               code: ERR_NOT_WRITER,
@@ -138,23 +185,7 @@ export class PostService {
         );
       }
 
-      // 업데이트하기
-      const updateResult = await this.postRepository.updatePost(input, writer);
-
-      // 업데이트에 성공한 row가 없는 경우 오류
-      if (updateResult.affected === 0) {
-        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
-          extensions: {
-            code: ERR_NO_UPDATE,
-          },
-        });
-      }
-
-      return {
-        ...post,
-        ...(input.content && { content: input.content }),
-        ...(input.title && { title: input.title }),
-      };
+      return post;
     } catch (error) {
       if (error.extensions?.customFlag) {
         error.addBriefStacktraceToCode(prefix);
