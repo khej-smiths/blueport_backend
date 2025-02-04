@@ -61,7 +61,7 @@ export class PostResolver {
     @Args('input') input: DeletePostInputDto,
     @AuthUser() writer: User,
   ) {
-    return await this.postService.updatePost(input, writer);
+    return await this.postService.deletePost(input, writer);
   }
 
   @ResolveField('writer', () => User, {
