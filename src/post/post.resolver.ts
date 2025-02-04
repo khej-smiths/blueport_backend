@@ -16,6 +16,7 @@ import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
+import { DeletePostInputDto } from './dtos/delete-post.dto';
 
 @Resolver(() => Post)
 export class PostResolver {
@@ -49,6 +50,15 @@ export class PostResolver {
   @Mutation(() => Post, { description: '게시글 수정하기' })
   async updatePost(
     @Args('input') input: UpdatePostInputDto,
+    @AuthUser() writer: User,
+  ) {
+    return await this.postService.updatePost(input, writer);
+  }
+
+  @AccessRole('USER')
+  @Mutation(() => Post, { description: '게시글 삭제하기' })
+  async deletePost(
+    @Args('input') input: DeletePostInputDto,
     @AuthUser() writer: User,
   ) {
     return await this.postService.updatePost(input, writer);
