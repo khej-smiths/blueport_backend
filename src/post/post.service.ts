@@ -8,6 +8,7 @@ import { User } from 'src/user/user.entity';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { IOLogger } from 'src/logger/log.decorator';
+import { DeletePostInputDto } from './dtos/delete-post.dto';
 
 @Injectable()
 @IOLogger()
@@ -94,14 +95,12 @@ export class PostService {
   }
 
   async updatePost(input: UpdatePostInputDto, writer: User): Promise<Post> {
-    const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
-    const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
-    const ERR_NOT_WRITER = 'ERR_NOT_WRITER';
 
     const prefix = `${this.constructor.name} - ${this.updatePost.name}`;
 
     try {
+      // 수정 가능한 게시글인지 확인하기
       const post = await this.getEditablePost({
         postId: input.id,
         editorId: writer.id,
@@ -124,6 +123,51 @@ export class PostService {
         ...(input.content && { content: input.content }),
         ...(input.title && { title: input.title }),
       };
+    } catch (error) {
+      if (error.extensions?.customFlag) {
+        error.addBriefStacktraceToCode(prefix);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * @description 게시글 삭제하기
+   * @param input
+   * @param writer
+   * @returns
+   */
+  async deletePost(input: DeletePostInputDto, writer: User): Promise<boolean> {
+    const prefix = `${this.constructor.name} - ${this.deletePost.name}`;
+
+    const ERR_FAILED = 'ERR_FAILED';
+
+    try {
+      // 삭제 가능한 게시글인지 확인하기
+      await this.getEditablePost({
+        postId: input.id,
+        editorId: writer.id,
+      });
+
+      // 게시글 삭제하기
+      const deleteResult = await this.postRepository.deletePost(input, writer);
+
+      // 게시글 삭제 결과가 0인 경우 삭제된 게시글이 없음
+      if (deleteResult.affected === 0) {
+        throw new CustomGraphQLError(
+          '게시글을 삭제하지 못했습니다. 다시 시도해주세요.',
+          {
+            extensions: {
+              code: ERR_FAILED,
+            },
+          },
+        );
+      }
+
+      // TODO 삭제된 게시글이 여러개인 경우 롤백하기
+
+      return true;
     } catch (error) {
       if (error.extensions?.customFlag) {
         error.addBriefStacktraceToCode(prefix);
