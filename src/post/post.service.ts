@@ -151,10 +151,13 @@ export class PostService {
       });
 
       // 게시글 삭제하기
-      const deleteResult = await this.postRepository.deletePost(input, writer);
+      const [deleteResult, queryRunner] = await this.postRepository.deletePost(
+        input,
+        writer,
+      );
 
       // 게시글 삭제 결과가 0인 경우 삭제된 게시글이 없음
-      if (deleteResult.affected === 0) {
+      if (!deleteResult.affected || deleteResult.affected === 0) {
         throw new CustomGraphQLError(
           '게시글을 삭제하지 못했습니다. 다시 시도해주세요.',
           {
@@ -165,7 +168,12 @@ export class PostService {
         );
       }
 
-      // TODO 삭제된 게시글이 여러개인 경우 롤백하기
+      // TODO 삭제된 게시글이 여러개인 경우 롤백하기 > 정상 동작여부 확인 필요
+      if (deleteResult.affected > 1) {
+        await queryRunner.rollbackTransaction();
+      } else {
+        await queryRunner.commitTransaction();
+      }
 
       return true;
     } catch (error) {

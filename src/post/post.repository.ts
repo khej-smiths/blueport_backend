@@ -6,6 +6,7 @@ import {
   DeleteResult,
   FindManyOptions,
   FindOptionsWhere,
+  QueryRunner,
   Repository,
   UpdateResult,
 } from 'typeorm';
@@ -78,11 +79,18 @@ export class PostRepository extends Repository<Post> {
   async deletePost(
     option: DeletePostInputDto,
     writer: User,
-  ): Promise<DeleteResult> {
-    // TODO 정상 동작여부 확인하기
-    return await this.softDelete({
-      id: option.id,
-      writerId: writer.id,
-    });
+  ): Promise<[UpdateResult, QueryRunner]> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    return [
+      await queryRunner.manager.softDelete(Post, {
+        id: option.id,
+        writerId: writer.id,
+      }),
+      queryRunner,
+    ];
   }
 }
