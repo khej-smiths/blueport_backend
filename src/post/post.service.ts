@@ -168,7 +168,6 @@ export class PostService {
         );
       }
 
-      // TODO 삭제된 게시글이 여러개인 경우 롤백하기 > 정상 동작여부 확인 필요
       if (deleteResult.affected > 1) {
         await queryRunner.rollbackTransaction();
       } else {
