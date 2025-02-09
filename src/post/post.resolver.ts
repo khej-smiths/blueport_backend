@@ -56,7 +56,7 @@ export class PostResolver {
   }
 
   @AccessRole('USER')
-  @Mutation(() => Post, { description: '게시글 삭제하기' })
+  @Mutation(() => Boolean, { description: '게시글 삭제하기' })
   async deletePost(
     @Args('input') input: DeletePostInputDto,
     @AuthUser() writer: User,
