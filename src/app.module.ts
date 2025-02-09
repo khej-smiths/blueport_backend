@@ -116,6 +116,7 @@ import { Request } from 'express';
         password: configService.get('MYSQL_PASSWORD'),
         database: configService.get('MYSQL_DATABASE'),
         entities: [User, Post],
+        // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
         logging: true,
       }),
