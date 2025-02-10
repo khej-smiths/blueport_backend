@@ -17,12 +17,13 @@ import { CreatePostInputDto } from './dtos/create-post.dto';
 import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
+import { UserDataLoaderService } from 'src/user/user.data-loader';
 
 @Resolver(() => Post)
 export class PostResolver {
   constructor(
     private readonly postService: PostService,
-    private readonly userService: UserService,
+    private readonly userDataLoaderService: UserDataLoaderService,
   ) {}
 
   @AccessRole('USER')
@@ -68,8 +69,6 @@ export class PostResolver {
     description: '게시글 작성자',
   })
   async readUser(@Parent() post: Post): Promise<User> {
-    return await this.userService.readUserByOption({
-      userId: post.writerId,
-    });
+    return this.userDataLoaderService.getUsersByIds.load(post.writerId);
   }
 }
