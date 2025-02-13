@@ -10,7 +10,7 @@ export class CustomLogger extends ConsoleLogger {
   constructor() {
     super();
     this.requestId = uuidv4();
-    this.customLog('start', {
+    this.customLog('initialize CustomLogger', {
       className: this.constructor.name,
       methodName: 'constructor',
     });
@@ -30,7 +30,7 @@ export class CustomLogger extends ConsoleLogger {
   ) {
     const prefix = this.getPrefix(option);
     const processedMessage = this.processMessage(message);
-    this.logList.push(`${prefix} ${processedMessage}`);
+    this.logList.push(processedMessage);
     this.log(processedMessage, prefix);
   }
 
@@ -52,6 +52,10 @@ export class CustomLogger extends ConsoleLogger {
   // }
 
   async destroy() {
+    this.customLog('destroy logger', {
+      className: this.constructor.name,
+      methodName: 'destroy',
+    });
     this.customLog(this.logList, {
       className: this.constructor.name,
       methodName: this.destroy.name,

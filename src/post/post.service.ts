@@ -9,11 +9,15 @@ import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { IOLogger } from 'src/logger/log.decorator';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
+import { LoggerStorage } from 'src/logger/logger-storage';
 
 @Injectable()
 @IOLogger()
 export class PostService {
-  constructor(private readonly postRepository: PostRepository) {}
+  constructor(
+    private readonly postRepository: PostRepository,
+    private readonly als: LoggerStorage,
+  ) {}
 
   /**
    * @description: 게시글 작성하기

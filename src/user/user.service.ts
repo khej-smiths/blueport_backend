@@ -7,6 +7,7 @@ import { CreateUserInputDto } from './dtos/create-user.dto';
 import { CustomLogger } from 'src/logger/logger';
 import { IOLogger } from 'src/logger/log.decorator';
 import { FindOptionsWhere } from 'typeorm';
+import { LoggerStorage } from 'src/logger/logger-storage';
 
 @Injectable()
 @IOLogger()
@@ -14,7 +15,7 @@ export class UserService {
   constructor(
     @InjectRepository(UserRepository)
     private readonly userRepository: UserRepository,
-    private readonly logger: CustomLogger,
+    private readonly als: LoggerStorage,
   ) {}
 
   /**

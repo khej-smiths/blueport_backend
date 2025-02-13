@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { CustomGraphQLError } from 'src/common/error';
 import { JWT_PRIVATE_CLAIMS, JWT_TOKEN_PAYLOAD } from './types';
 import { ConfigService } from '@nestjs/config';
+import { LoggerStorage } from 'src/logger/logger-storage';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly configService: ConfigService,
+    private readonly als: LoggerStorage,
   ) {}
 
   /**
