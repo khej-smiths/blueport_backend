@@ -12,7 +12,6 @@ import { CustomLogger } from './logger';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-  // TODO requestId가 변경되지 않도록 로직 수정 필요
   constructor(private readonly als: LoggerStorage) {}
   intercept(
     context: ExecutionContext,
