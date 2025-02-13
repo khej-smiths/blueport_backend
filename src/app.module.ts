@@ -118,7 +118,7 @@ import { Request } from 'express';
         entities: [User, Post],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
-        logging: true,
+        // logging: true,
       }),
     }),
     AuthModule,
