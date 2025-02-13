@@ -11,7 +11,6 @@ import { input } from 'src/common/consts';
 import { PostService } from './post.service';
 import { ReadPostInputDto } from './dtos/read-post.dto';
 import { User } from 'src/user/user.entity';
-import { UserService } from 'src/user/user.service';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
