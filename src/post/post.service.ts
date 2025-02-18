@@ -19,6 +19,22 @@ export class PostService {
     private readonly als: LoggerStorage,
   ) {}
 
+  // TODO 동기함수인데 Wrapper에서 비동기로 감싸서 input이 제대로 넘어오지 않음(현재는 임시로 해당 함수에 async를 달아둠)
+  private async checkPost<T extends CreatePostInputDto | UpdatePostInputDto>(
+    input: T,
+  ): Promise<T> {
+    let newInput: T = input;
+
+    Object.keys(input).forEach((key) => {
+      // input에 hashtagList가 들어온 경우 중복체크
+      if (key === 'hashtagList') {
+        newInput[key] = [...new Set(input[key])];
+      }
+    });
+
+    return newInput;
+  }
+
   /**
    * @description: 게시글 작성하기
    * @param input
@@ -29,10 +45,7 @@ export class PostService {
     const ERR_NO_FIELD = 'ERR_NO_FIELD'; // 필수 정보가 누락된 경우
 
     try {
-      // input에 hashtagList가 들어온 경우 중복체크
-      if (input.hashtagList && input.hashtagList.length > 0) {
-        input.hashtagList = [...new Set(input.hashtagList)];
-      }
+      input = await this.checkPost(input);
 
       // 게시글 작성
       const post = await this.postRepository.createPost(input, { id: user.id });
@@ -106,6 +119,9 @@ export class PostService {
       postId: input.id,
       editorId: writer.id,
     });
+
+    // TODO 동기함수인데 Wrapper에서 비동기로 감싸서 input이 제대로 넘어오지 않음
+    input = await this.checkPost(input);
 
     // 업데이트하기
     const updateResult = await this.postRepository.updatePost(input, writer);
