@@ -60,8 +60,6 @@ export class PostService {
     const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
 
-    const prefix = `${this.constructor.name} - ${this.readPost.name}`;
-
     try {
       const postList = await this.postRepository.readPostList({ id: input.id });
 
@@ -81,10 +79,6 @@ export class PostService {
         return postList[0];
       }
     } catch (error) {
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(prefix);
-      }
-
       throw error;
     }
   }

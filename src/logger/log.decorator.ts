@@ -8,13 +8,15 @@
  */
 export const Wrapper: () => ClassDecorator = () => {
   return (target: any) => {
+    // Wrapper 데코레이터가 적용된 클래스의 함수 목록 가져오기
     const methodList = Object.getOwnPropertyNames(target.prototype);
 
+    // Wrapper 데코레이터가 적용된 클래스의 함수 목록을 반복문 돌리기
     methodList.forEach((method: string) => {
+      // 현재 반복문의 함수명 가져오기
       const originalMethod = target.prototype[method];
 
       /**
-       * TODO [클래스명 바인딩을 하기위해 발견한 내용] 이 부분에 대한 증거 확보 필요
        * constructor의 경우 클래스 인스턴스를 초기화하는 특별한 함수로 일반 메서드로 간주되지 않는다.
        * 그래서 따로 IO를 감싸는 로그를 감싸지 않고 바로 리턴처리했다.
        * 이게 없을 경우 해당 데코레이터를 사용하는 함수의 this로 constructor의 이름(클래스 이름)에 접근하지 못한다.
@@ -30,7 +32,11 @@ export const Wrapper: () => ClassDecorator = () => {
        * 일반 함수로 선언할 경우 함수가 호출된 위치의 this를 사용하기 때문에 class 의 this와 바인딩되어 class 에 있는 Logger를 사용할 수 있다.
        */
 
+      // 현 함수를 바꿔치기하기(logger감싸지고, 에러 처리가 추가된 형태로)
       target.prototype[method] = async function (...args: any) {
+        // 에러에서 사용할 수 있도록 prefix 우선 할당
+        const prefix = `${this.constructor.name} - ${method}`;
+
         const customLogger = this.als.getStore()!.customLogger;
 
         // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
@@ -46,15 +52,23 @@ export const Wrapper: () => ClassDecorator = () => {
           value: method,
         });
 
-        // 기존 메소드를 실행한다.
-        const result = await originalMethod.apply(this, args);
+        let result: any;
 
-        // 해당 클래스에 logger가 있을 경우, output을 로그로 남긴다.
-        if (customLogger) {
-          customLogger.customLog(
-            { output: result },
-            { className: target.name, methodName: method },
-          );
+        try {
+          // 기존 메소드를 실행한다.
+          result = await originalMethod.apply(this, args);
+          // 해당 클래스에 logger가 있을 경우, output을 로그로 남긴다.
+          if (customLogger) {
+            customLogger.customLog(
+              { output: result },
+              { className: target.name, methodName: method },
+            );
+          }
+        } catch (error) {
+          if (error.extensions?.customFlag) {
+            error.addBriefStacktraceToCode(prefix);
+          }
+          throw error;
         }
 
         // 리턴
