@@ -6,8 +6,10 @@ import { CustomGraphQLError } from 'src/common/error';
 import { JWT_PRIVATE_CLAIMS, JWT_TOKEN_PAYLOAD } from './types';
 import { ConfigService } from '@nestjs/config';
 import { LoggerStorage } from 'src/logger/logger-storage';
+import { Wrapper } from 'src/logger/log.decorator';
 
 @Injectable()
+@Wrapper()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
@@ -65,15 +67,13 @@ export class AuthService {
    * @param token
    * @returns
    */
-  validateToken(token: string): JWT_PRIVATE_CLAIMS {
+  async validateToken(token: string): Promise<JWT_PRIVATE_CLAIMS> {
     const ERR_EXPIRED_TOKEN = 'ERR_EXPIRED_TOKEN';
     const ERR_NOT_VALID_EMAIL = 'ERR_NOT_VALID_EMAIL';
     const ERR_NOT_VALID_USER_ID = 'ERR_NOT_VALID_USER_ID';
     const ERR_NOT_VALID_ISSUER = 'ERR_NOT_VALID_ISSUER';
     const ERR_NOT_VALID_TIME = 'ERR_NOT_VALID_TIME';
     const ERR_NOT_VALID_SUBJECT = 'ERR_NOT_VALID_SUBJECT';
-
-    const prefix = `${this.constructor.name} - ${this.validateToken.name}`;
 
     try {
       // 토큰 검증 - 토큰 만료
@@ -153,10 +153,6 @@ export class AuthService {
             },
           },
         );
-      }
-
-      if (error instanceof CustomGraphQLError) {
-        error.addBriefStacktraceToCode(prefix);
       }
 
       throw error;
