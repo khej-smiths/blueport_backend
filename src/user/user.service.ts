@@ -5,12 +5,12 @@ import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserInputDto } from './dtos/create-user.dto';
 import { CustomLogger } from 'src/logger/logger';
-import { IOLogger } from 'src/logger/log.decorator';
+import { Wrapper } from 'src/logger/log.decorator';
 import { FindOptionsWhere } from 'typeorm';
 import { LoggerStorage } from 'src/logger/logger-storage';
 
 @Injectable()
-@IOLogger()
+@Wrapper()
 export class UserService {
   constructor(
     @InjectRepository(UserRepository)

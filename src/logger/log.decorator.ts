@@ -1,8 +1,12 @@
 /**
- * @description: Class Decorator - IO마다 로그를 다는 데코레이터
+ * @description
+ * Class Decorator - Wrapper
+ * 역할
+ * 1. IO Logger
+ * 2. Error에 prefix 추가
  * @returns
  */
-export const IOLogger: () => ClassDecorator = () => {
+export const Wrapper: () => ClassDecorator = () => {
   return (target: any) => {
     const methodList = Object.getOwnPropertyNames(target.prototype);
 

@@ -7,12 +7,12 @@ import { CreatePostInputDto } from './dtos/create-post.dto';
 import { User } from 'src/user/user.entity';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
-import { IOLogger } from 'src/logger/log.decorator';
+import { Wrapper } from 'src/logger/log.decorator';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
 import { LoggerStorage } from 'src/logger/logger-storage';
 
 @Injectable()
-@IOLogger()
+@Wrapper()
 export class PostService {
   constructor(
     private readonly postRepository: PostRepository,
