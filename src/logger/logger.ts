@@ -93,7 +93,7 @@ export class CustomLogger extends ConsoleLogger {
         message.input[0] &&
         message.input[0].constructor.name === 'ExecutionContextHost'
       ) {
-        // input이 실행 컨텍스트(ExecutionContext)인 경우 stringify 제외
+        // input이 실행 컨텍스트(ExecutionContext)인 경우, input과 custom header인 access_token 만 로그에 추가함
         return JSON.stringify([
           message.input[0].args[1],
           [{ access_token: message.input[0].args[2].access_token }],
