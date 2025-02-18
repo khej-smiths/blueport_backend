@@ -3,7 +3,6 @@ import { Post } from './post.entity';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import {
   DataSource,
-  DeleteResult,
   FindManyOptions,
   FindOptionsWhere,
   QueryRunner,
@@ -18,6 +17,9 @@ type ReadPostOption = {
   id?: string;
   skip?: number;
   take?: number;
+  order?: {
+    [P in keyof Post]?: 'ASC' | 'DESC';
+  };
 };
 
 @Injectable()
@@ -53,8 +55,11 @@ export class PostRepository extends Repository<Post> {
 
     const findOption: FindManyOptions<Post> = {
       where,
+      // 페이징 처리에 필요한 조건
       ...(option.skip && { skip: option.skip }),
       ...(option.take && { take: option.take }),
+      // 게시글 정렬 조건
+      ...(option.order && { order: option.order }),
     };
 
     const postList = await this.find(findOption);
