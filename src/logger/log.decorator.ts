@@ -31,12 +31,12 @@ export const Wrapper: () => ClassDecorator = () => {
        * 이 함수는 class 외부에서 선언되었기 때문에 만약 화살표 함수로 선언할 경우 class 외부인 현 위치의 this를 바라보기 때문에 class의 this에 접근할 수 없어 logger를 사용할 수 없다.
        * 일반 함수로 선언할 경우 함수가 호출된 위치의 this를 사용하기 때문에 class 의 this와 바인딩되어 class 에 있는 Logger를 사용할 수 있다.
        */
-
       // 현 함수를 바꿔치기하기(logger감싸지고, 에러 처리가 추가된 형태로)
       target.prototype[method] = async function (...args: any) {
         // 에러에서 사용할 수 있도록 prefix 우선 할당
         const prefix = `${this.constructor.name} - ${method}`;
 
+        // als에서 logger 가져오기
         const customLogger = this.als.getStore()!.customLogger;
 
         // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
@@ -65,13 +65,14 @@ export const Wrapper: () => ClassDecorator = () => {
             );
           }
         } catch (error) {
+          // 만약 에러가 발생한 경우, 그 에러가 custom으로 생성된 에러인 경우 prefix 를 추가한다.
           if (error.extensions?.customFlag) {
             error.addBriefStacktraceToCode(prefix);
           }
           throw error;
         }
 
-        // 리턴
+        // 실제 함수의 결과를 리턴
         return result;
       };
     });
