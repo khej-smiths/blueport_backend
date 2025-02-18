@@ -3,7 +3,7 @@
  * Class Decorator - Wrapper
  * 역할
  * 1. IO Logger
- * 2. Error에 prefix 추가
+ * 2. Error에 prefix 추가 - 함수를 try - catch로 감싸기 때문에, 별도로 커스텀 에러를 추가할게 아니라면, 호출한 쪽에서는 try - catch가 필요하지 않다
  * @returns
  */
 export const Wrapper: () => ClassDecorator = () => {
