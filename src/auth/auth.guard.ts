@@ -1,6 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
 import { UserService } from 'src/user/user.service';
@@ -20,9 +19,7 @@ export class GlobalGuard implements CanActivate {
     // als의 경우 실제 클래스에서 직접 사용하지 않지만, Wrapper 데코레이터에서 사용하고 있기 때문에 호출함
     private readonly als: LoggerStorage,
   ) {}
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     // 에러 케이스
     const ERR_NO_TOKEN = 'ERR_NO_TOKEN'; // 토큰이 없는 경우
     const ERR_NOT_VALID_TOKEN = 'ERR_NOT_VALID_TOKEN'; // 부적절한 토큰인 경우
@@ -38,7 +35,7 @@ export class GlobalGuard implements CanActivate {
 
     // 토큰이 있는 경우 유효한 토큰인지 확인하기
     if (accessToken) {
-      validationResult = this.authService.validateToken(accessToken);
+      validationResult = await this.authService.validateToken(accessToken);
 
       // 토큰 검증 후 이메일과 uid가 없는 경우 에러를 리턴
       if (!validationResult.email || !validationResult.uid) {
