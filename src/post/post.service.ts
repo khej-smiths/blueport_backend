@@ -80,10 +80,19 @@ export class PostService {
     }
   }
 
+  /**
+   * @description 게시글 목록 조회하기
+   * @param input
+   * @returns
+   */
   async readPostList(input: ReadPostListInputDto): Promise<Array<Post>> {
     const postList = await this.postRepository.readPostList({
       skip: input.limit * (input.pageNumber - 1),
       take: input.limit,
+      // 게시글 작성일을 기준으로 최신순으로 정렬
+      order: {
+        createdAt: 'DESC',
+      },
     });
 
     return postList;
