@@ -35,21 +35,6 @@ export class CustomLogger extends ConsoleLogger {
   }
 
   // TODO Error, Warn 추가
-  // customError(
-  //   message: string,
-  //   option?: { className?: string; functionName: string },
-  // ) {
-  //   const prefix = this.getPrefix(option);
-  //   console.error(prefix, message);
-  // }
-
-  // customWarn(
-  //   message: string,
-  //   option?: { className?: string; functionName: string },
-  // ) {
-  //   const prefix = this.getPrefix(option);
-  //   console.warn(prefix, message);
-  // }
 
   async destroy() {
     this.customLog('destroy logger', {
