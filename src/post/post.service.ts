@@ -25,8 +25,6 @@ export class PostService {
    * @returns
    */
   async createPost(user: User, input: CreatePostInputDto): Promise<Post> {
-    const prefix = `${this.constructor.name} - ${this.createPost.name}`;
-
     const ERR_NO_FIELD = 'ERR_NO_FIELD';
 
     try {
@@ -43,10 +41,6 @@ export class PostService {
         );
       }
 
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(prefix);
-      }
-
       throw error;
     }
   }
@@ -60,26 +54,22 @@ export class PostService {
     const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
 
-    try {
-      const postList = await this.postRepository.readPostList({ id: input.id });
+    const postList = await this.postRepository.readPostList({ id: input.id });
 
-      if (postList.length === 0) {
-        throw new CustomGraphQLError('게시글 조회에 실패했습니다.', {
-          extensions: {
-            code: ERR_NO_DATA,
-          },
-        });
-      } else if (postList.length > 1) {
-        throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
-          extensions: {
-            code: ERR_MULTIPLE_DATA,
-          },
-        });
-      } else {
-        return postList[0];
-      }
-    } catch (error) {
-      throw error;
+    if (postList.length === 0) {
+      throw new CustomGraphQLError('게시글 조회에 실패했습니다.', {
+        extensions: {
+          code: ERR_NO_DATA,
+        },
+      });
+    } else if (postList.length > 1) {
+      throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
+        extensions: {
+          code: ERR_MULTIPLE_DATA,
+        },
+      });
+    } else {
+      return postList[0];
     }
   }
 
@@ -95,39 +85,29 @@ export class PostService {
   async updatePost(input: UpdatePostInputDto, writer: User): Promise<Post> {
     const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
 
-    const prefix = `${this.constructor.name} - ${this.updatePost.name}`;
+    // 수정 가능한 게시글인지 확인하기
+    const post = await this.getEditablePost({
+      postId: input.id,
+      editorId: writer.id,
+    });
 
-    try {
-      // 수정 가능한 게시글인지 확인하기
-      const post = await this.getEditablePost({
-        postId: input.id,
-        editorId: writer.id,
+    // 업데이트하기
+    const updateResult = await this.postRepository.updatePost(input, writer);
+
+    // 업데이트에 성공한 row가 없는 경우 오류
+    if (updateResult.affected === 0) {
+      throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
+        extensions: {
+          code: ERR_NO_UPDATE,
+        },
       });
-
-      // 업데이트하기
-      const updateResult = await this.postRepository.updatePost(input, writer);
-
-      // 업데이트에 성공한 row가 없는 경우 오류
-      if (updateResult.affected === 0) {
-        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
-          extensions: {
-            code: ERR_NO_UPDATE,
-          },
-        });
-      }
-
-      return {
-        ...post,
-        ...(input.content && { content: input.content }),
-        ...(input.title && { title: input.title }),
-      };
-    } catch (error) {
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(prefix);
-      }
-
-      throw error;
     }
+
+    return {
+      ...post,
+      ...(input.content && { content: input.content }),
+      ...(input.title && { title: input.title }),
+    };
   }
 
   /**
@@ -137,49 +117,39 @@ export class PostService {
    * @returns
    */
   async deletePost(input: DeletePostInputDto, writer: User): Promise<boolean> {
-    const prefix = `${this.constructor.name} - ${this.deletePost.name}`;
-
     const ERR_FAILED = 'ERR_FAILED';
 
-    try {
-      // 삭제 가능한 게시글인지 확인하기
-      await this.getEditablePost({
-        postId: input.id,
-        editorId: writer.id,
-      });
+    // 삭제 가능한 게시글인지 확인하기
+    await this.getEditablePost({
+      postId: input.id,
+      editorId: writer.id,
+    });
 
-      // 게시글 삭제하기
-      const [deleteResult, queryRunner] = await this.postRepository.deletePost(
-        input,
-        writer,
-      );
+    // 게시글 삭제하기
+    const [deleteResult, queryRunner] = await this.postRepository.deletePost(
+      input,
+      writer,
+    );
 
-      // 게시글 삭제 결과가 0인 경우 삭제된 게시글이 없음
-      if (!deleteResult.affected || deleteResult.affected === 0) {
-        throw new CustomGraphQLError(
-          '게시글을 삭제하지 못했습니다. 다시 시도해주세요.',
-          {
-            extensions: {
-              code: ERR_FAILED,
-            },
+    // 게시글 삭제 결과가 0인 경우 삭제된 게시글이 없음
+    if (!deleteResult.affected || deleteResult.affected === 0) {
+      throw new CustomGraphQLError(
+        '게시글을 삭제하지 못했습니다. 다시 시도해주세요.',
+        {
+          extensions: {
+            code: ERR_FAILED,
           },
-        );
-      }
-
-      if (deleteResult.affected > 1) {
-        await queryRunner.rollbackTransaction();
-      } else {
-        await queryRunner.commitTransaction();
-      }
-
-      return true;
-    } catch (error) {
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(prefix);
-      }
-
-      throw error;
+        },
+      );
     }
+
+    if (deleteResult.affected > 1) {
+      await queryRunner.rollbackTransaction();
+    } else {
+      await queryRunner.commitTransaction();
+    }
+
+    return true;
   }
 
   /**
@@ -193,54 +163,44 @@ export class PostService {
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
     const ERR_NOT_WRITER = 'ERR_NOT_WRITER';
 
-    const prefix = `${this.constructor.name} - ${this.getEditablePost.name}`;
+    // 게시글을 업데이트하기 위한 조건 확인하기 위해 게시글을 우선 조회하기
+    const postList = await this.postRepository.readPostList({
+      id: input.postId,
+    });
 
-    try {
-      // 게시글을 업데이트하기 위한 조건 확인하기 위해 게시글을 우선 조회하기
-      const postList = await this.postRepository.readPostList({
-        id: input.postId,
+    // 조회된 게시글이 없는 경우 오류처리
+    if (!postList || postList.length === 0) {
+      throw new CustomGraphQLError('게시글을 조회할 수 없습니다.', {
+        extensions: {
+          code: ERR_NO_DATA,
+        },
       });
-
-      // 조회된 게시글이 없는 경우 오류처리
-      if (!postList || postList.length === 0) {
-        throw new CustomGraphQLError('게시글을 조회할 수 없습니다.', {
-          extensions: {
-            code: ERR_NO_DATA,
-          },
-        });
-      }
-
-      // 조회된 게시글이 여러개인 경우 오류 처리
-      if (postList && postList.length > 1) {
-        throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
-          extensions: {
-            code: ERR_MULTIPLE_DATA,
-          },
-        });
-      }
-
-      // 조회된 게시글은 1개이기 때문에 postList > post로 변수 변경
-      const post = postList[0];
-
-      // 게시글의 작성자는 본인이어야한다
-      if (post.writerId !== input.editorId) {
-        throw new CustomGraphQLError(
-          '본인이 작성한 게시글만 업데이트/삭제할 수 있습니다.',
-          {
-            extensions: {
-              code: ERR_NOT_WRITER,
-            },
-          },
-        );
-      }
-
-      return post;
-    } catch (error) {
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(prefix);
-      }
-
-      throw error;
     }
+
+    // 조회된 게시글이 여러개인 경우 오류 처리
+    if (postList && postList.length > 1) {
+      throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
+        extensions: {
+          code: ERR_MULTIPLE_DATA,
+        },
+      });
+    }
+
+    // 조회된 게시글은 1개이기 때문에 postList > post로 변수 변경
+    const post = postList[0];
+
+    // 게시글의 작성자는 본인이어야한다
+    if (post.writerId !== input.editorId) {
+      throw new CustomGraphQLError(
+        '본인이 작성한 게시글만 업데이트/삭제할 수 있습니다.',
+        {
+          extensions: {
+            code: ERR_NOT_WRITER,
+          },
+        },
+      );
+    }
+
+    return post;
   }
 }
