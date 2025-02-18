@@ -87,7 +87,20 @@ export class CustomLogger extends ConsoleLogger {
 
   private processMessage(message: any): string {
     if (typeof message === 'object') {
-      return JSON.stringify(message);
+      if (
+        message.input &&
+        Array.isArray(message.input) &&
+        message.input[0] &&
+        message.input[0].constructor.name === 'ExecutionContextHost'
+      ) {
+        // input이 실행 컨텍스트(ExecutionContext)인 경우 stringify 제외
+        return JSON.stringify([
+          message.input[0].args[1],
+          [{ access_token: message.input[0].args[2].access_token }],
+        ]);
+      } else {
+        return JSON.stringify(message);
+      }
     }
     return message;
   }
