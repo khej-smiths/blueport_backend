@@ -14,6 +14,10 @@ abstract class IPost extends CommonEntity {
   @Column({ type: 'longtext', comment: '게시글 내용' })
   content: string;
 
+  @Field(() => [String], { nullable: true, description: '게시글의 해시태그' })
+  @Column({ type: 'json', nullable: true, name: 'hashtag_list' })
+  hashtagList?: Array<string>;
+
   @Field(() => String, { description: '게시글 작성자의 id' })
   @Column({ type: 'uuid', name: 'writer_id' })
   writerId: string;
