@@ -25,9 +25,16 @@ export class PostService {
    * @returns
    */
   async createPost(user: User, input: CreatePostInputDto): Promise<Post> {
-    const ERR_NO_FIELD = 'ERR_NO_FIELD';
+    // 에러 케이스
+    const ERR_NO_FIELD = 'ERR_NO_FIELD'; // 필수 정보가 누락된 경우
 
     try {
+      // input에 hashtagList가 들어온 경우 중복체크
+      if (input.hashtagList && input.hashtagList.length > 0) {
+        input.hashtagList = [...new Set(input.hashtagList)];
+      }
+
+      // 게시글 작성
       const post = await this.postRepository.createPost(input, { id: user.id });
 
       return post;

@@ -5,4 +5,5 @@ import { PostInputType } from '../post.entity';
 export class CreatePostInputDto extends PickType(PostInputType, [
   'title',
   'content',
+  'hashtagList',
 ]) {}

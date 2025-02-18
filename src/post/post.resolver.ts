@@ -26,7 +26,9 @@ export class PostResolver {
   ) {}
 
   @AccessRole('USER')
-  @Mutation(() => Post, { description: '게시글 작성하기' })
+  @Mutation(() => Post, {
+    description: '게시글 작성하기, 로그인 유저만 게시글 작성 가능',
+  })
   async createPost(
     @Args(input) input: CreatePostInputDto,
     @AuthUser() user: User,
