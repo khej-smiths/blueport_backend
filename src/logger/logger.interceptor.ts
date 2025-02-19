@@ -20,7 +20,7 @@ export class LoggerInterceptor implements NestInterceptor {
     // NewAuthGuard에서 셋팅된 이메일 값을 가져오기
     const gqlContext = GqlExecutionContext.create(context).getContext();
     const logger: CustomLogger = this.als.getStore()!.customLogger;
-    const email = gqlContext.email;
+    const email = gqlContext.user?.email;
     if (email) logger.setEmail(email);
     return next.handle().pipe(
       tap(() => {

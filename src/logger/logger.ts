@@ -53,14 +53,18 @@ export class CustomLogger extends ConsoleLogger {
    * @param option (optional) 로그의 prefix를 위한 추가 정보
    * @returns 로그를 구분할 수 있는 prefix
    */
-  private getPrefix(option?: { className?: string; functionName?: string }) {
+  private getPrefix(option?: { className?: string; methodName?: string }) {
     // constructor에서 생성된 requestId를 prefix의 가장 앞에 부여
     let prefix = this.requestId;
 
     // option이 존재할 경우 추가 정보를 prefix에 부여
     if (option) {
-      if (option.className) prefix = `${prefix} # ${option.className}`;
-      if (option.functionName) prefix = `${prefix} # ${option.functionName}`;
+      if (option.className) {
+        prefix = `${prefix} # ${option.className}`;
+      }
+      if (option.methodName) {
+        prefix = `${prefix} # ${option.methodName}`;
+      }
     }
 
     // 이메일이 존재할 경우 prefix에 부여

@@ -66,7 +66,7 @@ export class GlobalGuard implements CanActivate {
       }
 
       // 유저 정보 가져오기
-      const user = this.userService.readUserByOption({
+      const user = await this.userService.readUserByOption({
         email: validationResult.email,
         userId: validationResult.uid,
       });
