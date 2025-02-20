@@ -1,3 +1,6 @@
+/**
+ * asyncMainWrapperFn, syncMainWrapperFn 함수 간 로직은 동일하고 비동기, 동기 여부만 다르다
+ */
 async function asyncMainWrapperFn(
   method: string,
   target: any,
