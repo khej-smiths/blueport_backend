@@ -1,3 +1,89 @@
+async function asyncMainWrapperFn(
+  method: string,
+  target: any,
+  originalMethod: Function,
+  ...args: any
+): Promise<any> {
+  // 에러에서 사용할 수 있도록 prefix 우선 할당
+  const prefix = `${this.constructor.name} - ${method}`;
+
+  // als에서 logger 가져오기
+  const customLogger = this.als.getStore()!.customLogger;
+
+  // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
+  if (customLogger) {
+    customLogger.customLog(
+      { input: args },
+      { className: target.name, methodName: method },
+    );
+  }
+
+  // this 바인딩
+  Object.defineProperty(target.prototype[method], 'name', {
+    value: method,
+  });
+
+  let result: any;
+
+  try {
+    // 기존 메소드를 실행한다.
+    // result = await originalMethod.apply(this, args);
+    result = await originalMethod.apply(this, args);
+  } catch (error) {
+    // 만약 에러가 발생한 경우, 그 에러가 custom으로 생성된 에러인 경우 prefix 를 추가한다.
+    if (error.extensions?.customFlag) {
+      error.addBriefStacktraceToCode(prefix);
+    }
+    throw error;
+  }
+
+  // 실제 함수의 결과를 리턴
+  return result;
+}
+
+function syncMainWrapperFn(
+  method: string,
+  target: any,
+  originalMethod: Function,
+  ...args: any
+): any {
+  // 에러에서 사용할 수 있도록 prefix 우선 할당
+  const prefix = `${this.constructor.name} - ${method}`;
+
+  // als에서 logger 가져오기
+  const customLogger = this.als.getStore()!.customLogger;
+
+  // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
+  if (customLogger) {
+    customLogger.customLog(
+      { input: args },
+      { className: target.name, methodName: method },
+    );
+  }
+
+  // this 바인딩
+  Object.defineProperty(target.prototype[method], 'name', {
+    value: method,
+  });
+
+  let result: any;
+
+  try {
+    // 기존 메소드를 실행한다.
+    // result = await originalMethod.apply(this, args);
+    result = originalMethod.apply(this, args);
+  } catch (error) {
+    // 만약 에러가 발생한 경우, 그 에러가 custom으로 생성된 에러인 경우 prefix 를 추가한다.
+    if (error.extensions?.customFlag) {
+      error.addBriefStacktraceToCode(prefix);
+    }
+    throw error;
+  }
+
+  // 실제 함수의 결과를 리턴
+  return result;
+}
+
 /**
  * @description
  * Class Decorator - Wrapper
@@ -37,92 +123,22 @@ export const Wrapper: () => ClassDecorator = () => {
       // 현 함수를 바꿔치기하기(logger감싸지고, 에러 처리가 추가된 형태로)
       target.prototype[method] = isAsync
         ? async function (...args: any) {
-            // 에러에서 사용할 수 있도록 prefix 우선 할당
-            const prefix = `${this.constructor.name} - ${method}`;
-
-            // als에서 logger 가져오기
-            const customLogger = this.als.getStore()!.customLogger;
-
-            // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
-            if (customLogger) {
-              customLogger.customLog(
-                { input: args },
-                { className: target.name, methodName: method },
-              );
-            }
-
-            // this 바인딩
-            Object.defineProperty(target.prototype[method], 'name', {
-              value: method,
-            });
-
-            let result: any;
-
-            try {
-              // 기존 메소드를 실행한다.
-              result = await originalMethod.apply(this, args);
-
-              // 해당 클래스에 logger가 있을 경우, output을 로그로 남긴다.
-              if (customLogger) {
-                customLogger.customLog(
-                  { output: result },
-                  { className: target.name, methodName: method },
-                );
-              }
-            } catch (error) {
-              // 만약 에러가 발생한 경우, 그 에러가 custom으로 생성된 에러인 경우 prefix 를 추가한다.
-              if (error.extensions?.customFlag) {
-                error.addBriefStacktraceToCode(prefix);
-              }
-              throw error;
-            }
-
-            // 실제 함수의 결과를 리턴
-            return result;
+            return await asyncMainWrapperFn.call(
+              this,
+              method,
+              target,
+              originalMethod,
+              ...args,
+            );
           }
         : function (...args: any) {
-            // 에러에서 사용할 수 있도록 prefix 우선 할당
-            const prefix = `${this.constructor.name} - ${method}`;
-
-            // als에서 logger 가져오기
-            const customLogger = this.als.getStore()!.customLogger;
-
-            // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
-            if (customLogger) {
-              customLogger.customLog(
-                { input: args },
-                { className: target.name, methodName: method },
-              );
-            }
-
-            // this 바인딩
-            Object.defineProperty(target.prototype[method], 'name', {
-              value: method,
-            });
-
-            let result: any;
-
-            try {
-              // 기존 메소드를 실행한다.
-              result = originalMethod.apply(this, args);
-
-              // 해당 클래스에 logger가 있을 경우, output을 로그로 남긴다.
-              if (customLogger) {
-                customLogger.customLog(
-                  { output: result },
-                  { className: target.name, methodName: method },
-                );
-              }
-            } catch (error) {
-              // 만약 에러가 발생한 경우, 그 에러가 custom으로 생성된 에러인 경우 prefix 를 추가한다.
-              if (error.extensions?.customFlag) {
-                error.addBriefStacktraceToCode(prefix);
-              }
-              throw error;
-            }
-
-            // 실제 함수의 결과를 리턴
-            return result;
+            return syncMainWrapperFn.call(
+              this,
+              method,
+              target,
+              originalMethod,
+              ...args,
+            );
           };
     });
   };
