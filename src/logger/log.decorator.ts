@@ -1,12 +1,8 @@
-/**
- * asyncMainWrapperFn, syncMainWrapperFn 함수 간 로직은 동일하고 비동기, 동기 여부만 다르다
- */
-async function asyncMainWrapperFn(
+function getPrefixAndPrefixLogAndBinding(
   method: string,
   target: any,
-  originalMethod: Function,
   ...args: any
-): Promise<any> {
+): string {
   // 에러에서 사용할 수 있도록 prefix 우선 할당
   const prefix = `${this.constructor.name} - ${method}`;
 
@@ -25,6 +21,20 @@ async function asyncMainWrapperFn(
   Object.defineProperty(target.prototype[method], 'name', {
     value: method,
   });
+
+  return prefix;
+}
+
+/**
+ * asyncMainWrapperFn, syncMainWrapperFn 함수 간 로직은 동일하고 비동기, 동기 여부만 다르다
+ */
+async function asyncMainWrapperFn(
+  method: string,
+  target: any,
+  originalMethod: Function,
+  ...args: any
+): Promise<any> {
+  const prefix = getPrefixAndPrefixLogAndBinding(method, target, args);
 
   let result: any;
 
@@ -50,24 +60,7 @@ function syncMainWrapperFn(
   originalMethod: Function,
   ...args: any
 ): any {
-  // 에러에서 사용할 수 있도록 prefix 우선 할당
-  const prefix = `${this.constructor.name} - ${method}`;
-
-  // als에서 logger 가져오기
-  const customLogger = this.als.getStore()!.customLogger;
-
-  // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
-  if (customLogger) {
-    customLogger.customLog(
-      { input: args },
-      { className: target.name, methodName: method },
-    );
-  }
-
-  // this 바인딩
-  Object.defineProperty(target.prototype[method], 'name', {
-    value: method,
-  });
+  const prefix = getPrefixAndPrefixLogAndBinding(method, target, args);
 
   let result: any;
 
