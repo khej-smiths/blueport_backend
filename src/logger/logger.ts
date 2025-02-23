@@ -68,7 +68,7 @@ export class CustomLogger extends ConsoleLogger {
     }
 
     // 이메일이 존재할 경우 prefix에 부여
-    if (this.email) prefix = `${prefix} # ${this.email}`;
+    if (this.email) prefix = `# ${this.email} # ${prefix} `;
 
     // prefix
     return `[${prefix}]`;
