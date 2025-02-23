@@ -1,13 +1,15 @@
-function getPrefixAndPrefixLogAndBinding(
+import { CustomLogger } from './logger';
+
+function getPrefixAndCustomLoggerAndPrefixLogAndBinding(
   method: string,
   target: any,
   ...args: any
-): string {
+): { prefix: string; customLogger: CustomLogger } {
   // 에러에서 사용할 수 있도록 prefix 우선 할당
   const prefix = `${this.constructor.name} - ${method}`;
 
   // als에서 logger 가져오기
-  const customLogger = this.als.getStore()!.customLogger;
+  const customLogger: CustomLogger = this.als.getStore()!.customLogger;
 
   // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
   if (customLogger) {
@@ -22,7 +24,7 @@ function getPrefixAndPrefixLogAndBinding(
     value: method,
   });
 
-  return prefix;
+  return { prefix, customLogger };
 }
 
 /**
@@ -34,7 +36,13 @@ async function asyncMainWrapperFn(
   originalMethod: Function,
   ...args: any
 ): Promise<any> {
-  const prefix = getPrefixAndPrefixLogAndBinding(method, target, args);
+  const { prefix, customLogger } =
+    getPrefixAndCustomLoggerAndPrefixLogAndBinding.call(
+      this,
+      method,
+      target,
+      ...args,
+    );
 
   let result: any;
 
@@ -42,6 +50,14 @@ async function asyncMainWrapperFn(
     // 기존 메소드를 실행한다.
     // result = await originalMethod.apply(this, args);
     result = await originalMethod.apply(this, args);
+
+    // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
+    if (customLogger) {
+      customLogger.customLog(
+        { output: result },
+        { className: target.name, methodName: method },
+      );
+    }
   } catch (error) {
     // 만약 에러가 발생한 경우, 그 에러가 custom으로 생성된 에러인 경우 prefix 를 추가한다.
     if (error.extensions?.customFlag) {
@@ -60,7 +76,13 @@ function syncMainWrapperFn(
   originalMethod: Function,
   ...args: any
 ): any {
-  const prefix = getPrefixAndPrefixLogAndBinding(method, target, args);
+  const { prefix, customLogger } =
+    getPrefixAndCustomLoggerAndPrefixLogAndBinding.call(
+      this,
+      method,
+      target,
+      args,
+    );
 
   let result: any;
 
