@@ -17,19 +17,6 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
 ## DB
 
 ```
@@ -48,4 +35,5 @@ $ docker-compose -f mysql-docker-compose.yml up -d
 
 ```
 1. swc compiler - tsc보다 속도가 빠른 swc 컴파일러 적용
+2. log - Async Local Storage를 이용해 request 별 로그를 작성하고, 각 함수를 감싸는 wrapper용 함수를 만들어 IO 로그의 중복 최소화
 ```
