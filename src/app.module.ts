@@ -16,6 +16,7 @@ import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { Post } from './post/post.entity';
 import { Request } from 'express';
+import { Blog } from './blog/blog.entity';
 
 @Module({
   imports: [
@@ -115,7 +116,7 @@ import { Request } from 'express';
         username: configService.get('MYSQL_USERNAME'),
         password: configService.get('MYSQL_PASSWORD'),
         database: configService.get('MYSQL_DATABASE'),
-        entities: [User, Post],
+        entities: [User, Post, Blog],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
         // logging: true,
