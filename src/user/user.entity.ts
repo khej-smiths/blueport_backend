@@ -1,7 +1,8 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Blog } from 'src/blog/blog.entity';
 import { CommonEntity } from 'src/common/common.entity';
 import { Post } from 'src/post/post.entity';
-import { Column, Entity, OneToMany, Unique } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, Relation, Unique } from 'typeorm';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -21,6 +22,10 @@ abstract class IUser extends CommonEntity {
   @OneToMany(() => Post, (post) => post.writer, { nullable: true })
   @Field(() => [Post], { nullable: true })
   postList?: Array<Post>;
+
+  @OneToOne(() => Blog, (blog) => blog.owner, { nullable: true })
+  @Field(() => Blog, { nullable: true })
+  blog?: Relation<Blog>;
 }
 
 @ObjectType()

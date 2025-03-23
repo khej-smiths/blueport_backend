@@ -1,6 +1,14 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CommonEntity } from 'src/common/common.entity';
-import { Column, Entity, Unique } from 'typeorm';
+import { User } from 'src/user/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  Relation,
+  Unique,
+} from 'typeorm';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -23,6 +31,7 @@ abstract class IBlog extends CommonEntity {
     length: 256,
     comment: '프로필 사진',
     nullable: true,
+    name: 'profile_photo',
   })
   profilePhoto?: string;
 
@@ -42,6 +51,14 @@ abstract class IBlog extends CommonEntity {
     nullable: true,
   })
   skills?: Array<string>;
+
+  @Field(() => String, { description: '블로그 주인의 id' })
+  @Column({ type: 'uuid', name: 'owner_id' })
+  ownerId: string;
+
+  @OneToOne(() => User, (user) => user.blog)
+  @JoinColumn({ name: 'owner_id' })
+  owner: Relation<User>;
 }
 
 @ObjectType()
