@@ -21,6 +21,9 @@ import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
+    /**
+     * 앱 구동을 위한 토대
+     */
     // 환경변수 설정 모듈
     ConfigModule.forRoot({
       isGlobal: true, // 해당 모듈을 전역에서 접근할 수 있도록 isGlobal: true로 설정
@@ -107,6 +110,7 @@ import { BlogModule } from './blog/blog.module';
         };
       },
     }),
+    // TypeOrm 설정 모듈
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -120,14 +124,22 @@ import { BlogModule } from './blog/blog.module';
         entities: [User, Post, Blog],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
-        // logging: true,
+        logging: true,
       }),
     }),
+    // 권한
     AuthModule,
-    PostModule,
-    UserModule,
-    BlogModule,
+    // 로거
     LoggerModule,
+    /**
+     * 앱 구동을 위한 실제 비즈니스 로직
+     */
+    // 게시글
+    PostModule,
+    // 유저
+    UserModule,
+    // 블로그
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
