@@ -17,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { Post } from './post/post.entity';
 import { Request } from 'express';
 import { Blog } from './blog/blog.entity';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -125,6 +126,7 @@ import { Blog } from './blog/blog.entity';
     AuthModule,
     PostModule,
     UserModule,
+    BlogModule,
     LoggerModule,
   ],
   controllers: [AppController],
