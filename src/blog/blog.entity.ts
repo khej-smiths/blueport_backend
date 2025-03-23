@@ -52,12 +52,12 @@ abstract class IBlog extends CommonEntity {
   })
   skills?: Array<string>;
 
-  @Field(() => String, { description: '블로그 주인의 id' })
-  @Column({ type: 'uuid', name: 'owner_id' })
+  @Column({ type: 'uuid', name: 'owner_id', comment: '블로그 주인의 id' })
   ownerId: string;
 
   @OneToOne(() => User, (user) => user.blog)
   @JoinColumn({ name: 'owner_id' })
+  @Field(() => User, { description: '블로그 주인 전체 정보' })
   owner: Relation<User>;
 }
 

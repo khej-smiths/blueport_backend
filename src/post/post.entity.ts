@@ -18,10 +18,10 @@ abstract class IPost extends CommonEntity {
   @Column({ type: 'json', nullable: true, name: 'hashtag_list' })
   hashtagList?: Array<string>;
 
-  @Field(() => String, { description: '게시글 작성자의 id' })
-  @Column({ type: 'uuid', name: 'writer_id' })
+  @Column({ type: 'uuid', name: 'writer_id', comment: '게시글 작성자의 id' })
   writerId: string;
 
+  @Field(() => User, { description: '게시글 작성자 전체 정보' })
   @ManyToOne(() => User, (user) => user.postList)
   @JoinColumn({ name: 'writer_id' })
   writer: User;
