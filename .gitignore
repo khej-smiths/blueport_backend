@@ -40,3 +40,6 @@ schema.gql
 
 # db
 db/
+
+#.env.dev
+.env.dev
