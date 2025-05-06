@@ -13,3 +13,16 @@ services:
       - ./db/mysql/data:/var/lib/mysql
       - ./db/mysql/init:/docker-entrypoint-initdb.d
     platform: linux/x86_64
+  app:
+    build:
+      context: . # 현재 디렉토리의
+      dockerfile: Dockerfile # 도커파일 빌드
+    container_name: app
+    environment:
+      - PORT=${PORT}
+    ports:
+      - '7777:7777'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
