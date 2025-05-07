@@ -19,6 +19,8 @@ async function bootstrap() {
   // TODO orm 바꾸기
   // TODO 도커, 환경변수 파일들 셋팅 다시하기(gitignore, 파일명 등등)
 
+  // TODO mysql 볼륨은 외부에 미리 셋팅하기
+
   await app.listen(7777);
 }
 bootstrap();
