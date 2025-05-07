@@ -17,10 +17,18 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
-## DB
+## DB + APP
 
 ```
 $ docker-compose -f mysql-docker-compose.yml up -d
+```
+
+## 특정 서비스만 변경하고 싶을 때
+
+```
+docker-compose -f mysql-docker-compose.yml build 서비스명
+docker-compose -f mysql-docker-compose.yml up -d 서비스명
+
 ```
 
 ## Rule
