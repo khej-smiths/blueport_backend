@@ -107,6 +107,12 @@ import { BlogModule } from './blog/blog.module';
 
             return error;
           },
+          cors: {
+            // 프론트 서버의 오리진
+            origin: ['http://localhost:3000'],
+            // 쿠키, 인증헤더 등을 사용할 수 있게 할 것인지
+            credentials: true,
+          },
         };
       },
     }),
