@@ -42,7 +42,9 @@ abstract class IUser extends CommonEntity {
 @ObjectType()
 @Entity('user')
 @Unique('unique_email_for_user', ['email']) // email을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
-export class User extends IUser {}
+export class User extends IUser {
+  // TODO beforeInsert, beforeUpdate 비밀번호 암호화
+}
 
 @InputType()
 export class UserInputType extends IUser {}
