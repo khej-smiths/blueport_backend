@@ -7,10 +7,12 @@ import { Column, Entity, OneToMany, OneToOne, Relation, Unique } from 'typeorm';
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
 abstract class IUser extends CommonEntity {
+  // TODO 길이 체크
   @Field(() => String, { description: '유저의 이름' })
   @Column({ type: 'varchar', length: 256, comment: '유저의 이름' })
   name: string;
 
+  // TODO 이메일 형태 체크
   @Field(() => String, { description: '유저의 이메일' })
   @Column({
     type: 'varchar',
@@ -18,6 +20,15 @@ abstract class IUser extends CommonEntity {
     comment: '유저의 이메일',
   })
   email: string;
+
+  // TODO 비밀번호 정규식 체크
+  @Field(() => String, { description: '유저의 비밀번호' })
+  @Column({
+    type: 'varchar',
+    length: 256,
+    comment: '유저의 비밀번호',
+  })
+  password: string;
 
   @OneToMany(() => Post, (post) => post.writer, { nullable: true })
   @Field(() => [Post], { nullable: true })
