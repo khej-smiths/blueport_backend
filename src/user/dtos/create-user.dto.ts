@@ -5,4 +5,5 @@ import { UserInputType } from '../user.entity';
 export class CreateUserInputDto extends PickType(UserInputType, [
   'name',
   'email',
+  'password',
 ]) {}
