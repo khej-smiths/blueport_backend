@@ -21,6 +21,8 @@ async function bootstrap() {
 
   // TODO mysql 볼륨은 외부에 미리 셋팅하기
 
+  // TODO db 들어갈 input들 길이 체크
+
   await app.listen(7777);
 }
 bootstrap();
