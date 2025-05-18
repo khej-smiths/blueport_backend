@@ -2,7 +2,16 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { Blog } from 'src/blog/blog.entity';
 import { CommonEntity } from 'src/common/common.entity';
 import { Post } from 'src/post/post.entity';
-import { Column, Entity, OneToMany, OneToOne, Relation, Unique } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  Relation,
+  Unique,
+} from 'typeorm';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -47,6 +56,14 @@ abstract class IUser extends CommonEntity {
 @Unique('unique_email_for_user', ['email']) // email을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
 export class User extends IUser {
   // TODO beforeInsert, beforeUpdate 비밀번호 암호화
+  @BeforeInsert()
+  @BeforeUpdate()
+  /**
+   * 해싱과 암호화의 차이
+   *  - 해싱: 일방향 > 원래 값으로 복원 불가
+   *  - 암호화: 양방향 > 암호화된 데이터가 복호화 필요할경우
+   */
+  hashPassword() {}
 }
 
 @InputType()
