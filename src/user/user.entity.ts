@@ -27,6 +27,9 @@ abstract class IUser extends CommonEntity {
     type: 'varchar',
     length: 256,
     comment: '유저의 비밀번호',
+    // TODO 이거 테스트 필요
+    // 유저 객체 반환에 포함되지 않도록 select를 false로 선택
+    select: false,
   })
   password: string;
 
