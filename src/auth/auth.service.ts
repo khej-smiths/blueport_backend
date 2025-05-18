@@ -7,6 +7,7 @@ import { JWT_PRIVATE_CLAIMS, JWT_TOKEN_PAYLOAD } from './types';
 import { ConfigService } from '@nestjs/config';
 import { LoggerStorage } from 'src/logger/logger-storage';
 import { Wrapper } from 'src/logger/log.decorator';
+import argon2 from 'argon2';
 
 @Injectable()
 @Wrapper()
@@ -21,11 +22,13 @@ export class AuthService {
   /**
    * @description: 로그인
    * @param input
+   *
    * @returns
    */
   async login(input: LoginInputDto): Promise<string> {
     // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_DELETED_USER = 'ERR_DELETED_USER';
+    const ERR_NOT_MATCHED_PASSWORD = 'NOT_MATCHED_PASSWORD';
 
     // 유저 정보 가져오기
     const user = await this.userService.readUserByOption({
@@ -36,6 +39,14 @@ export class AuthService {
     if (user.deletedAt) {
       throw new CustomGraphQLError('탈퇴한 계정입니다.', {
         extensions: { code: ERR_DELETED_USER },
+      });
+    }
+
+    // 유저 암호 확인
+    const isMatch = await argon2.verify(user.password, input.password);
+    if (!isMatch) {
+      throw new CustomGraphQLError('비밀번호를 다시 확인해주세요', {
+        extensions: { code: ERR_NOT_MATCHED_PASSWORD },
       });
     }
 

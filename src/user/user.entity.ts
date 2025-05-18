@@ -12,6 +12,7 @@ import {
   Relation,
   Unique,
 } from 'typeorm';
+import argon2 from 'argon2';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -63,7 +64,10 @@ export class User extends IUser {
    *  - 해싱: 일방향 > 원래 값으로 복원 불가
    *  - 암호화: 양방향 > 암호화된 데이터가 복호화 필요할경우
    */
-  hashPassword() {}
+  async hashPassword() {
+    const hash = await argon2.hash(this.password);
+    this.password = hash;
+  }
 }
 
 @InputType()
