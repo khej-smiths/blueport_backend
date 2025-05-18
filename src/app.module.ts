@@ -54,6 +54,7 @@ import { BlogModule } from './blog/blog.module';
       inject: [ConfigService], // 의존성 주입에서 특정 클래스 또는 서비스를 명시적으로 주입받고자 할 때 사용하는 배열. 주로 팩토리 함수 또는 커스텀 프로바이더에서 사용
       useFactory: async (configService: ConfigService) => {
         return {
+          graphiql: true,
           autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // 스키마 파일 생성 방식 선언
           // headers를 graphql context에 직접 추가
           context: ({ req }: { req: Request }) => {
