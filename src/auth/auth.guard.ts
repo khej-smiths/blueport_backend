@@ -3,7 +3,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { Reflector } from '@nestjs/core';
 import { UserService } from 'src/user/user.service';
-import { AccessRoleType } from 'src/auth/auth.decorator';
+import { AccessRoleType, RequiredRelationsList } from 'src/auth/auth.decorator';
 import { CustomGraphQLError } from 'src/common/error';
 import { JWT_PRIVATE_CLAIMS } from './types';
 import { Wrapper } from 'src/logger/log.decorator';
@@ -52,6 +52,13 @@ export class GlobalGuard implements CanActivate {
       this.reflector.get<AccessRoleType>('AccessRole', context.getHandler()) ||
       'PUBLIC';
 
+    // 유저 외 필요한 관계 데이터 확인하기
+    let requiredRelationList =
+      this.reflector.get<RequiredRelationsList>(
+        'RequiredRelationList',
+        context.getHandler(),
+      ) || undefined;
+
     if (accessRole === 'PUBLIC') {
       // 'PUBLIC' API인 경우 모두가 사용 가능
       return true;
@@ -67,8 +74,8 @@ export class GlobalGuard implements CanActivate {
 
       // 유저 정보 가져오기
       const user = await this.userService.readUserByOption({
-        email: validationResult.email,
-        userId: validationResult.uid,
+        where: { email: validationResult.email, id: validationResult.uid },
+        ...(requiredRelationList && { relations: requiredRelationList }),
       });
 
       // 가져온 유저 정보를 컨텍스트에 담기

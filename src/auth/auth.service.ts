@@ -32,7 +32,7 @@ export class AuthService {
 
     // 유저 정보 가져오기
     const user = await this.userService.readUserByOption({
-      email: input.email,
+      where: { email: input.email },
     });
 
     // 해당 유저가 로그인할 수 있는지 확인하기 - 탈퇴 유저는 사용 불가
