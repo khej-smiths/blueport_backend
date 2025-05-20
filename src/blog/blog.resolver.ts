@@ -33,4 +33,7 @@ export class BlogResolver {
   ): Promise<Blog> {
     return await this.blogService.updateBlog(input, user);
   }
+
+  // TODO 블로그 조회
+  // TODO 블로그 삭제
 }
