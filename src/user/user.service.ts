@@ -62,8 +62,8 @@ export class UserService {
    * @returns: User
    */
   async readUserByOption(option: {
-    userId?: string;
-    email?: string;
+    where?: { id?: string; email?: string };
+    relations?: Array<string>;
   }): Promise<User> {
     // 에러의 앞에 달 prefix 선언
     const errPrefix = `${this.constructor.name} - ${this.readUserByOption.name}`;
@@ -88,12 +88,7 @@ export class UserService {
       }
 
       // 유저 조회
-      const userList = await this.userRepository.readUserList({
-        where: {
-          ...(option.userId && { id: option.userId }),
-          ...(option.email && { email: option.email }),
-        } as FindOptionsWhere<User>,
-      });
+      const userList = await this.userRepository.readUserList(option);
 
       if (
         // 유저가 없는 경우 에러 처리
