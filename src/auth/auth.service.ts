@@ -56,9 +56,11 @@ export class AuthService {
       email: user.email,
     };
 
+    // TODO 유저 오픈전에는 리프레시 토큰 적용 필요
     // 토큰 생성하기
-    // TODO 나중에 필요할 경우 refreshToken 생성
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: '30 days',
+    });
 
     return accessToken;
   }
