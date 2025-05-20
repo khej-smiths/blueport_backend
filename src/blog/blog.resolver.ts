@@ -18,4 +18,6 @@ export class BlogResolver {
   ): Promise<Blog> {
     return await this.blogService.createBlog(input, user);
   }
+
+  // TODO updateBlog - 블로그 수정
 }
