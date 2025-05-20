@@ -19,5 +19,12 @@ export class BlogResolver {
     return await this.blogService.createBlog(input, user);
   }
 
-  // TODO updateBlog - 블로그 수정
+  @AccessRole('USER')
+  @Mutation(() => Blog, { description: '블로그 수정' })
+  async updateBlog(
+    @Args(input) input: CreateBlogInputDto,
+    @AuthUser() user: User,
+  ): Promise<Blog> {
+    return await this.blogService.updateBlog(input, user);
+  }
 }
