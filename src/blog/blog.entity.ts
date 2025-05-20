@@ -25,24 +25,34 @@ abstract class IBlog extends CommonEntity {
   })
   domain: string;
 
-  @Field(() => String, { description: '프로필 사진', nullable: true })
+  @Field(() => String, { description: '인사말' })
+  @Column({
+    type: 'varchar',
+    length: 256,
+    comment: '인사말',
+  })
+  greeting: string;
+
+  @Field(() => String, { description: '프로필 사진' })
   @Column({
     type: 'varchar',
     length: 256,
     comment: '프로필 사진',
-    nullable: true,
-    name: 'profile_photo',
+    name: 'photo',
   })
-  profilePhoto?: string;
+  photo: string;
 
-  @Field(() => String, { description: '자기소개', nullable: true })
+  @Field(() => String, { description: '자기소개' })
   @Column({
     type: 'varchar',
     length: 256,
     comment: '자기소개',
-    nullable: true,
   })
-  introduction?: string;
+  introduction: string;
+
+  /////////////////////////////
+  // ===== 옵셔널 필드 ===== //
+  /////////////////////////////
 
   @Field(() => String, { description: '기술 스택', nullable: true })
   @Column({
@@ -52,6 +62,27 @@ abstract class IBlog extends CommonEntity {
   })
   skills?: Array<string>;
 
+  @Field(() => String, { description: '이메일', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 256,
+    comment: '이메일',
+    nullable: true,
+  })
+  email?: string;
+
+  @Field(() => String, { description: 'github 링크', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 256,
+    comment: 'github',
+    nullable: true,
+  })
+  github?: string;
+
+  /////////////////////////////////
+  // ===== 관계표시용 필드 ===== //
+  /////////////////////////////////
   @Column({ type: 'uuid', name: 'owner_id', comment: '블로그 주인의 id' })
   ownerId: string;
 
