@@ -5,6 +5,7 @@ import { BlogService } from './blog.service';
 import { CreateBlogInputDto } from './dtos/create-blog.dto';
 import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
 import { User } from 'src/user/user.entity';
+import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 
 @Resolver(() => Blog)
 export class BlogResolver {
@@ -22,7 +23,7 @@ export class BlogResolver {
   @AccessRole('USER')
   @Mutation(() => Blog, { description: '블로그 수정' })
   async updateBlog(
-    @Args(input) input: CreateBlogInputDto,
+    @Args(input) input: UpdateBlogInputDto,
     @AuthUser() user: User,
   ): Promise<Blog> {
     return await this.blogService.updateBlog(input, user);
