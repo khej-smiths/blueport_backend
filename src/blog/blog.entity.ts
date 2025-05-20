@@ -1,4 +1,11 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsEmail,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { CommonEntity } from 'src/common/common.entity';
 import { User } from 'src/user/user.entity';
 import {
@@ -14,76 +21,97 @@ import {
 @InputType({ isAbstract: true })
 abstract class IBlog extends CommonEntity {
   @Field(() => String, { description: '블로그 이름' })
-  @Column({ type: 'varchar', length: 256, comment: '블로그 이름' })
+  @Column({ type: 'varchar', length: 255, comment: '블로그 이름' })
+  @IsString()
   name: string;
 
-  @Field(() => String, { description: '도메인' })
+  @Field(() => String, { description: '도메인, 50자 내외' })
   @Column({
     type: 'varchar',
-    length: 256,
+    length: 255,
     comment: '도메인',
   })
+  @IsString()
   domain: string;
 
   @Field(() => String, { description: '인사말' })
   @Column({
     type: 'varchar',
-    length: 256,
+    length: 255,
     comment: '인사말',
   })
+  @IsString()
   greeting: string;
 
   @Field(() => String, { description: '프로필 사진' })
   @Column({
     type: 'varchar',
-    length: 256,
+    length: 255,
     comment: '프로필 사진',
     name: 'photo',
   })
+  @IsString()
   photo: string;
 
   @Field(() => String, { description: '자기소개' })
   @Column({
     type: 'varchar',
-    length: 256,
+    length: 255,
     comment: '자기소개',
   })
+  @IsString()
   introduction: string;
 
   /////////////////////////////
   // ===== 옵셔널 필드 ===== //
   /////////////////////////////
 
-  @Field(() => String, { description: '기술 스택', nullable: true })
+  @Field(() => [String], {
+    description: '기술 스택, 100개 제한',
+    nullable: true,
+  })
   @Column({
     type: 'json',
     comment: '기술 스택',
     nullable: true,
   })
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMaxSize(100) // 배열 최대길이
+  @IsOptional()
   skills?: Array<string>;
 
   @Field(() => String, { description: '이메일', nullable: true })
   @Column({
     type: 'varchar',
-    length: 256,
+    length: 255,
     comment: '이메일',
     nullable: true,
   })
+  @IsEmail()
+  @IsOptional()
   email?: string;
 
   @Field(() => String, { description: 'github 링크', nullable: true })
   @Column({
     type: 'varchar',
-    length: 256,
+    length: 255,
     comment: 'github',
     nullable: true,
   })
+  @IsString()
+  @IsOptional()
   github?: string;
 
   /////////////////////////////////
   // ===== 관계표시용 필드 ===== //
   /////////////////////////////////
-  @Column({ type: 'uuid', name: 'owner_id', comment: '블로그 주인의 id' })
+  @Column({
+    type: 'uuid',
+    name: 'owner_id',
+    comment: '블로그 주인의 id',
+    unique: true,
+  })
   ownerId: string;
 
   @OneToOne(() => User, (user) => user.blog)

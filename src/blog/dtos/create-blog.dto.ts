@@ -5,7 +5,10 @@ import { BlogInputType } from '../blog.entity';
 export class CreateBlogInputDto extends PickType(BlogInputType, [
   'name',
   'domain',
-  'profilePhoto',
+  'greeting',
+  'photo',
   'introduction',
   'skills',
+  'email',
+  'github',
 ]) {}
