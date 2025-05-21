@@ -8,6 +8,7 @@ import { CreateBlogInputDto } from './dtos/create-blog.dto';
 import { User } from 'src/user/user.entity';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 import { CustomGraphQLError } from 'src/common/error';
+import { ReadBlogInputDto } from './dtos/read-blog.dto';
 
 @Injectable()
 @Wrapper()
@@ -67,6 +68,40 @@ export class BlogService {
         ...user.blog,
         ...input,
       };
+    } catch (error) {
+      if (error.extensions.customFlag === true) {
+        error.addBriefStacktraceToCode(errPrefix);
+      }
+
+      throw error;
+    }
+  }
+
+  async readBlog(input: ReadBlogInputDto): Promise<Blog> {
+    // 에러의 앞에 달 prefix 선언
+    const errPrefix = `${this.constructor.name} - ${this.readBlog.name}`;
+
+    const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 조회할 블로그가 없는 경우
+    const ERR_MULTIPLE_BLOG = 'ERR_MULTIPLE_BLOG'; // 조회할 블로그가 여러 개인 경우
+
+    try {
+      const blogList = await this.blogRepository.readBlogList(input);
+
+      if (blogList.length === 0) {
+        throw new CustomGraphQLError('조회할 블로그가 없습니다.', {
+          extensions: {
+            code: ERR_NO_BLOG,
+          },
+        });
+      } else if (blogList.length > 1) {
+        throw new CustomGraphQLError('조회할 블로그가 여러 개입니다.', {
+          extensions: {
+            code: ERR_MULTIPLE_BLOG,
+          },
+        });
+      }
+
+      return blogList[0];
     } catch (error) {
       if (error.extensions.customFlag === true) {
         error.addBriefStacktraceToCode(errPrefix);

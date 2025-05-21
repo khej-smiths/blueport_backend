@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository, UpdateResult } from 'typeorm';
+import {
+  DataSource,
+  FindOptionsWhere,
+  FindManyOptions,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { Blog } from './blog.entity';
 import { CreateBlogInputDto } from './dtos/create-blog.dto';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
+import { ReadBlogInputDto } from './dtos/read-blog.dto';
 
 @Injectable()
 export class BlogRepository extends Repository<Blog> {
@@ -36,5 +43,23 @@ export class BlogRepository extends Repository<Blog> {
       },
       input,
     );
+  }
+
+  /**
+   * @description 블로그 목록 조회하기
+   */
+  async readBlogList(option: ReadBlogInputDto): Promise<Array<Blog>> {
+    const where: FindOptionsWhere<Blog> = {
+      ...(option.id && { id: option.id }),
+      ...(option.ownerId && { ownerId: option.ownerId }),
+    };
+
+    const findOption: FindManyOptions<Blog> = {
+      where,
+    };
+
+    const blogList = await this.find(findOption);
+
+    return blogList;
   }
 }

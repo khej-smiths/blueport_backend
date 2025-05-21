@@ -1,4 +1,11 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { input } from 'src/common/consts';
 import { Blog } from './blog.entity';
 import { BlogService } from './blog.service';
@@ -10,6 +17,8 @@ import {
 } from 'src/auth/auth.decorator';
 import { User } from 'src/user/user.entity';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
+import { ReadBlogInputDto } from './dtos/read-blog.dto';
+import { Post } from 'src/post/post.entity';
 
 @Resolver(() => Blog)
 export class BlogResolver {
@@ -34,6 +43,9 @@ export class BlogResolver {
     return await this.blogService.updateBlog(input, user);
   }
 
-  // TODO 블로그 조회
+  @Query(() => Blog, { description: '블로그 조회' })
+  async readBlog(@Args(input) input: ReadBlogInputDto): Promise<Blog> {
+    return await this.blogService.readBlog(input);
+  }
   // TODO 블로그 삭제
 }
