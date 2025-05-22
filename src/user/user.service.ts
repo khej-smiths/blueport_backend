@@ -24,9 +24,6 @@ export class UserService {
    * @returns
    */
   async createUser(input: CreateUserInputDto): Promise<User> {
-    // 에러의 앞에 달 prefix 선언
-    const errPrefix = `${this.constructor.name} - ${this.createUser.name}`;
-
     // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_DUPLICATION_EMAIL = 'ERR_DUPLICATION_EMAIL'; // 이메일이 중복된 경우
 
@@ -47,11 +44,6 @@ export class UserService {
         );
       }
 
-      // 유저 생성 후 나온 에러가 커스텀 에러인 경우 prefix 추가
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(errPrefix);
-      }
-
       throw error;
     }
   }
@@ -65,9 +57,6 @@ export class UserService {
     where?: { id?: string; email?: string };
     relations?: Array<string>;
   }): Promise<User> {
-    // 에러의 앞에 달 prefix 선언
-    const errPrefix = `${this.constructor.name} - ${this.readUserByOption.name}`;
-
     // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_NO_OPTION = 'ERR_NO_OPTION'; // 유저 조회를 위한 옵션이 알맞게 설정되지 않은 경우
     const ERR_NO_USER = 'ERR_NO_USER'; // 유저가 조회되지 않은 경우
@@ -112,9 +101,6 @@ export class UserService {
         return userList[0];
       }
     } catch (error) {
-      if (error.extensions.customFlag === true) {
-        error.addBriefStacktraceToCode(errPrefix);
-      }
       throw error;
     }
   }
