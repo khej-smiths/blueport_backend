@@ -1,11 +1,4 @@
-import {
-  Args,
-  Mutation,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { input } from 'src/common/consts';
 import { Blog } from './blog.entity';
 import { BlogService } from './blog.service';
@@ -18,7 +11,6 @@ import {
 import { User } from 'src/user/user.entity';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 import { ReadBlogInputDto } from './dtos/read-blog.dto';
-import { Post } from 'src/post/post.entity';
 
 @Resolver(() => Blog)
 export class BlogResolver {
@@ -26,6 +18,7 @@ export class BlogResolver {
 
   @AccessRole('USER')
   @Mutation(() => Blog, { description: '블로그 생성' })
+  @RequiredRelationList(['blog'])
   async createBlog(
     @Args(input) input: CreateBlogInputDto,
     @AuthUser() user: User,
