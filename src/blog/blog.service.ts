@@ -20,13 +20,33 @@ export class BlogService {
   ) {}
 
   async createBlog(input: CreateBlogInputDto, user: User): Promise<Blog> {
-    // TODO 에러케이스 정리
-    const ERR_CASE = 'ERR_CASE';
+    // ===== 에러 접두사 ===== //
+    const errPrefix = `${this.constructor.name} - ${this.createBlog.name}`;
+
+    // ===== 에러 케이스 ===== //
+    const ERR_ALREADY_BLOG = 'ERR_ALREADY_BLOG'; // 이미 블로그를 소유하고 있는 경우
 
     try {
+      // ===== 이미 블로그를 소유하고 있는 경우 에러처리 ===== //
+      if (user.blog) {
+        throw new CustomGraphQLError('이미 소유하고 있는 블로그가 있습니다.', {
+          extensions: {
+            code: ERR_ALREADY_BLOG,
+          },
+        });
+      }
+
+      // ===== 블로그 생성 ===== //
       const blog = await this.blogRepository.createBlog(input, { id: user.id });
+
+      // ===== 블로그 생성 결과 반환 ===== //
       return blog;
     } catch (error) {
+      // ===== 백에서 처리한 에러인 경우, stacktrace 간소화 ===== //
+      if (error.extensions.customFlag === true) {
+        error.addBriefStacktraceToCode(errPrefix);
+      }
+
       throw error;
     }
   }
