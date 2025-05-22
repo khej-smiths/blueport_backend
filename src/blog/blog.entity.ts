@@ -112,6 +112,7 @@ abstract class IBlog extends CommonEntity {
     comment: '블로그 주인의 id',
     unique: true,
   })
+  @Field(() => String, { description: '블로그 주인의 id' })
   ownerId: string;
 
   @OneToOne(() => User, (user) => user.blog)
