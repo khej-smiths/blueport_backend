@@ -20,9 +20,6 @@ export class BlogService {
   ) {}
 
   async createBlog(input: CreateBlogInputDto, user: User): Promise<Blog> {
-    // ===== 에러 접두사 ===== //
-    const errPrefix = `${this.constructor.name} - ${this.createBlog.name}`;
-
     // ===== 에러 케이스 ===== //
     const ERR_ALREADY_BLOG = 'ERR_ALREADY_BLOG'; // 이미 블로그를 소유하고 있는 경우
 
@@ -42,19 +39,11 @@ export class BlogService {
       // ===== 블로그 생성 결과 반환 ===== //
       return blog;
     } catch (error) {
-      // ===== 백에서 처리한 에러인 경우, stacktrace 간소화 ===== //
-      if (error.extensions.customFlag === true) {
-        error.addBriefStacktraceToCode(errPrefix);
-      }
-
       throw error;
     }
   }
 
   async updateBlog(input: UpdateBlogInputDto, user: User): Promise<Blog> {
-    // 에러의 앞에 달 prefix 선언
-    const errPrefix = `${this.constructor.name} - ${this.updateBlog.name}`;
-
     // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_NO_UPDATE = 'ERR_NO_UPDATE'; // 업데이트하지 못한 경우
     const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 업데이트 할 블로그가 없는 경우
@@ -89,18 +78,11 @@ export class BlogService {
         ...input,
       };
     } catch (error) {
-      if (error.extensions.customFlag === true) {
-        error.addBriefStacktraceToCode(errPrefix);
-      }
-
       throw error;
     }
   }
 
   async readBlog(input: ReadBlogInputDto): Promise<Blog> {
-    // 에러의 앞에 달 prefix 선언
-    const errPrefix = `${this.constructor.name} - ${this.readBlog.name}`;
-
     const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 조회할 블로그가 없는 경우
     const ERR_MULTIPLE_BLOG = 'ERR_MULTIPLE_BLOG'; // 조회할 블로그가 여러 개인 경우
 
@@ -123,10 +105,6 @@ export class BlogService {
 
       return blogList[0];
     } catch (error) {
-      if (error.extensions.customFlag === true) {
-        error.addBriefStacktraceToCode(errPrefix);
-      }
-
       throw error;
     }
   }
