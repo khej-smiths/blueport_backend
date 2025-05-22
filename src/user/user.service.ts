@@ -62,46 +62,42 @@ export class UserService {
     const ERR_NO_USER = 'ERR_NO_USER'; // 유저가 조회되지 않은 경우
     const ERR_MULTIPLE_USER = 'ERR_MULTIPLE_USER'; // 조회된 유저가 여럿인 경우
 
-    try {
-      // option으로 들어온 항목을 카운트
-      const keyListLength = Object.keys(option).length;
+    // option으로 들어온 항목을 카운트
+    const keyListLength = Object.keys(option).length;
 
-      // 옵션이 1개도 선택되지 않은 경우 에러 처리
-      if (!option || keyListLength === 0) {
-        throw new CustomGraphQLError(
-          '유저 조회를 위한 옵션이 설정되지 않았습니다.',
-          {
-            extensions: { code: ERR_NO_OPTION },
-          },
-        );
-      }
+    // 옵션이 1개도 선택되지 않은 경우 에러 처리
+    if (!option || keyListLength === 0) {
+      throw new CustomGraphQLError(
+        '유저 조회를 위한 옵션이 설정되지 않았습니다.',
+        {
+          extensions: { code: ERR_NO_OPTION },
+        },
+      );
+    }
 
-      // 유저 조회
-      const userList = await this.userRepository.readUserList(option);
+    // 유저 조회
+    const userList = await this.userRepository.readUserList(option);
 
-      if (
-        // 유저가 없는 경우 에러 처리
-        !userList ||
-        userList.length === 0
-      ) {
-        throw new CustomGraphQLError('유저가 조회되지 않습니다.', {
-          extensions: {
-            code: ERR_NO_USER,
-          },
-        });
-      } else if (
-        // 유저가 여러개인 경우 에러 처리
-        userList.length > 1
-      ) {
-        throw new CustomGraphQLError('조건에 맞는 유저가 여러명입니다.', {
-          extensions: { code: ERR_MULTIPLE_USER },
-        });
-      } else {
-        // 유저가 1개만 조회된 경우 값을 리턴
-        return userList[0];
-      }
-    } catch (error) {
-      throw error;
+    if (
+      // 유저가 없는 경우 에러 처리
+      !userList ||
+      userList.length === 0
+    ) {
+      throw new CustomGraphQLError('유저가 조회되지 않습니다.', {
+        extensions: {
+          code: ERR_NO_USER,
+        },
+      });
+    } else if (
+      // 유저가 여러개인 경우 에러 처리
+      userList.length > 1
+    ) {
+      throw new CustomGraphQLError('조건에 맞는 유저가 여러명입니다.', {
+        extensions: { code: ERR_MULTIPLE_USER },
+      });
+    } else {
+      // 유저가 1개만 조회된 경우 값을 리턴
+      return userList[0];
     }
   }
 }

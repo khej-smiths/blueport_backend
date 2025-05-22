@@ -23,24 +23,20 @@ export class BlogService {
     // ===== 에러 케이스 ===== //
     const ERR_ALREADY_BLOG = 'ERR_ALREADY_BLOG'; // 이미 블로그를 소유하고 있는 경우
 
-    try {
-      // ===== 이미 블로그를 소유하고 있는 경우 에러처리 ===== //
-      if (user.blog) {
-        throw new CustomGraphQLError('이미 소유하고 있는 블로그가 있습니다.', {
-          extensions: {
-            code: ERR_ALREADY_BLOG,
-          },
-        });
-      }
-
-      // ===== 블로그 생성 ===== //
-      const blog = await this.blogRepository.createBlog(input, { id: user.id });
-
-      // ===== 블로그 생성 결과 반환 ===== //
-      return blog;
-    } catch (error) {
-      throw error;
+    // ===== 이미 블로그를 소유하고 있는 경우 에러처리 ===== //
+    if (user.blog) {
+      throw new CustomGraphQLError('이미 소유하고 있는 블로그가 있습니다.', {
+        extensions: {
+          code: ERR_ALREADY_BLOG,
+        },
+      });
     }
+
+    // ===== 블로그 생성 ===== //
+    const blog = await this.blogRepository.createBlog(input, { id: user.id });
+
+    // ===== 블로그 생성 결과 반환 ===== //
+    return blog;
   }
 
   async updateBlog(input: UpdateBlogInputDto, user: User): Promise<Blog> {
@@ -48,64 +44,56 @@ export class BlogService {
     const ERR_NO_UPDATE = 'ERR_NO_UPDATE'; // 업데이트하지 못한 경우
     const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 업데이트 할 블로그가 없는 경우
 
-    try {
-      // 유저의 블로그가 없는 경우 에러처리
-      if (!user.blog) {
-        throw new CustomGraphQLError('업데이트 할 블로그가 없습니다.', {
-          extensions: {
-            code: ERR_NO_BLOG,
-          },
-        });
-      }
-
-      // 블로그 정보 업데이트
-      const result = await this.blogRepository.updateBlog(input, {
-        id: user.id,
+    // 유저의 블로그가 없는 경우 에러처리
+    if (!user.blog) {
+      throw new CustomGraphQLError('업데이트 할 블로그가 없습니다.', {
+        extensions: {
+          code: ERR_NO_BLOG,
+        },
       });
-
-      // 블로그 업데이트 결과가 없는 경우 에러처리
-      if (result.affected === 0) {
-        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
-          extensions: {
-            code: ERR_NO_UPDATE,
-          },
-        });
-      }
-
-      // 기존 유저 정보와 input 정보 조합해서 새로운 블로그 정보 바로 리턴
-      return {
-        ...user.blog,
-        ...input,
-      };
-    } catch (error) {
-      throw error;
     }
+
+    // 블로그 정보 업데이트
+    const result = await this.blogRepository.updateBlog(input, {
+      id: user.id,
+    });
+
+    // 블로그 업데이트 결과가 없는 경우 에러처리
+    if (result.affected === 0) {
+      throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
+        extensions: {
+          code: ERR_NO_UPDATE,
+        },
+      });
+    }
+
+    // 기존 유저 정보와 input 정보 조합해서 새로운 블로그 정보 바로 리턴
+    return {
+      ...user.blog,
+      ...input,
+    };
   }
 
   async readBlog(input: ReadBlogInputDto): Promise<Blog> {
     const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 조회할 블로그가 없는 경우
     const ERR_MULTIPLE_BLOG = 'ERR_MULTIPLE_BLOG'; // 조회할 블로그가 여러 개인 경우
 
-    try {
-      const blogList = await this.blogRepository.readBlogList(input);
+    const blogList = await this.blogRepository.readBlogList(input);
 
-      if (blogList.length === 0) {
-        throw new CustomGraphQLError('조회할 블로그가 없습니다.', {
-          extensions: {
-            code: ERR_NO_BLOG,
-          },
-        });
-      } else if (blogList.length > 1) {
-        throw new CustomGraphQLError('조회할 블로그가 여러 개입니다.', {
-          extensions: {
-            code: ERR_MULTIPLE_BLOG,
-          },
-        });
-      }
-
-      return blogList[0];
-    } catch (error) {
-      throw error;
+    if (blogList.length === 0) {
+      throw new CustomGraphQLError('조회할 블로그가 없습니다.', {
+        extensions: {
+          code: ERR_NO_BLOG,
+        },
+      });
+    } else if (blogList.length > 1) {
+      throw new CustomGraphQLError('조회할 블로그가 여러 개입니다.', {
+        extensions: {
+          code: ERR_MULTIPLE_BLOG,
+        },
+      });
     }
+
+    return blogList[0];
   }
 }
