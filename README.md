@@ -44,4 +44,5 @@ docker-compose -f mysql-docker-compose.yml up -d 서비스명
 ```
 1. swc compiler - tsc보다 속도가 빠른 swc 컴파일러 적용
 2. log - Async Local Storage를 이용해 request 별 로그를 작성하고, 각 함수를 감싸는 wrapper용 함수를 만들어 IO 로그의 중복 최소화
+3. error - 각 클래스를 감싸는 wrapper 함수에서 함수의 전체 error를 감싸서 처리하고 있기 때문에, 특별히 따로 잡아야할 에러가 있는게 아니라면 전체를 관통하는 에러처리는 필요없음
 ```
