@@ -11,6 +11,7 @@ import {
 import { User } from 'src/user/user.entity';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 import { ReadBlogInputDto } from './dtos/read-blog.dto';
+import { ReadBlogListInputDto } from './dtos/read-blog-list.dto';
 
 @Resolver(() => Blog)
 export class BlogResolver {
@@ -40,5 +41,13 @@ export class BlogResolver {
   async readBlog(@Args(input) input: ReadBlogInputDto): Promise<Blog> {
     return await this.blogService.readBlog(input);
   }
+
+  @Query(() => [Blog], { description: '블로그 목록 조회' })
+  async readBlogList(
+    @Args(input) input: ReadBlogListInputDto,
+  ): Promise<Array<Blog>> {
+    return await this.blogService.readBlogList(input);
+  }
+
   // TODO 블로그 삭제
 }

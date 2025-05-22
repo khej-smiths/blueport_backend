@@ -9,7 +9,16 @@ import {
 import { Blog } from './blog.entity';
 import { CreateBlogInputDto } from './dtos/create-blog.dto';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
-import { ReadBlogInputDto } from './dtos/read-blog.dto';
+
+type ReadBlogOption = {
+  id?: string; // 블로그 아이디
+  ownerId?: string; // 블로그 주인 아이디
+  skip?: number;
+  take?: number;
+  order?: {
+    [P in keyof Blog]?: 'ASC' | 'DESC';
+  };
+};
 
 @Injectable()
 export class BlogRepository extends Repository<Blog> {
@@ -48,7 +57,7 @@ export class BlogRepository extends Repository<Blog> {
   /**
    * @description 블로그 목록 조회하기
    */
-  async readBlogList(option: ReadBlogInputDto): Promise<Array<Blog>> {
+  async readBlogList(option: ReadBlogOption): Promise<Array<Blog>> {
     const where: FindOptionsWhere<Blog> = {
       ...(option.id && { id: option.id }),
       ...(option.ownerId && { ownerId: option.ownerId }),
@@ -56,6 +65,11 @@ export class BlogRepository extends Repository<Blog> {
 
     const findOption: FindManyOptions<Blog> = {
       where,
+      // 페이징 처리에 필요한 조건
+      ...(option.skip && { skip: option.skip }),
+      ...(option.take && { take: option.take }),
+      // 게시글 정렬 조건
+      ...(option.order && { order: option.order }),
     };
 
     const blogList = await this.find(findOption);

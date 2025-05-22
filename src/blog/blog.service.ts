@@ -9,6 +9,7 @@ import { User } from 'src/user/user.entity';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 import { CustomGraphQLError } from 'src/common/error';
 import { ReadBlogInputDto } from './dtos/read-blog.dto';
+import { ReadBlogListInputDto } from './dtos/read-blog-list.dto';
 
 @Injectable()
 @Wrapper()
@@ -95,5 +96,32 @@ export class BlogService {
     }
 
     return blogList[0];
+  }
+
+  async readBlogList(input: ReadBlogListInputDto): Promise<Array<Blog>> {
+    const ERR_OVER_CNT = 'ERR_OVER_CNT';
+
+    // ===== 현재 기획에서 블로그 조회는 최대 2개까지 가능함. 추후에 수정될 여지가 있어 실제 로직상에서 임의 처리 진행===== //
+    if (input.limit > 2) {
+      throw new CustomGraphQLError(
+        '조회할 수 있는 블로그 개수를 초과했습니다.',
+        {
+          extensions: {
+            code: ERR_OVER_CNT,
+          },
+        },
+      );
+    }
+
+    const blogList = await this.blogRepository.readBlogList({
+      skip: input.limit * (input.pageNumber - 1),
+      take: input.limit,
+      // 블로그 생성일을 기준으로 최신순으로 정렬
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return blogList;
   }
 }
