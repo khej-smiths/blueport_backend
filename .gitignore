@@ -43,3 +43,8 @@ db/
 
 #.env.dev
 .env.dev
+
+# caddy
+caddy_config
+caddy_data
+Caddyfile
