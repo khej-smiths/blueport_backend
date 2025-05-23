@@ -31,6 +31,12 @@ docker-compose -f mysql-docker-compose.yml up -d 서비스명
 
 ```
 
+## 기존 컨테이너와 이미지 모두 깨끗하게 삭제하고 싶을 때
+
+```
+docker-compose down --rmi all
+```
+
 ## Rule
 
 ```
