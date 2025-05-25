@@ -12,4 +12,6 @@ export class UserResolver {
   async createUser(@Args(input) input: CreateUserInputDto): Promise<User> {
     return await this.userService.createUser(input);
   }
+
+  // TODO readUser > blogId 값 전달하기
 }
