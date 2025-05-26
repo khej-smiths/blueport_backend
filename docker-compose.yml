@@ -1,4 +1,3 @@
-version: '3.8' # docker-compose의 version
 services:
   db:
     restart: unless-stopped # 수동으로 중지하지 않는 한 자동으로 재시작
