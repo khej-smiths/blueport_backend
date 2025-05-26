@@ -4,10 +4,9 @@ import { CustomGraphQLError } from 'src/common/error';
 import { UserRepository } from './user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserInputDto } from './dtos/create-user.dto';
-import { CustomLogger } from 'src/logger/logger';
 import { Wrapper } from 'src/logger/log.decorator';
-import { FindOptionsWhere } from 'typeorm';
 import { LoggerStorage } from 'src/logger/logger-storage';
+import { UpdateUserInputDto } from './dtos/update-user.dto';
 
 @Injectable()
 @Wrapper()
@@ -99,5 +98,25 @@ export class UserService {
       // 유저가 1개만 조회된 경우 값을 리턴
       return userList[0];
     }
+  }
+
+  // TODO 비밀번호 업데이트의 경우 유저 인증 필요
+  async updateUser(user: User, input: UpdateUserInputDto): Promise<User> {
+    const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
+
+    const result = await this.userRepository.updateUser(user.id, input);
+
+    if (result.affected === 0) {
+      throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
+        extensions: {
+          code: ERR_NO_UPDATE,
+        },
+      });
+    }
+
+    return {
+      ...user,
+      ...(input.name && { name: input.name }),
+    } as User;
   }
 }

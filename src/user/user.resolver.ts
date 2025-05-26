@@ -8,6 +8,7 @@ import {
   AuthUser,
   RequiredRelationList,
 } from 'src/auth/auth.decorator';
+import { UpdateUserInputDto } from './dtos/update-user.dto';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -23,9 +24,16 @@ export class UserResolver {
   })
   @AccessRole('USER')
   @RequiredRelationList(['blog'])
-  async readUser(@AuthUser() user: User) {
+  async readUser(@AuthUser() user: User): Promise<User> {
     return user;
   }
 
-  // TODO updateUser
+  @AccessRole('USER')
+  @Mutation(() => User, { description: '유저 업데이트' })
+  async updateUser(
+    @AuthUser() user: User,
+    @Args(input) input: UpdateUserInputDto,
+  ): Promise<User> {
+    return await this.userService.updateUser(user, input);
+  }
 }

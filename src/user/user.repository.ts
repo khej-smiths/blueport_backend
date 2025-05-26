@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { DataSource, FindManyOptions, Repository } from 'typeorm';
+import { DataSource, FindManyOptions, Repository, UpdateResult } from 'typeorm';
 import { CreateUserInputDto } from './dtos/create-user.dto';
+import { UpdateUserInputDto } from './dtos/update-user.dto';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -28,5 +29,17 @@ export class UserRepository extends Repository<User> {
   async readUserList(option: FindManyOptions<User>): Promise<Array<User>> {
     const userList = await this.find(option);
     return userList;
+  }
+
+  async updateUser(
+    id: string,
+    input: UpdateUserInputDto,
+  ): Promise<UpdateResult> {
+    const creation = await this.create({
+      ...(input.password && { password: input.password }),
+      ...(input.name && { name: input.name }),
+    });
+
+    return await this.update({ id }, creation);
   }
 }
