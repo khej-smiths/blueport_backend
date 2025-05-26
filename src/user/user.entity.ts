@@ -33,7 +33,7 @@ abstract class IUser extends CommonEntity {
 
   // TODO 비밀번호 정규식 체크
   // 8자 이상 20자 이하 영문, 숫자, 특수문자가 각각 한개씩 >> /^(?=.[A-Za-z])(?=.\d)(?=.[!@#$%^&()-+=[]{};':"\|,.<>/?~])[A-Za-z\d!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~]{8,20}$/;
-  @Field(() => String, { description: '유저의 비밀번호' })
+  // @Field(() => String, { description: '유저의 비밀번호' })
   @Column({
     type: 'varchar',
     length: 256,
@@ -69,4 +69,9 @@ export class User extends IUser {
 }
 
 @InputType()
-export class UserInputType extends IUser {}
+export class UserInputType extends IUser {
+  // TODO 비밀번호 정규식 체크
+  // 8자 이상 20자 이하 영문, 숫자, 특수문자가 각각 한개씩 >> /^(?=.[A-Za-z])(?=.\d)(?=.[!@#$%^&()-+=[]{};':"\|,.<>/?~])[A-Za-z\d!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~]{8,20}$/;
+  @Field(() => String, { description: '유저의 비밀번호' })
+  password: string;
+}
