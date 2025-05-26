@@ -76,7 +76,9 @@ import { BlogModule } from './blog/blog.module';
               const errorRawMessageList: Array<string> = [
                 error.message,
                 error.extensions?.code,
-                ...error.extensions?.originalError?.message,
+                ...(Array.isArray(error.extensions?.originalError?.message)
+                  ? error.extensions.originalError.message
+                  : []),
               ];
               const errorMessageList: Array<string> = [];
 
