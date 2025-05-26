@@ -63,8 +63,10 @@ export class User extends IUser {
    *  - 암호화: 양방향 > 암호화된 데이터가 복호화 필요할경우
    */
   async hashPassword() {
-    const hash = await argon2.hash(this.password);
-    this.password = hash;
+    if (this.password) {
+      const hash = await argon2.hash(this.password);
+      this.password = hash;
+    }
   }
 }
 
