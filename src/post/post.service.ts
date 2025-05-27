@@ -87,7 +87,6 @@ export class PostService {
    * @param input
    * @returns
    */
-  // TODO 조회수 추가 로직 추가 필요
   async readPost(input: ReadPostInputDto): Promise<Post> {
     const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
@@ -106,9 +105,51 @@ export class PostService {
           code: ERR_MULTIPLE_DATA,
         },
       });
-    } else {
-      return postList[0];
     }
+
+    // TODO 조회수 추가 중 로그 정리 필요
+    this.#increaseViewCount(input.id)
+      .then((result) => {
+        if (result) {
+          console.log('조회수 추가 성공');
+        } else {
+          console.log('조회수 추가 실패');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        console.log('조회수 추가 중 에러 발생');
+      });
+
+    return postList[0];
+  }
+
+  async #increaseViewCount(postId: string): Promise<boolean> {
+    const prefix = `${this.constructor.name} - ${this.#increaseViewCount.name}`;
+
+    const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
+
+    try {
+      const updateResult = await this.postRepository.increaseViewCount(postId);
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      // 업데이트에 성공한 row가 없는 경우 오류
+      if (updateResult.affected === 1) {
+        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
+          extensions: {
+            code: ERR_NO_UPDATE,
+          },
+        });
+      }
+    } catch (error) {
+      if (error.extensions?.customFlag) {
+        error.addBriefStacktraceToCode(prefix);
+      }
+      throw error;
+    }
+
+    return true;
   }
 
   /**
