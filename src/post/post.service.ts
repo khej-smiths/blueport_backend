@@ -19,13 +19,18 @@ export class PostService {
     private readonly als: LoggerStorage,
   ) {}
 
+  /**
+   * @description 게시글 작성 및 업데이트 전 내용 확인(현재는 해시태그의 중복만 처리)
+   * @param input
+   * @returns
+   */
   private checkPost<T extends CreatePostInputDto | UpdatePostInputDto>(
     input: T,
   ): T {
     let newInput: T = input;
 
     Object.keys(input).forEach((key) => {
-      // input에 hashtagList가 들어온 경우 중복체크
+      // ===== input에 hashtagList가 들어온 경우 중복체크 ===== //
       if (key === 'hashtagList') {
         newInput[key] = [...new Set(input[key])];
       }
@@ -42,13 +47,26 @@ export class PostService {
   async createPost(user: User, input: CreatePostInputDto): Promise<Post> {
     // 에러 케이스
     const ERR_NO_FIELD = 'ERR_NO_FIELD'; // 필수 정보가 누락된 경우
+    const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 블로그가 우선해야함
 
     try {
+      // ===== 게시글 작성 전 확인 1. 블로그가 없으면 게시글 작성 불가 ===== //
+      if (!user.blog) {
+        throw new CustomGraphQLError('블로그를 먼저 생성해주세요.', {
+          extensions: { code: ERR_NO_BLOG },
+        });
+      }
+
+      // ===== 게시글 작성 전 확인 2. 게시글 작성 전 게시글의 내용 확인 ===== //
       input = this.checkPost(input);
 
-      // 게시글 작성
-      const post = await this.postRepository.createPost(input, { id: user.id });
+      // ===== 게시글 작성 ===== //
+      const post = await this.postRepository.createPost(input, {
+        id: user.id,
+        blogId: user.blog.id,
+      });
 
+      // ===== 작성한 게시글 리턴 ===== //
       return post;
     } catch (error) {
       if (error.code === 'ER_NO_DEFAULT_FOR_FIELD') {
@@ -69,6 +87,7 @@ export class PostService {
    * @param input
    * @returns
    */
+  // TODO 조회수 추가 로직 추가 필요
   async readPost(input: ReadPostInputDto): Promise<Post> {
     const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
