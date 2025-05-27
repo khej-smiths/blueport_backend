@@ -85,6 +85,14 @@ export class PostRepository extends Repository<Post> {
     return await this.update({ id: option.id, writerId: writer.id }, content);
   }
 
+  async increaseViewCount(postId: string): Promise<UpdateResult> {
+    return await this.createQueryBuilder()
+      .update(Post)
+      .set({ viewCount: () => 'viewCount + 1' })
+      .where('id = :id', { id: postId })
+      .execute();
+  }
+
   async deletePost(
     option: DeletePostInputDto,
     writer: User,
