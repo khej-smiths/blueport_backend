@@ -10,7 +10,16 @@ export class CustomGraphQLError extends GraphQLError {
   extensions: GraphQLErrorExtensions & {
     code: string;
     customFlag: true;
+    requestId?: string;
   };
+
+  /**
+   * @description 에러가 진행된 request의 id값을 error에 넣기위한 함수
+   * @param requestId
+   */
+  applyRequestId(requestId: string) {
+    this.extensions.requestId = requestId;
+  }
 
   constructor(message: string, options?: GraphQLErrorOptions) {
     /**
