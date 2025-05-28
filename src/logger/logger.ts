@@ -7,9 +7,12 @@ export class CustomLogger extends ConsoleLogger {
   private email: string;
   private logList: Array<string> = [];
 
-  constructor() {
+  /**
+   * @description 로거 생성자 - 이벤트 패턴과 같이 새로운 logger를 생성이 필요하나 requestId가 연결되어야 할 경우 파라미터로 받음
+   */
+  constructor(requestId?: string) {
     super();
-    this.requestId = uuidv4();
+    this.requestId = requestId ?? uuidv4();
     this.customLog('initialize CustomLogger', {
       className: this.constructor.name,
       methodName: 'constructor',
