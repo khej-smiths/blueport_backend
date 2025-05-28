@@ -16,6 +16,10 @@ export class CustomLogger extends ConsoleLogger {
     });
   }
 
+  getRequestId() {
+    return this.requestId;
+  }
+
   setEmail(email: string) {
     this.email = email;
     this.customLog('set email', {
@@ -30,11 +34,21 @@ export class CustomLogger extends ConsoleLogger {
   ) {
     const prefix = this.getPrefix(option);
     const processedMessage = this.processMessage(message);
-    this.logList.push(processedMessage);
+    this.logList.push(JSON.stringify({ prefix, processedMessage }));
     this.log(processedMessage, prefix);
   }
 
-  // TODO Error, Warn 추가
+  customError(
+    errors: any,
+    option?: { className?: string; methodName?: string },
+  ) {
+    const prefix = this.getPrefix(option);
+    const processedExtensions = this.processMessage(errors);
+    this.logList.push(JSON.stringify({ prefix, processedExtensions }));
+    this.error(processedExtensions, prefix);
+  }
+
+  // TODO  Warn 추가
 
   async destroy() {
     this.customLog('destroy logger', {
