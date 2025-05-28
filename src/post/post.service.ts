@@ -10,6 +10,8 @@ import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { Wrapper } from 'src/logger/log.decorator';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
 import { LoggerStorage } from 'src/logger/logger-storage';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EVENT_INCREASE_VIEW_COUNT } from './post.event-listener';
 
 @Injectable()
 @Wrapper()
@@ -17,6 +19,7 @@ export class PostService {
   constructor(
     private readonly postRepository: PostRepository,
     private readonly als: LoggerStorage,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -107,49 +110,20 @@ export class PostService {
       });
     }
 
-    // TODO 조회수 추가 중 로그 정리 필요
-    this.#increaseViewCount(input.id)
-      .then((result) => {
-        if (result) {
-          console.log('조회수 추가 성공');
-        } else {
-          console.log('조회수 추가 실패');
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        console.log('조회수 추가 중 에러 발생');
-      });
+    // ===== 이벤트에 requestId 넣어서 전달 ===== //
+    const loggerRequestId: string = this.als
+      .getStore()!
+      .customLogger.getRequestId();
 
+    // ===== 이벤트로 조회수 증가 ===== //
+    this.eventEmitter.emit(
+      EVENT_INCREASE_VIEW_COUNT,
+      input.id,
+      loggerRequestId,
+    );
+
+    // ===== 조회할 게시글 리턴 ===== //
     return postList[0];
-  }
-
-  async #increaseViewCount(postId: string): Promise<boolean> {
-    const prefix = `${this.constructor.name} - ${this.#increaseViewCount.name}`;
-
-    const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
-
-    try {
-      const updateResult = await this.postRepository.increaseViewCount(postId);
-
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-
-      // 업데이트에 성공한 row가 없는 경우 오류
-      if (updateResult.affected === 1) {
-        throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
-          extensions: {
-            code: ERR_NO_UPDATE,
-          },
-        });
-      }
-    } catch (error) {
-      if (error.extensions?.customFlag) {
-        error.addBriefStacktraceToCode(prefix);
-      }
-      throw error;
-    }
-
-    return true;
   }
 
   /**
