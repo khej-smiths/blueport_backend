@@ -18,13 +18,14 @@ import { Post } from './post/post.entity';
 import { Request } from 'express';
 import { Blog } from './blog/blog.entity';
 import { BlogModule } from './blog/blog.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
-    /**
-     * 앱 구동을 위한 토대
-     */
-    // 환경변수 설정 모듈
+    // =============================== //
+    // ===== 앱 구동을 위한 셋팅 ===== //
+    // =============================== //
+    // ===== 1. 환경변수 설정 모듈 ===== //
     ConfigModule.forRoot({
       isGlobal: true, // 해당 모듈을 전역에서 접근할 수 있도록 isGlobal: true로 설정
       envFilePath: '.env.dev', // 환경변수 파일
@@ -47,16 +48,15 @@ import { BlogModule } from './blog/blog.module';
         JWT_SUBJECT: Joi.string().required(), // 토큰 발급자
       }),
     }),
-    // GraphQL 설정 모듈
+    // ===== 2. GraphQL 설정 모듈 ===== //
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      imports: [ConfigModule], // 모듈을 다른 모듈에서 사용할 수 있도록 가져오는 역할(모듈간의 의존성 관계를 설정하는데 사용)
-      inject: [ConfigService], // 의존성 주입에서 특정 클래스 또는 서비스를 명시적으로 주입받고자 할 때 사용하는 배열. 주로 팩토리 함수 또는 커스텀 프로바이더에서 사용
+      imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         return {
           graphiql: true,
-          autoSchemaFile: join(process.cwd(), 'src/schema.gql'), // 스키마 파일 생성 방식 선언
-          // headers를 graphql context에 직접 추가
+          autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
           context: ({ req }: { req: Request }) => {
             return {
               access_token: req.headers['access_token'],
@@ -119,7 +119,7 @@ import { BlogModule } from './blog/blog.module';
         };
       },
     }),
-    // TypeOrm 설정 모듈
+    // ===== 3. TypeOrm 설정 모듈 ===== //
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -136,18 +136,23 @@ import { BlogModule } from './blog/blog.module';
         logging: true,
       }),
     }),
-    // 권한
+    // ===== 4. 이벤트 모듈 ===== //
+    EventEmitterModule.forRoot(),
+    // ============================ //
+    // ===== 커스텀 공통 모듈 ===== //
+    // ============================ //
+    // ===== 1. 권한 ===== //
     AuthModule,
-    // 로거
+    // ===== 2. 로거 ====== //
     LoggerModule,
-    /**
-     * 앱 구동을 위한 실제 비즈니스 로직
-     */
-    // 게시글
+    // ====================================================== //
+    // ===== 앱 구동을 위해 커스텀된 실제 비즈니스 로직 ===== //
+    // ====================================================== //
+    // ===== 1. 게시글 ===== //
     PostModule,
-    // 유저
+    // ===== 2. 유저 ===== //
     UserModule,
-    // 블로그
+    // ===== 3. 블로그 ===== //
     BlogModule,
   ],
   controllers: [AppController],

@@ -10,6 +10,8 @@ import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { Wrapper } from 'src/logger/log.decorator';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
 import { LoggerStorage } from 'src/logger/logger-storage';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EVENT_INCREASE_VIEW_COUNT } from './post.event-listener';
 
 @Injectable()
 @Wrapper()
@@ -17,15 +19,21 @@ export class PostService {
   constructor(
     private readonly postRepository: PostRepository,
     private readonly als: LoggerStorage,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * @description 게시글 작성 및 업데이트 전 내용 확인(현재는 해시태그의 중복만 처리)
+   * @param input
+   * @returns
+   */
   private checkPost<T extends CreatePostInputDto | UpdatePostInputDto>(
     input: T,
   ): T {
     let newInput: T = input;
 
     Object.keys(input).forEach((key) => {
-      // input에 hashtagList가 들어온 경우 중복체크
+      // ===== input에 hashtagList가 들어온 경우 중복체크 ===== //
       if (key === 'hashtagList') {
         newInput[key] = [...new Set(input[key])];
       }
@@ -42,13 +50,26 @@ export class PostService {
   async createPost(user: User, input: CreatePostInputDto): Promise<Post> {
     // 에러 케이스
     const ERR_NO_FIELD = 'ERR_NO_FIELD'; // 필수 정보가 누락된 경우
+    const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 블로그가 우선해야함
 
     try {
+      // ===== 게시글 작성 전 확인 1. 블로그가 없으면 게시글 작성 불가 ===== //
+      if (!user.blog) {
+        throw new CustomGraphQLError('블로그를 먼저 생성해주세요.', {
+          extensions: { code: ERR_NO_BLOG },
+        });
+      }
+
+      // ===== 게시글 작성 전 확인 2. 게시글 작성 전 게시글의 내용 확인 ===== //
       input = this.checkPost(input);
 
-      // 게시글 작성
-      const post = await this.postRepository.createPost(input, { id: user.id });
+      // ===== 게시글 작성 ===== //
+      const post = await this.postRepository.createPost(input, {
+        id: user.id,
+        blogId: user.blog.id,
+      });
 
+      // ===== 작성한 게시글 리턴 ===== //
       return post;
     } catch (error) {
       if (error.code === 'ER_NO_DEFAULT_FOR_FIELD') {
@@ -87,9 +108,22 @@ export class PostService {
           code: ERR_MULTIPLE_DATA,
         },
       });
-    } else {
-      return postList[0];
     }
+
+    // ===== 이벤트에 requestId 넣어서 전달 ===== //
+    const loggerRequestId: string = this.als
+      .getStore()!
+      .customLogger.getRequestId();
+
+    // ===== 이벤트로 조회수 증가 ===== //
+    this.eventEmitter.emit(
+      EVENT_INCREASE_VIEW_COUNT,
+      input.id,
+      loggerRequestId,
+    );
+
+    // ===== 조회할 게시글 리턴 ===== //
+    return postList[0];
   }
 
   /**

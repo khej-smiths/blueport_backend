@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { CommonEntity } from 'src/common/common.entity';
 import { User } from 'src/user/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
@@ -18,8 +18,15 @@ abstract class IPost extends CommonEntity {
   @Column({ type: 'json', nullable: true, name: 'hashtag_list' })
   hashtagList?: Array<string>;
 
+  @Field(() => Int, { description: '조회수' })
+  @Column({ type: 'int', unsigned: true, default: 0, comment: '조회수' })
+  viewCount: number;
+
   @Column({ type: 'uuid', name: 'writer_id', comment: '게시글 작성자의 id' })
   writerId: string;
+
+  @Column({ type: 'uuid', name: 'blog_id', comment: '게시글 블로그의 id' })
+  blogId: string;
 
   @Field(() => User, { description: '게시글 작성자 전체 정보' })
   @ManyToOne(() => User, (user) => user.postList)

@@ -35,9 +35,13 @@ export class PostRepository extends Repository<Post> {
    */
   async createPost(
     option: CreatePostInputDto,
-    userInfo: { id: string },
+    userInfo: { id: string; blogId: string },
   ): Promise<Post> {
-    const creation = await this.create({ ...option, writerId: userInfo.id });
+    const creation = await this.create({
+      ...option,
+      writerId: userInfo.id,
+      blogId: userInfo.blogId,
+    });
     const post = await this.save(creation);
 
     return post;
@@ -79,6 +83,14 @@ export class PostRepository extends Repository<Post> {
     const { id, ...content } = option;
 
     return await this.update({ id: option.id, writerId: writer.id }, content);
+  }
+
+  async increaseViewCount(postId: string): Promise<UpdateResult> {
+    return await this.createQueryBuilder()
+      .update(Post)
+      .set({ viewCount: () => 'viewCount + 1' })
+      .where('id = :id', { id: postId })
+      .execute();
   }
 
   async deletePost(

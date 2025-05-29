@@ -13,7 +13,11 @@ import { ReadPostInputDto } from './dtos/read-post.dto';
 import { User } from 'src/user/user.entity';
 import { ReadPostListInputDto } from './dtos/read-post-list.dto';
 import { CreatePostInputDto } from './dtos/create-post.dto';
-import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
+import {
+  AccessRole,
+  AuthUser,
+  RequiredRelationList,
+} from 'src/auth/auth.decorator';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
 import { UserDataLoaderService } from 'src/user/user.data-loader';
@@ -29,6 +33,7 @@ export class PostResolver {
   @Mutation(() => Post, {
     description: '게시글 작성하기, 로그인 유저만 게시글 작성 가능',
   })
+  @RequiredRelationList(['blog'])
   async createPost(
     @Args(input) input: CreatePostInputDto,
     @AuthUser() user: User,

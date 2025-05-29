@@ -7,13 +7,20 @@ export class CustomLogger extends ConsoleLogger {
   private email: string;
   private logList: Array<string> = [];
 
-  constructor() {
+  /**
+   * @description 로거 생성자 - 이벤트 패턴과 같이 새로운 logger를 생성이 필요하나 requestId가 연결되어야 할 경우 파라미터로 받음
+   */
+  constructor(requestId?: string) {
     super();
-    this.requestId = uuidv4();
+    this.requestId = requestId ?? uuidv4();
     this.customLog('initialize CustomLogger', {
       className: this.constructor.name,
       methodName: 'constructor',
     });
+  }
+
+  getRequestId() {
+    return this.requestId;
   }
 
   setEmail(email: string) {
@@ -30,11 +37,21 @@ export class CustomLogger extends ConsoleLogger {
   ) {
     const prefix = this.getPrefix(option);
     const processedMessage = this.processMessage(message);
-    this.logList.push(processedMessage);
+    this.logList.push(JSON.stringify({ prefix, processedMessage }));
     this.log(processedMessage, prefix);
   }
 
-  // TODO Error, Warn 추가
+  customError(
+    errors: any,
+    option?: { className?: string; methodName?: string },
+  ) {
+    const prefix = this.getPrefix(option);
+    const processedExtensions = this.processMessage(errors);
+    this.logList.push(JSON.stringify({ prefix, processedExtensions }));
+    this.error(processedExtensions, prefix);
+  }
+
+  // TODO  Warn 추가
 
   async destroy() {
     this.customLog('destroy logger', {
