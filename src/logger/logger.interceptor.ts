@@ -9,6 +9,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { tap, catchError } from 'rxjs/operators';
 import { LoggerStorage } from './logger-storage';
 import { CustomLogger } from './logger';
+import { CustomGraphQLError } from 'src/common/error';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
@@ -44,7 +45,9 @@ export class LoggerInterceptor implements NestInterceptor {
         // ===== 기존에 남긴 로그 전체 남기기===== //
         logger.destroy();
         // ===== 에러에 requestId 적용하기 ===== //
-        error.applyRequestId(logger.getRequestId());
+        if (error instanceof CustomGraphQLError) {
+          error.applyRequestId(logger.getRequestId());
+        }
         throw error;
       }),
     );
