@@ -5,7 +5,7 @@ import {
 } from 'graphql';
 import { DateTime } from 'luxon';
 
-// 에러 객체
+// graphql 에러 객체
 export class CustomGraphQLError extends GraphQLError {
   extensions: GraphQLErrorExtensions & {
     code: string;
