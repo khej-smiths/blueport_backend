@@ -3,5 +3,5 @@ export const UPLOAD_TYPE_LIST_TOKEN = 'UPLOAD_TYPE_LIST';
 export const UPLOAD_LIMIT_SIZE_OBJ_TOKEN = 'UPLOAD_LIMIT_SIZE_OBJ';
 
 // 업로드하는 경우의 수
-export const UPLOAD_TYPE_LIST = ['blog-image', 'profile-image'] as const;
+export const UPLOAD_TYPE_LIST = ['post-image', 'profile-image'] as const;
 export type UPLOAD_TYPE = (typeof UPLOAD_TYPE_LIST)[number];
