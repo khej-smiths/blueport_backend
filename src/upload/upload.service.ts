@@ -4,6 +4,7 @@ import {
   UPLOAD_LIMIT_SIZE_OBJ_TOKEN,
   UPLOAD_TYPE,
   UPLOAD_TYPE_LIST_TOKEN,
+  UPLOAD_VALID_FILE_EXTENSION_OBJ_TOKEN,
 } from './consts';
 @Injectable()
 export class UploadService {
@@ -13,6 +14,11 @@ export class UploadService {
     private readonly UPLOAD_TYPE_LIST: Array<UPLOAD_TYPE>,
     @Inject(UPLOAD_LIMIT_SIZE_OBJ_TOKEN)
     private readonly UPLOAD_LIMIT_SIZE_OBJ: Record<UPLOAD_TYPE, number>,
+    @Inject(UPLOAD_VALID_FILE_EXTENSION_OBJ_TOKEN)
+    private readonly UPLOAD_VALID_FILE_EXTENSION_OBJ: Record<
+      UPLOAD_TYPE,
+      Array<string>
+    >,
   ) {}
 
   // TODO 파일 업로드 로직 추가
@@ -65,17 +71,12 @@ export class UploadService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (
-      !['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(
-        file.mimetype,
-      )
-    ) {
+    if (!this.UPLOAD_VALID_FILE_EXTENSION_OBJ[type].includes(file.mimetype)) {
       // 예외처리 2. 업로드하는 파일의 확장자가 바르지않은경우
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
-          message:
-            '파일 확장자를 확인해주세요(허용하는 확장자: jpeg,jpg,png,gif)',
+          message: `파일 확장자를 확인해주세요(허용하는 확장자: ${this.UPLOAD_VALID_FILE_EXTENSION_OBJ[type].map((elem) => `'${elem}'`)} )`,
           error: `Bad Request - ${ERR_NOT_VALID_EXTENSION} - [${requestId}]`,
         },
         HttpStatus.BAD_REQUEST,
