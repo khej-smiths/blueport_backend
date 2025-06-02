@@ -3,7 +3,6 @@ import { LoggerStorage } from 'src/logger/logger-storage';
 import {
   UPLOAD_LIMIT_SIZE_OBJ_TOKEN,
   UPLOAD_TYPE,
-  UPLOAD_TYPE_LIST,
   UPLOAD_TYPE_LIST_TOKEN,
 } from './consts';
 @Injectable()
@@ -24,6 +23,7 @@ export class UploadService {
     // 에러 케이스
     const ERR_OVER_FILE_SIZE = 'ERR_OVER_FILE_SIZE'; // 허용 가능한 파일 사이즈를 오버한 경우
     const ERR_NOT_VALID_TYPE = 'ERR_NOT_VALID_TYPE'; // 업로드 할 수 있는 타입이 아닌 경우
+    const ERR_NOT_VALID_EXTENSION = 'ERR_NOT_VALID_EXTENSION'; // 업로드 할 수 있는 타입이 아닌 경우
 
     // 로거가져오기
     const logger = this.als.getStore()?.customLogger!;
@@ -43,7 +43,8 @@ export class UploadService {
 
     const requestId = this.als.getStore()!.customLogger.getRequestId();
 
-    if (!UPLOAD_TYPE_LIST.includes(type)) {
+    if (!this.UPLOAD_TYPE_LIST.includes(type)) {
+      // 예외처리 0. 파일 업로드 경우 확인
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -54,7 +55,7 @@ export class UploadService {
       );
     }
     if (file.size > this.UPLOAD_LIMIT_SIZE_OBJ[type]) {
-      // 예외처리 1. 파일 사이즈가 8MB가 넘어가는 경우
+      // 예외처리 1. 파일 사이즈 제한을 넘어가는 경우
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -64,7 +65,22 @@ export class UploadService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
+    if (
+      !['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(
+        file.mimetype,
+      )
+    ) {
+      // 예외처리 2. 업로드하는 파일의 확장자가 바르지않은경우
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message:
+            '파일 확장자를 확인해주세요(허용하는 확장자: jpeg,jpg,png,gif)',
+          error: `Bad Request - ${ERR_NOT_VALID_EXTENSION} - [${requestId}]`,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     // TODO 파일 업로드 후 url 리턴
 
     return 'url';
