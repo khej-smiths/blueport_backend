@@ -5,7 +5,7 @@ import { PostRepository } from './post.repository';
 import { CustomGraphQLError } from 'src/common/error';
 import { CreatePostInputDto } from './dtos/create-post.dto';
 import { User } from 'src/user/user.entity';
-import { ReadPostListInputDto } from './dtos/read-post-list.dto';
+import { ReadPostListInputDto, SORT_OPTION } from './dtos/read-post-list.dto';
 import { UpdatePostInputDto } from './dtos/update-post.dto';
 import { Wrapper } from 'src/logger/log.decorator';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
@@ -94,7 +94,9 @@ export class PostService {
     const ERR_NO_DATA = 'ERR_NO_DATA';
     const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
 
-    const postList = await this.postRepository.readPostList({ id: input.id });
+    const postList = await this.postRepository.readPostList({
+      where: { id: input.id },
+    });
 
     if (postList.length === 0) {
       throw new CustomGraphQLError('게시글 조회에 실패했습니다.', {
@@ -137,8 +139,16 @@ export class PostService {
       take: input.limit,
       // 게시글 작성일을 기준으로 최신순으로 정렬
       order: {
-        createdAt: 'DESC',
+        ...(input.sortOption === SORT_OPTION.NEWEST && { createdAt: 'DESC' }),
+        ...(input.sortOption === SORT_OPTION.VIEW_COUNT && {
+          viewCount: 'DESC',
+        }),
       },
+      ...(input.blogId && {
+        where: {
+          blogId: input.blogId,
+        },
+      }),
     });
 
     return postList;
@@ -229,7 +239,7 @@ export class PostService {
 
     // 게시글을 업데이트하기 위한 조건 확인하기 위해 게시글을 우선 조회하기
     const postList = await this.postRepository.readPostList({
-      id: input.postId,
+      where: { id: input.postId },
     });
 
     // 조회된 게시글이 없는 경우 오류처리
