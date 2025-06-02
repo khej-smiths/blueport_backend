@@ -21,7 +21,11 @@ export class UploadService {
     >,
   ) {}
 
-  // TODO 파일 업로드 로직 추가
+  /**
+   *
+   * @description 범용 파일 업로드 함수
+   * TODO 실제 파일 업로드 로직은 추가 구현 필요함
+   */
   async uploadFile(
     file: Express.Multer.File,
     type: UPLOAD_TYPE,
