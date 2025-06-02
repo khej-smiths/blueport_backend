@@ -9,6 +9,7 @@ import { UploadService } from './upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UPLOAD_TYPE } from './consts';
 
+// TODO swagger 적용
 @Controller('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
