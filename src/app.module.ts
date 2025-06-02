@@ -59,7 +59,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
           autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
           context: ({ req }: { req: Request }) => {
             return {
-              access_token: req.headers['access_token'],
+              access_token: req.headers['authorization']?.split('Bearer ')[1],
             };
           },
           formatError: (error: any) => {
