@@ -4,7 +4,6 @@ import { CreatePostInputDto } from './dtos/create-post.dto';
 import {
   DataSource,
   FindManyOptions,
-  FindOptionsWhere,
   QueryRunner,
   Repository,
   UpdateResult,
@@ -14,12 +13,14 @@ import { User } from 'src/user/user.entity';
 import { DeletePostInputDto } from './dtos/delete-post.dto';
 
 type ReadPostOption = {
-  id?: string;
   skip?: number;
   take?: number;
   order?: {
+    // 정렬은 어떻게 될 지 모르기때문에 Post 키 값 전체 받는 것으로 타입 지정
     [P in keyof Post]?: 'ASC' | 'DESC';
   };
+  // where는 postId, blogId로만 제한
+  where?: Partial<Record<'id' | 'blogId', string>>;
 };
 
 @Injectable()
@@ -53,12 +54,8 @@ export class PostRepository extends Repository<Post> {
    * @returns
    */
   async readPostList(option: ReadPostOption): Promise<Array<Post>> {
-    const where: FindOptionsWhere<Post> = {
-      ...(option.id && { id: option.id }),
-    };
-
     const findOption: FindManyOptions<Post> = {
-      where,
+      ...(option.where && { where: option.where }),
       // 페이징 처리에 필요한 조건
       ...(option.skip && { skip: option.skip }),
       ...(option.take && { take: option.take }),
