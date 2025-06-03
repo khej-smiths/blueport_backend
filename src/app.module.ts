@@ -21,7 +21,8 @@ import { BlogModule } from './blog/blog.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { UploadModule } from './upload/upload.module';
 import { ResumeModule } from './resume/resume.module';
-import { Resume } from './resume/resume.entity';
+import { Resume } from './resume/entities/resume.entity';
+import { Education } from './resume/entities/education.entity';
 
 @Module({
   imports: [
@@ -133,7 +134,7 @@ import { Resume } from './resume/resume.entity';
         username: configService.get('MYSQL_USERNAME'),
         password: configService.get('MYSQL_PASSWORD'),
         database: configService.get('MYSQL_DATABASE'),
-        entities: [User, Post, Blog, Resume],
+        entities: [User, Post, Blog, Education, Resume],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
         logging: true,
