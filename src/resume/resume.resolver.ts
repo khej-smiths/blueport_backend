@@ -1,6 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { ResumeService } from './resume.service';
-import { Resume } from './resume.entity';
+import { Resume } from './entities/resume.entity';
 import { input } from 'src/common/consts';
 import { CreateResumeInputDto } from './dtos/create-resume.dto';
 
