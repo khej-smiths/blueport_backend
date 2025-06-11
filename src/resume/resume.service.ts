@@ -83,15 +83,21 @@ export class ResumeService {
     }
   }
 
+  /**
+   * 이력서 조회
+   */
   async readResume(input: ReadResumeInputDto): Promise<Resume> {
-    const ERR_NO_DATA = 'ERR_NO_DATA';
-    const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
+    // 이력서 조회 중 발생할 수 있는 에러 케이스
+    const ERR_NO_DATA = 'ERR_NO_DATA'; // 조회할 이력서가 없는 경우
+    const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA'; // 여러개의 이력서가 조회된 경우
 
+    // 이력서 조회
     const resumeList = await this.resumeRepository.readResumeList({
       id: input.id,
       relations: ['educationList', 'careerList'],
     });
 
+    // 이력서 조회 관련 에러 처리
     if (resumeList.length === 0) {
       throw new CustomGraphQLError('이력서 조회에 실패했습니다.', {
         extensions: {
@@ -106,6 +112,7 @@ export class ResumeService {
       });
     }
 
+    // 이력서 리턴
     return resumeList[0];
   }
 
