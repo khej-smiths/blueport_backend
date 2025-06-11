@@ -23,6 +23,7 @@ import { UploadModule } from './upload/upload.module';
 import { ResumeModule } from './resume/resume.module';
 import { Resume } from './resume/entities/resume.entity';
 import { Education } from './resume/entities/education.entity';
+import { Career } from './resume/entities/career.entity';
 
 @Module({
   imports: [
@@ -134,7 +135,7 @@ import { Education } from './resume/entities/education.entity';
         username: configService.get('MYSQL_USERNAME'),
         password: configService.get('MYSQL_PASSWORD'),
         database: configService.get('MYSQL_DATABASE'),
-        entities: [User, Post, Blog, Education, Resume],
+        entities: [User, Post, Blog, Education, Resume, Career],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
         logging: true,
