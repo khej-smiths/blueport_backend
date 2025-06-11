@@ -13,6 +13,7 @@ import {
   Unique,
 } from 'typeorm';
 import argon2 from 'argon2';
+import { Resume } from 'src/resume/entities/resume.entity';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -48,6 +49,10 @@ abstract class IUser extends CommonEntity {
   @OneToOne(() => Blog, (blog) => blog.owner, { nullable: true })
   @Field(() => Blog, { nullable: true })
   blog?: Relation<Blog>;
+
+  @OneToOne(() => Resume, (resume) => resume.owner, { nullable: true })
+  @Field(() => Resume, { nullable: true })
+  resume?: Relation<Resume>;
 }
 
 @ObjectType()
