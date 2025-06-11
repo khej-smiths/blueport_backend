@@ -3,6 +3,7 @@ import { ResumeResolver } from './resume.resolver';
 import { ResumeService } from './resume.service';
 import { ResumeRepository } from './resume.repository';
 import { EducationRepository } from './repositories/education.repository';
+import { CareerRepository } from './repositories/career.repository';
 
 @Module({
   providers: [
@@ -10,6 +11,7 @@ import { EducationRepository } from './repositories/education.repository';
     ResumeService,
     ResumeRepository,
     EducationRepository,
+    CareerRepository,
   ],
 })
 export class ResumeModule {}
