@@ -10,15 +10,11 @@ import {
   Column,
   OneToMany,
 } from 'typeorm';
+import { Career } from './career.entity';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
 abstract class IResume extends CommonEntity {
-  @OneToOne(() => User, (user) => user.blog)
-  @JoinColumn({ name: 'owner_id' })
-  @Field(() => User, { description: '이력서 주인 전체 정보' })
-  owner: Relation<User>;
-
   @Column({
     type: 'uuid',
     name: 'owner_id',
@@ -28,9 +24,18 @@ abstract class IResume extends CommonEntity {
   @Field(() => String, { description: '이력서 주인의 id' })
   ownerId: string;
 
+  @OneToOne(() => User, (user) => user.resume)
+  @JoinColumn({ name: 'owner_id' })
+  @Field(() => User, { description: '이력서 주인 전체 정보' })
+  owner: Relation<User>;
+
   @OneToMany(() => Education, (edu) => edu.resume, { nullable: true })
-  @Field(() => [Education], { nullable: true, description: '경력' })
+  @Field(() => [Education], { nullable: true, description: '학력' })
   educationList?: Array<Education>;
+
+  @OneToMany(() => Career, (career) => career.resume, { nullable: true })
+  @Field(() => [Career], { nullable: true, description: '경력' })
+  careerList?: Array<Career>;
 }
 
 @ObjectType()
