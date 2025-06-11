@@ -2,6 +2,7 @@ import { DataSource, DeleteResult, EntityManager, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Education } from '../entities/education.entity';
 import { CreateEducationInputDto } from '../dtos/create-resume.dto';
+import { UpdateEducationInputDto } from '../dtos/update-resume.dto';
 
 @Injectable()
 export class EducationRepository extends Repository<Education> {
@@ -31,7 +32,18 @@ export class EducationRepository extends Repository<Education> {
     return educationList;
   }
 
-  async updateEducationList() {}
+  async updateEducationList(
+    input: Array<UpdateEducationInputDto>,
+    transactionEntityManager?: EntityManager,
+  ): Promise<void> {
+    let updateResult: Array<Education>;
+    if (transactionEntityManager) {
+      // 트랜잭션
+      updateResult = await transactionEntityManager.save(Education, input);
+    } else {
+      updateResult = await this.save(input);
+    }
+  }
 
   async deleteEducationList(
     idList: Array<string>,
