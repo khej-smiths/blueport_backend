@@ -8,6 +8,7 @@ import { EducationRepository } from './repositories/education.repository';
 import { DataSource } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { CustomGraphQLError } from 'src/common/error';
+import { CareerRepository } from './repositories/career.repository';
 
 @Injectable()
 @Wrapper()
@@ -16,6 +17,7 @@ export class ResumeService {
     private readonly als: LoggerStorage,
     private readonly resumeRepository: ResumeRepository,
     private readonly educationRepository: EducationRepository,
+    private readonly careerRepository: CareerRepository,
     private readonly dataSource: DataSource,
   ) {}
   /**
@@ -47,6 +49,17 @@ export class ResumeService {
             queryRunner.manager,
           );
         resume.educationList = educationList;
+      }
+
+      // 경력 추가
+      if (input.careerList) {
+        const careerList = await this.careerRepository.createCareerList(
+          input.careerList.map((elem) => {
+            return { resumeId: resume.id, ...elem };
+          }),
+          queryRunner.manager,
+        );
+        resume.careerList = careerList;
       }
 
       return resume;
