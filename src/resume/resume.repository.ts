@@ -28,4 +28,14 @@ export class ResumeRepository extends Repository<Resume> {
 
     return resume;
   }
+
+  /**
+   * 이력서 목록 조회
+   */
+  async readResumeList(input: { id: string; relations?: Array<string> }) {
+    return await this.find({
+      where: { id: input.id },
+      ...(input.relations && { relations: input.relations }),
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ResumeService } from './resume.service';
 import { Resume } from './entities/resume.entity';
 import { input } from 'src/common/consts';
@@ -10,6 +10,7 @@ import {
 } from 'src/auth/auth.decorator';
 import { User } from 'src/user/user.entity';
 import { UpdateResumeInputDto } from './dtos/update-resume.dto';
+import { ReadResumeInputDto } from './dtos/read-resume.dto';
 
 @Resolver()
 export class ResumeResolver {
@@ -21,6 +22,11 @@ export class ResumeResolver {
     @AuthUser() user: User,
   ): Promise<Resume> {
     return await this.resumeService.createResume(user, input);
+  }
+
+  @Query(() => Resume, { description: '이력서 조회' })
+  async readResume(@Args(input) input: ReadResumeInputDto): Promise<Resume> {
+    return await this.resumeService.readResume(input);
   }
 
   // TODO 이력서 수정 작업중

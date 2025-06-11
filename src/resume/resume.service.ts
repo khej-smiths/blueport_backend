@@ -13,6 +13,7 @@ import {
   UpdateEducationInputDto,
   UpdateResumeInputDto,
 } from './dtos/update-resume.dto';
+import { ReadResumeInputDto } from './dtos/read-resume.dto';
 
 @Injectable()
 @Wrapper()
@@ -80,6 +81,32 @@ export class ResumeService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async readResume(input: ReadResumeInputDto): Promise<Resume> {
+    const ERR_NO_DATA = 'ERR_NO_DATA';
+    const ERR_MULTIPLE_DATA = 'ERR_MULTIPLE_DATA';
+
+    const resumeList = await this.resumeRepository.readResumeList({
+      id: input.id,
+      relations: ['educationList', 'careerList'],
+    });
+
+    if (resumeList.length === 0) {
+      throw new CustomGraphQLError('게시글 조회에 실패했습니다.', {
+        extensions: {
+          code: ERR_NO_DATA,
+        },
+      });
+    } else if (resumeList.length > 1) {
+      throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
+        extensions: {
+          code: ERR_MULTIPLE_DATA,
+        },
+      });
+    }
+
+    return resumeList[0];
   }
 
   /**

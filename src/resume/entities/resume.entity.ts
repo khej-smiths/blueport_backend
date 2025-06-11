@@ -24,9 +24,9 @@ abstract class IResume extends CommonEntity {
   @Field(() => String, { description: '이력서 주인의 id' })
   ownerId: string;
 
+  // 이력서 주인 전체 정보
   @OneToOne(() => User, (user) => user.resume)
   @JoinColumn({ name: 'owner_id' })
-  @Field(() => User, { description: '이력서 주인 전체 정보' })
   owner: Relation<User>;
 
   @OneToMany(() => Education, (edu) => edu.resume, { nullable: true })
@@ -44,3 +44,6 @@ abstract class IResume extends CommonEntity {
 @ObjectType()
 @Entity('resume')
 export class Resume extends IResume {}
+
+@InputType()
+export class ResumeInputType extends IResume {}
