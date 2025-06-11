@@ -3,7 +3,7 @@ import { Resume } from './entities/resume.entity';
 import { Wrapper } from 'src/logger/log.decorator';
 import { CreateResumeInputDto } from './dtos/create-resume.dto';
 import { LoggerStorage } from 'src/logger/logger-storage';
-import { ResumeRepository } from './resume.repository';
+import { ResumeRepository } from './repositories/resume.repository';
 import { EducationRepository } from './repositories/education.repository';
 import { DataSource } from 'typeorm';
 import { User } from 'src/user/user.entity';
