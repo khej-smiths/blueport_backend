@@ -1,4 +1,4 @@
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, DeleteResult, EntityManager, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Education } from '../entities/education.entity';
 import { CreateEducationInputDto } from '../dtos/create-resume.dto';
@@ -29,5 +29,21 @@ export class EducationRepository extends Repository<Education> {
     }
 
     return educationList;
+  }
+
+  async updateEducationList() {}
+
+  async deleteEducationList(
+    idList: Array<string>,
+    transactionEntityManager?: EntityManager,
+  ): Promise<DeleteResult> {
+    let result: DeleteResult;
+    if (transactionEntityManager) {
+      result = await transactionEntityManager.delete(Education, idList);
+    } else {
+      result = await this.delete(idList);
+    }
+
+    return result;
   }
 }

@@ -3,8 +3,13 @@ import { ResumeService } from './resume.service';
 import { Resume } from './entities/resume.entity';
 import { input } from 'src/common/consts';
 import { CreateResumeInputDto } from './dtos/create-resume.dto';
-import { AccessRole, AuthUser } from 'src/auth/auth.decorator';
+import {
+  AccessRole,
+  AuthUser,
+  RequiredRelationList,
+} from 'src/auth/auth.decorator';
 import { User } from 'src/user/user.entity';
+import { UpdateResumeInputDto } from './dtos/update-resume.dto';
 
 @Resolver()
 export class ResumeResolver {
@@ -17,5 +22,15 @@ export class ResumeResolver {
   ): Promise<Resume> {
     return await this.resumeService.createResume(user, input);
   }
-  // TODO 이력서 수정
+
+  // TODO 이력서 수정 작업중
+  @AccessRole('USER')
+  @RequiredRelationList(['resume', 'resume.educationList', 'resume.careerList'])
+  @Mutation(() => Resume, { description: '이력서 수정' })
+  async updateResume(
+    @Args(input) input: UpdateResumeInputDto,
+    @AuthUser() user: User,
+  ): Promise<Resume> {
+    return await this.resumeService.updateResume(user, input);
+  }
 }
