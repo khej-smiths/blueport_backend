@@ -16,7 +16,9 @@ export const AccessRole = (role?: AccessRoleType) =>
   SetMetadata('AccessRole', role || 'USER');
 
 // API별 필요한 정보(유저와 관계가 있는)
-export type RequiredRelationsList = Array<'blog'>;
+export type RequiredRelationsList = Array<
+  'blog' | 'resume' | 'resume.educationList' | 'resume.careerList'
+>;
 
 export const RequiredRelationList = (relationsList?: RequiredRelationsList) =>
   SetMetadata('RequiredRelationList', relationsList);
