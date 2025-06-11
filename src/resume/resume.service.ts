@@ -93,13 +93,13 @@ export class ResumeService {
     });
 
     if (resumeList.length === 0) {
-      throw new CustomGraphQLError('게시글 조회에 실패했습니다.', {
+      throw new CustomGraphQLError('이력서 조회에 실패했습니다.', {
         extensions: {
           code: ERR_NO_DATA,
         },
       });
     } else if (resumeList.length > 1) {
-      throw new CustomGraphQLError('선택된 게시글이 여러개입니다.', {
+      throw new CustomGraphQLError('선택된 이력서가 여러개입니다.', {
         extensions: {
           code: ERR_MULTIPLE_DATA,
         },
