@@ -36,13 +36,11 @@ abstract class IResume extends CommonEntity {
   @OneToMany(() => Career, (career) => career.resume, { nullable: true })
   @Field(() => [Career], { nullable: true, description: '경력' })
   careerList?: Array<Career>;
+
+  // TODO 프로젝트
+  // TODO 포트폴리오
 }
 
 @ObjectType()
 @Entity('resume')
-export class Resume extends IResume {
-  // 학력
-  // 경력
-  // 프로젝트
-  // 포트폴리오
-}
+export class Resume extends IResume {}
