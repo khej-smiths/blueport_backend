@@ -1,7 +1,6 @@
-import { DataSource, Repository } from 'typeorm';
-import { Resume } from './resume.entity';
+import { DataSource, EntityManager, Repository } from 'typeorm';
+import { Resume } from './entities/resume.entity';
 import { Injectable } from '@nestjs/common';
-import { CreateResumeInputDto } from './dtos/create-resume.dto';
 
 @Injectable()
 export class ResumeRepository extends Repository<Resume> {
@@ -9,10 +8,24 @@ export class ResumeRepository extends Repository<Resume> {
     super(Resume, dataSource.createEntityManager());
   }
 
-  async createResume(input: CreateResumeInputDto): Promise<Resume> {
-    const creation = await this.create(input);
+  /**
+   * 이력서 생성
+   */
+  async createResume(
+    input: { ownerId: string },
+    transactionEntityManager?: EntityManager, // transaction이 필요한 경우
+  ): Promise<Resume> {
+    let creation: Resume;
+    let resume: Resume;
 
-    const resume = await this.save(creation);
+    if (transactionEntityManager) {
+      creation = transactionEntityManager.create(Resume, input);
+      resume = await transactionEntityManager.save(Resume, creation);
+    } else {
+      creation = this.create(input);
+      resume = await this.save(creation);
+    }
+
     return resume;
   }
 }
