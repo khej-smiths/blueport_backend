@@ -18,6 +18,9 @@ export class ResumeService {
     private readonly educationRepository: EducationRepository,
     private readonly dataSource: DataSource,
   ) {}
+  /**
+   * 이력서 생성
+   */
   async createResume(user: User, input: CreateResumeInputDto): Promise<Resume> {
     // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_ALREADY_RESUME = 'ERR_ALREADY_RESUME'; // 이미 생성된 이력서가 있는 경우
@@ -51,7 +54,7 @@ export class ResumeService {
       await queryRunner.rollbackTransaction();
 
       if (error.code === 'ER_DUP_ENTRY') {
-        error = new CustomGraphQLError('이미 작성된 이력서가 있씁니다.', {
+        error = new CustomGraphQLError('이미 작성된 이력서가 있습니다.', {
           extensions: { code: ERR_ALREADY_RESUME },
         });
       }
