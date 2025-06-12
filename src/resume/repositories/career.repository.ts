@@ -1,7 +1,8 @@
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, DeleteResult, EntityManager, Repository } from 'typeorm';
 import { Career } from '../entities/career.entity';
 import { CreateCareerInputDto } from '../dtos/create-resume.dto';
 import { Injectable } from '@nestjs/common';
+import { UpdateCareerInputDto } from '../dtos/update-resume.dto';
 
 @Injectable()
 export class CareerRepository extends Repository<Career> {
@@ -29,5 +30,32 @@ export class CareerRepository extends Repository<Career> {
     }
 
     return careerList;
+  }
+
+  async updateCareerList(
+    input: Array<UpdateCareerInputDto>,
+    transactionEntityManager?: EntityManager,
+  ): Promise<void> {
+    let updateResult: Array<Career>;
+    if (transactionEntityManager) {
+      // 트랜잭션
+      updateResult = await transactionEntityManager.save(Career, input);
+    } else {
+      updateResult = await this.save(input);
+    }
+  }
+
+  async deleteCareerList(
+    idList: Array<string>,
+    transactionEntityManager?: EntityManager,
+  ): Promise<DeleteResult> {
+    let result: DeleteResult;
+    if (transactionEntityManager) {
+      result = await transactionEntityManager.delete(Career, idList);
+    } else {
+      result = await this.delete(idList);
+    }
+
+    return result;
   }
 }
