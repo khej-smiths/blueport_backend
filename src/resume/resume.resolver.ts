@@ -29,7 +29,6 @@ export class ResumeResolver {
     return await this.resumeService.readResume(input);
   }
 
-  // TODO 이력서 수정 작업중
   @AccessRole('USER')
   @RequiredRelationList(['resume', 'resume.educationList', 'resume.careerList'])
   @Mutation(() => Resume, { description: '이력서 수정' })
