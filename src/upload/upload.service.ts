@@ -6,6 +6,10 @@ import {
   UPLOAD_TYPE_LIST_TOKEN,
   UPLOAD_VALID_FILE_EXTENSION_OBJ_TOKEN,
 } from './consts';
+import { HttpService } from '@nestjs/axios';
+import FormData from 'form-data';
+import { ConfigService } from '@nestjs/config';
+
 @Injectable()
 export class UploadService {
   constructor(
@@ -19,6 +23,8 @@ export class UploadService {
       UPLOAD_TYPE,
       Array<string>
     >,
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -86,7 +92,29 @@ export class UploadService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     // TODO 파일 업로드 후 url 리턴
+
+    const form = new FormData();
+
+    form.append('file', file.buffer, file.originalname);
+
+    try {
+      // TODO req 날리면 계속 에러가 날라와서 토큰 재확인 필요함
+      const res = await this.httpService.axiosRef.post(
+        `https://api.cloudflare.com/client/v4/accounts/${this.configService.get('CLOUDFLARE_ACCOUNT_ID')}/images/v1`,
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${this.configService.get('CLOUDFLARE_API_TOKEN')}`,
+            ...form.getHeaders(),
+          },
+        },
+      );
+      console.log(3);
+    } catch (error) {
+      throw error;
+    }
 
     return 'url';
   }
