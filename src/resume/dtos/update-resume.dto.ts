@@ -7,6 +7,7 @@ import {
 } from '@nestjs/graphql';
 import { EducationInputType } from '../entities/education.entity';
 import { CareerInputType } from '../entities/career.entity';
+import { ProjectInputType } from '../entities/project.entity';
 
 @InputType()
 export class UpdateEducationInputDto extends IntersectionType(
@@ -36,6 +37,21 @@ export class UpdateCareerInputDto extends IntersectionType(
   ]),
   PartialType(PickType(CareerInputType, ['id'])),
 ) {}
+
+@InputType()
+export class UpdateProjectInputDto extends IntersectionType(
+  PickType(ProjectInputType, [
+    'order',
+    'name',
+    'personnel',
+    'skillList',
+    'description',
+    'startAt',
+    'endAt',
+  ]),
+  PartialType(PickType(ProjectInputType, ['id'])),
+) {}
+
 @InputType()
 export class UpdateResumeInputDto {
   @Field(() => [UpdateEducationInputDto], {
@@ -49,4 +65,10 @@ export class UpdateResumeInputDto {
     description: '경력',
   })
   careerList?: Array<UpdateCareerInputDto>;
+
+  @Field(() => [UpdateProjectInputDto], {
+    nullable: true,
+    description: '프로젝트',
+  })
+  projectList?: Array<UpdateProjectInputDto>;
 }
