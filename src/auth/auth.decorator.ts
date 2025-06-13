@@ -22,6 +22,7 @@ export type RequiredRelationsList = Array<
   | 'resume.educationList'
   | 'resume.careerList'
   | 'resume.projectList'
+  | 'resume.portfolioList'
 >;
 
 export const RequiredRelationList = (relationsList?: RequiredRelationsList) =>

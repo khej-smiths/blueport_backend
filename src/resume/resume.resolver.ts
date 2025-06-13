@@ -35,6 +35,7 @@ export class ResumeResolver {
     'resume.educationList',
     'resume.careerList',
     'resume.projectList',
+    'resume.portfolioList',
   ])
   @Mutation(() => Resume, { description: '이력서 수정' })
   async updateResume(
