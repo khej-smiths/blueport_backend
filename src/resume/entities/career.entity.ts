@@ -7,7 +7,7 @@ import { IsOptional, Matches } from 'class-validator';
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
 abstract class ICareer extends CommonEntity {
-  @Column({ type: 'int', unsigned: true, comment: '순서' })
+  @Column({ type: 'int', unsigned: true, comment: '정렬 순서' })
   @Field(() => Int, { description: '정렬 순서' })
   order: number;
 
