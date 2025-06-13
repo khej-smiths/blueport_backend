@@ -15,6 +15,7 @@ import {
   UpdateResumeInputDto,
 } from './dtos/update-resume.dto';
 import { ReadResumeInputDto } from './dtos/read-resume.dto';
+import { ProjectRepository } from './repositories/project.repository';
 
 @Injectable()
 @Wrapper()
@@ -24,6 +25,7 @@ export class ResumeService {
     private readonly resumeRepository: ResumeRepository,
     private readonly educationRepository: EducationRepository,
     private readonly careerRepository: CareerRepository,
+    private readonly projectRepository: ProjectRepository,
     private readonly dataSource: DataSource,
   ) {}
   /**
@@ -68,6 +70,17 @@ export class ResumeService {
         resume.careerList = careerList;
       }
 
+      // 프로젝트 추가
+      if (input.projectList) {
+        const projectList = await this.projectRepository.createProjectList(
+          input.projectList.map((elem) => {
+            return { resumeId: resume.id, ...elem };
+          }),
+          queryRunner.manager,
+        );
+        resume.projectList = projectList;
+      }
+
       return resume;
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -95,7 +108,7 @@ export class ResumeService {
     // 이력서 조회
     const resumeList = await this.resumeRepository.readResumeList({
       id: input.id,
-      relations: ['educationList', 'careerList'],
+      relations: ['educationList', 'careerList', 'projectList'],
     });
 
     // 이력서 조회 관련 에러 처리
@@ -138,7 +151,7 @@ export class ResumeService {
     try {
       // TODO 학력 외에도 적용할 수 있도록 for문으로 수정중
       const meta: Record<
-        'educationList' | 'careerList',
+        'educationList' | 'careerList' | 'projectList',
         {
           deletedIdList: Array<string>; // 삭제될 id 목록
           addedList: Array<UpdateEducationInputDto | UpdateCareerInputDto>; // 추가될 목록
@@ -166,6 +179,15 @@ export class ResumeService {
           deleteFn: this.careerRepository.deleteCareerList,
           updateFn: this.careerRepository.updateCareerList,
           createFn: this.careerRepository.createCareerList,
+        },
+        projectList: {
+          deletedIdList: [],
+          addedList: [],
+          updatedList: [],
+          updatedIdList: [],
+          deleteFn: this.projectRepository.deleteProjectList,
+          updateFn: this.projectRepository.updateProjectList,
+          createFn: this.projectRepository.createProjectList,
         },
       };
 
