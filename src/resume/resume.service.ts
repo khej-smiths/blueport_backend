@@ -12,10 +12,13 @@ import { CareerRepository } from './repositories/career.repository';
 import {
   UpdateCareerInputDto,
   UpdateEducationInputDto,
+  UpdatePortfolioInputDto,
+  UpdateProjectInputDto,
   UpdateResumeInputDto,
 } from './dtos/update-resume.dto';
 import { ReadResumeInputDto } from './dtos/read-resume.dto';
 import { ProjectRepository } from './repositories/project.repository';
+import { PortfolioRepository } from './repositories/portfolio.repository';
 
 @Injectable()
 @Wrapper()
@@ -26,6 +29,7 @@ export class ResumeService {
     private readonly educationRepository: EducationRepository,
     private readonly careerRepository: CareerRepository,
     private readonly projectRepository: ProjectRepository,
+    private readonly portfolioRepository: PortfolioRepository,
     private readonly dataSource: DataSource,
   ) {}
   /**
@@ -40,9 +44,11 @@ export class ResumeService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    let resume: Resume;
+
     try {
       // Resume 생성
-      const resume = await this.resumeRepository.createResume(
+      resume = await this.resumeRepository.createResume(
         { ownerId: user.id },
         queryRunner.manager,
       );
@@ -81,7 +87,17 @@ export class ResumeService {
         resume.projectList = projectList;
       }
 
-      return resume;
+      // 포트폴리오 추가
+      if (input.portfolioList) {
+        const portfolioList =
+          await this.portfolioRepository.createPortfolioList(
+            input.portfolioList.map((elem) => {
+              return { resumeId: resume.id, ...elem };
+            }),
+            queryRunner.manager,
+          );
+        resume.portfolioList = portfolioList;
+      }
     } catch (error) {
       await queryRunner.rollbackTransaction();
 
@@ -95,6 +111,8 @@ export class ResumeService {
     } finally {
       await queryRunner.release();
     }
+
+    return resume;
   }
 
   /**
@@ -108,7 +126,12 @@ export class ResumeService {
     // 이력서 조회
     const resumeList = await this.resumeRepository.readResumeList({
       id: input.id,
-      relations: ['educationList', 'careerList', 'projectList'],
+      relations: [
+        'educationList',
+        'careerList',
+        'projectList',
+        'portfolioList',
+      ],
     });
 
     // 이력서 조회 관련 에러 처리
@@ -151,11 +174,21 @@ export class ResumeService {
     try {
       // TODO 학력 외에도 적용할 수 있도록 for문으로 수정중
       const meta: Record<
-        'educationList' | 'careerList' | 'projectList',
+        'educationList' | 'careerList' | 'projectList' | 'portfolioList',
         {
           deletedIdList: Array<string>; // 삭제될 id 목록
-          addedList: Array<UpdateEducationInputDto | UpdateCareerInputDto>; // 추가될 목록
-          updatedList: Array<UpdateEducationInputDto | UpdateCareerInputDto>; // 수정될 목록
+          addedList: Array<
+            | UpdateEducationInputDto
+            | UpdateCareerInputDto
+            | UpdateProjectInputDto
+            | UpdatePortfolioInputDto
+          >; // 추가될 목록
+          updatedList: Array<
+            | UpdateEducationInputDto
+            | UpdateCareerInputDto
+            | UpdateProjectInputDto
+            | UpdatePortfolioInputDto
+          >; // 수정될 목록
           updatedIdList: Array<string>; // 수정될 id 목록
           deleteFn: Function;
           updateFn: Function;
@@ -188,6 +221,15 @@ export class ResumeService {
           deleteFn: this.projectRepository.deleteProjectList,
           updateFn: this.projectRepository.updateProjectList,
           createFn: this.projectRepository.createProjectList,
+        },
+        portfolioList: {
+          deletedIdList: [],
+          addedList: [],
+          updatedList: [],
+          updatedIdList: [],
+          deleteFn: this.portfolioRepository.deletePortfolioList,
+          updateFn: this.portfolioRepository.updatePortfolioList,
+          createFn: this.portfolioRepository.createPortfolioList,
         },
       };
 
