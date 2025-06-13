@@ -7,6 +7,7 @@ import {
   UPLOAD_TYPE_LIST_TOKEN,
   UPLOAD_VALID_FILE_EXTENSION_OBJ_TOKEN,
 } from './consts';
+import { HttpModule } from '@nestjs/axios';
 
 // 파일을 업로드하는 경우
 
@@ -36,5 +37,6 @@ import {
     },
   ],
   controllers: [UploadController],
+  imports: [HttpModule],
 })
 export class UploadModule {}

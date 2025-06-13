@@ -51,6 +51,9 @@ import { Career } from './resume/entities/career.entity';
         JWT_EXPIRES_IN: Joi.string().required(), // 만료시간
         JWT_ISSUER: Joi.string().required(), // 토큰 발급자
         JWT_SUBJECT: Joi.string().required(), // 토큰 발급자
+        // cloudflare
+        CLOUDFLARE_ACCOUNT_ID: Joi.string().required(), // cloudflare 계정
+        CLOUDFLARE_API_TOKEN: Joi.string().required(), // cloudflare api 토큰
       }),
     }),
     // ===== 2. GraphQL 설정 모듈 ===== //
