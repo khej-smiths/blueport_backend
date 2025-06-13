@@ -16,6 +16,7 @@ export class UpdateEducationInputDto extends IntersectionType(
     'major',
     'grade',
     'description',
+    'graduationStatus',
     'startAt',
     'endAt',
   ]),

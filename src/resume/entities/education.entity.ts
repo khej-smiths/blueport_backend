@@ -1,8 +1,39 @@
 import { Resume } from './resume.entity';
-import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  Float,
+  InputType,
+  Int,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { IsOptional, Matches } from 'class-validator';
 import { CommonEntity } from 'src/common/common.entity';
 import { Column, Entity, JoinColumn, ManyToOne, Relation } from 'typeorm';
+
+/**
+ * 졸업 조건
+ */
+export enum GRADUATION_STATUS {
+  GRADUATED = 'GRADUATED',
+  ENROLLED = 'ENROLLED',
+  EXPECTED_GRADUATION = 'EXPECTED_GRADUATION',
+}
+registerEnumType(GRADUATION_STATUS, {
+  name: 'GRADUATION_STATUS',
+  description: '졸업 조건',
+  valuesMap: {
+    GRADUATED: {
+      description: '졸업',
+    },
+    ENROLLED: {
+      description: '재학중',
+    },
+    EXPECTED_GRADUATION: {
+      description: '졸업 예정',
+    },
+  },
+});
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -36,6 +67,15 @@ abstract class IEducation extends CommonEntity {
   @Column({
     type: 'varchar',
     length: 255,
+    comment: '졸업 상태',
+    nullable: true,
+  })
+  @Field(() => GRADUATION_STATUS, { description: '졸업 상태', nullable: true })
+  graduationStatus?: GRADUATION_STATUS;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
     comment: '시작날짜. 날짜의 형태: yyyy.MM',
   })
   @Field(() => String, { description: '시작날짜. 날짜의 형태: yyyy.MM' })
@@ -60,8 +100,6 @@ abstract class IEducation extends CommonEntity {
     message: ' must be in the format yyyy.MM',
   })
   endAt?: string;
-
-  // TODO 졸업상태 추가(졸업, 재학중, 졸업예정 > 디스코드 참고)
 
   // ============================ //
   // ===== 관계 표시용 필드 ===== //

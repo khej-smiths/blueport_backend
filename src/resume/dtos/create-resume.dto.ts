@@ -9,6 +9,7 @@ export class CreateEducationInputDto extends PickType(EducationInputType, [
   'major',
   'grade',
   'description',
+  'graduationStatus',
   'startAt',
   'endAt',
 ]) {}
