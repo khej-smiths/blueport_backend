@@ -11,6 +11,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Career } from './career.entity';
+import { Project } from './project.entity';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -37,7 +38,9 @@ abstract class IResume extends CommonEntity {
   @Field(() => [Career], { nullable: true, description: '경력' })
   careerList?: Array<Career>;
 
-  // TODO 프로젝트
+  @OneToMany(() => Project, (project) => project.resume, { nullable: true })
+  @Field(() => [Project], { nullable: true, description: '프로젝트' })
+  projectList?: Array<Project>;
   // TODO 포트폴리오
 }
 
