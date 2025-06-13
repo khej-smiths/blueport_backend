@@ -17,7 +17,11 @@ export const AccessRole = (role?: AccessRoleType) =>
 
 // API별 필요한 정보(유저와 관계가 있는)
 export type RequiredRelationsList = Array<
-  'blog' | 'resume' | 'resume.educationList' | 'resume.careerList'
+  | 'blog'
+  | 'resume'
+  | 'resume.educationList'
+  | 'resume.careerList'
+  | 'resume.projectList'
 >;
 
 export const RequiredRelationList = (relationsList?: RequiredRelationsList) =>
