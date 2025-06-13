@@ -172,7 +172,6 @@ export class ResumeService {
     await queryRunner.startTransaction();
 
     try {
-      // TODO 학력 외에도 적용할 수 있도록 for문으로 수정중
       const meta: Record<
         'educationList' | 'careerList' | 'projectList' | 'portfolioList',
         {

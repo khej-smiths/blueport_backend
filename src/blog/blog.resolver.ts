@@ -37,7 +37,6 @@ export class BlogResolver {
     return await this.blogService.updateBlog(input, user);
   }
 
-  // TODO 도메인으로도 조회할 수 있도록 옵션 추가 필요(디스코드)
   @Query(() => Blog, { description: '블로그 조회' })
   async readBlog(@Args(input) input: ReadBlogInputDto): Promise<Blog> {
     return await this.blogService.readBlog(input);
