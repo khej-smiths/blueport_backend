@@ -39,6 +39,17 @@ abstract class IProject extends CommonEntity {
   @Column({
     type: 'varchar',
     length: 255,
+    comment: '시작날짜. 날짜의 형태: yyyy.MM',
+  })
+  @Field(() => String, { description: '시작날짜. 날짜의 형태: yyyy.MM' })
+  @Matches(/^\d{4}\.(0[1-9]|1[0-2])$/, {
+    message: ' must be in the format yyyy.MM',
+  })
+  startAt: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
     comment: '끝난 날짜. 날짜의 형태: yyyy.MM',
     nullable: true,
   })
@@ -66,3 +77,6 @@ abstract class IProject extends CommonEntity {
 @ObjectType()
 @Entity('project')
 export class Project extends IProject {}
+
+@InputType()
+export class ProjectInputType extends IProject {}
