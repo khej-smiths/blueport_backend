@@ -1,12 +1,12 @@
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { IsOptional, Matches } from 'class-validator';
 import { CommonEntity } from 'src/common/common.entity';
 import { Column, Entity, JoinColumn, ManyToOne, Relation } from 'typeorm';
 import { Resume } from './resume.entity';
-import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { IsOptional, Matches } from 'class-validator';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
-abstract class ICareer extends CommonEntity {
+abstract class IProject extends CommonEntity {
   @Column({ type: 'int', unsigned: true, comment: '정렬 순서' })
   @Field(() => Int, { description: '정렬 순서' })
   order: number;
@@ -14,37 +14,26 @@ abstract class ICareer extends CommonEntity {
   @Column({
     type: 'varchar',
     length: 255,
-    comment: '회사',
-    nullable: true,
+    comment: '프로젝트 명',
   })
-  @Field(() => String, { description: '회사', nullable: true })
-  company?: string;
+  @Field(() => String, { description: '프로젝트 명' })
+  name: string;
+
+  @Column({ type: 'int', unsigned: true, comment: '참여 인원', nullable: true })
+  @Field(() => Int, { description: '참여 인원', nullable: true })
+  personnel?: number;
+
+  @Column({ type: 'json', comment: '기술 스택', nullable: true })
+  @Field(() => [String], { description: '기술 스택', nullable: true })
+  skillList?: Array<string>;
 
   @Column({
     type: 'varchar',
     length: 255,
-    comment: '부서',
+    comment: '설명',
     nullable: true,
   })
-  @Field(() => String, { description: '부서', nullable: true })
-  department?: string;
-
-  @Column({
-    type: 'varchar',
-    length: 255,
-    comment: '직급',
-    nullable: true,
-  })
-  @Field(() => String, { description: '직급', nullable: true })
-  position?: string;
-
-  @Column({
-    type: 'varchar',
-    length: 255,
-    comment: '업무 내용',
-    nullable: true,
-  })
-  @Field(() => String, { description: '업무 내용', nullable: true })
+  @Field(() => String, { description: '설명', nullable: true })
   description?: string;
 
   @Column({
@@ -58,7 +47,6 @@ abstract class ICareer extends CommonEntity {
   })
   startAt: string;
 
-  // TODO 값이 있는 경우에는 startAt과 같거나 뒤에 있어야한다.
   @Column({
     type: 'varchar',
     length: 255,
@@ -87,8 +75,8 @@ abstract class ICareer extends CommonEntity {
 }
 
 @ObjectType()
-@Entity('career')
-export class Career extends ICareer {}
+@Entity('project')
+export class Project extends IProject {}
 
 @InputType()
-export class CareerInputType extends ICareer {}
+export class ProjectInputType extends IProject {}

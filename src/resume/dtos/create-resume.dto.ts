@@ -1,6 +1,8 @@
 import { Field, InputType, PickType } from '@nestjs/graphql';
 import { EducationInputType } from '../entities/education.entity';
 import { CareerInputType } from '../entities/career.entity';
+import { ProjectInputType } from '../entities/project.entity';
+import { PortfolioInputType } from '../entities/portfolio.entity';
 
 @InputType()
 export class CreateEducationInputDto extends PickType(EducationInputType, [
@@ -9,6 +11,7 @@ export class CreateEducationInputDto extends PickType(EducationInputType, [
   'major',
   'grade',
   'description',
+  'graduationStatus',
   'startAt',
   'endAt',
 ]) {}
@@ -23,6 +26,25 @@ export class CreateCareerInputDto extends PickType(CareerInputType, [
   'startAt',
   'endAt',
 ]) {}
+
+@InputType()
+export class CreateProjectInputDto extends PickType(ProjectInputType, [
+  'order',
+  'name',
+  'personnel',
+  'skillList',
+  'description',
+  'startAt',
+  'endAt',
+]) {}
+
+@InputType()
+export class CreatePortfolioInputDto extends PickType(PortfolioInputType, [
+  'order',
+  'type',
+  'url',
+]) {}
+
 @InputType()
 export class CreateResumeInputDto {
   @Field(() => [CreateEducationInputDto], {
@@ -36,4 +58,16 @@ export class CreateResumeInputDto {
     description: '경력',
   })
   careerList?: Array<CreateCareerInputDto>;
+
+  @Field(() => [CreateProjectInputDto], {
+    nullable: true,
+    description: '프로젝트',
+  })
+  projectList?: Array<CreateProjectInputDto>;
+
+  @Field(() => [CreatePortfolioInputDto], {
+    nullable: true,
+    description: '포트폴리오',
+  })
+  portfolioList?: Array<CreatePortfolioInputDto>;
 }

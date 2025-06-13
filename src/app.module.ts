@@ -24,6 +24,8 @@ import { ResumeModule } from './resume/resume.module';
 import { Resume } from './resume/entities/resume.entity';
 import { Education } from './resume/entities/education.entity';
 import { Career } from './resume/entities/career.entity';
+import { Project } from './resume/entities/project.entity';
+import { Portfolio } from './resume/entities/portfolio.entity';
 
 @Module({
   imports: [
@@ -138,7 +140,24 @@ import { Career } from './resume/entities/career.entity';
         username: configService.get('MYSQL_USERNAME'),
         password: configService.get('MYSQL_PASSWORD'),
         database: configService.get('MYSQL_DATABASE'),
-        entities: [User, Post, Blog, Education, Resume, Career],
+        entities: [
+          // 유저
+          User,
+          // 블로그
+          Blog,
+          // 게시글
+          Post,
+          // 이력서
+          Resume,
+          // 이력서 - 학력
+          Education,
+          // 이력서 - 경력
+          Career,
+          // 이력서 - 프로젝트
+          Project,
+          // 이력서 - 포트폴리오
+          Portfolio,
+        ],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
         logging: true,
