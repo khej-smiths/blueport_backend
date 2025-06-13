@@ -13,6 +13,7 @@ import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 type ReadBlogOption = {
   id?: string; // 블로그 아이디
   ownerId?: string; // 블로그 주인 아이디
+  domain?: string; // 블로그 도메인
   skip?: number;
   take?: number;
   order?: {
@@ -61,6 +62,7 @@ export class BlogRepository extends Repository<Blog> {
     const where: FindOptionsWhere<Blog> = {
       ...(option.id && { id: option.id }),
       ...(option.ownerId && { ownerId: option.ownerId }),
+      ...(option.domain && { domain: option.domain }),
     };
 
     const findOption: FindManyOptions<Blog> = {
