@@ -13,7 +13,19 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UploadService {
   constructor(
+    // 로거
     private readonly als: LoggerStorage,
+    // http 통신용
+    private readonly httpService: HttpService,
+    // 환경변수
+    private readonly configService: ConfigService,
+    /**
+     * Module에서 주입: 업로드하는 케이스와 제약조건
+     *
+     * UPLOAD_TYPE_LIST: 업로드가 필요한 경우
+     * UPLOAD_LIMIT_SIZE_OBJ: 각 경우별 파일 사이즈 크기
+     * UPLOAD_VALID_FILE_EXTENSION_OBJ: 각 경우별 허용되는 확장자
+     */
     @Inject(UPLOAD_TYPE_LIST_TOKEN)
     private readonly UPLOAD_TYPE_LIST: Array<UPLOAD_TYPE>,
     @Inject(UPLOAD_LIMIT_SIZE_OBJ_TOKEN)
@@ -23,8 +35,6 @@ export class UploadService {
       UPLOAD_TYPE,
       Array<string>
     >,
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
   ) {}
 
   /**
