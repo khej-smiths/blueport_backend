@@ -25,6 +25,7 @@ import { Resume } from './resume/entities/resume.entity';
 import { Education } from './resume/entities/education.entity';
 import { Career } from './resume/entities/career.entity';
 import { Project } from './resume/entities/project.entity';
+import { Portfolio } from './resume/entities/portfolio.entity';
 
 @Module({
   imports: [
@@ -154,6 +155,8 @@ import { Project } from './resume/entities/project.entity';
           Career,
           // 이력서 - 프로젝트
           Project,
+          // 이력서 - 포트폴리오
+          Portfolio,
         ],
         // TODO dev 배포이후에는 삭제해야함
         synchronize: true,
