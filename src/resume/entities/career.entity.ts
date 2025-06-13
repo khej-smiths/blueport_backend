@@ -38,7 +38,6 @@ abstract class ICareer extends CommonEntity {
   @Field(() => String, { description: '직급', nullable: true })
   position?: string;
 
-  // 업무내용
   @Column({
     type: 'varchar',
     length: 255,
