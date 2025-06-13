@@ -30,7 +30,12 @@ export class ResumeResolver {
   }
 
   @AccessRole('USER')
-  @RequiredRelationList(['resume', 'resume.educationList', 'resume.careerList'])
+  @RequiredRelationList([
+    'resume',
+    'resume.educationList',
+    'resume.careerList',
+    'resume.projectList',
+  ])
   @Mutation(() => Resume, { description: '이력서 수정' })
   async updateResume(
     @Args(input) input: UpdateResumeInputDto,
