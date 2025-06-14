@@ -50,6 +50,7 @@ export class UploadService {
     const ERR_OVER_FILE_SIZE = 'ERR_OVER_FILE_SIZE'; // 허용 가능한 파일 사이즈를 오버한 경우
     const ERR_NOT_VALID_TYPE = 'ERR_NOT_VALID_TYPE'; // 업로드 할 수 있는 타입이 아닌 경우
     const ERR_NOT_VALID_EXTENSION = 'ERR_NOT_VALID_EXTENSION'; // 업로드 할 수 있는 타입이 아닌 경우
+    const ERR_FAILED_UPLOAD = 'ERR_FAILED_UPLOAD'; // 업로드하다가 에러가 발생한 경우
 
     // 로거가져오기
     const logger = this.als.getStore()?.customLogger!;
@@ -103,14 +104,13 @@ export class UploadService {
       );
     }
 
-    // TODO 파일 업로드 후 url 리턴
-
     const form = new FormData();
 
     form.append('file', file.buffer, file.originalname);
 
+    let url: string;
+
     try {
-      // TODO req 날리면 계속 에러가 날라와서 토큰 재확인 필요함
       const res = await this.httpService.axiosRef.post(
         `https://api.cloudflare.com/client/v4/accounts/${this.configService.get('CLOUDFLARE_ACCOUNT_ID')}/images/v1`,
         form,
@@ -121,11 +121,35 @@ export class UploadService {
           },
         },
       );
-      console.log(3);
+
+      logger.customLog({
+        'res.data': res.data,
+      });
+
+      const urlList: Array<string> = res.data.result.variants;
+
+      url = urlList.filter((elem) => elem.includes('public'))[0];
+
+      logger.customLog({
+        url,
+      });
     } catch (error) {
-      throw error;
+      logger.customError(error, {
+        className: this.constructor.name,
+        methodName: this.uploadFile.name,
+      });
+
+      // CLOUDFLARE를 이용해 파일을 업로드하다가 에러가 발생한 경우
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `파일을 업로드하는 중 오류가 발생했습니다. ${error.code}`,
+          error: `INTERNAL_SERVER_ERROR - ${ERR_FAILED_UPLOAD} - [${requestId}]`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
-    return 'url';
+    return url;
   }
 }
