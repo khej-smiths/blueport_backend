@@ -126,7 +126,6 @@ export class UploadService {
         'res.data': res.data,
       });
 
-      // res.data;
       const urlList: Array<string> = res.data.result.variants;
 
       url = urlList.filter((elem) => elem.includes('public'))[0];
