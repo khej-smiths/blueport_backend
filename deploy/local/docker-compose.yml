@@ -1,0 +1,40 @@
+services:
+  db:
+    restart: unless-stopped # 수동으로 중지하지 않는 한 자동으로 재시작
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: ${MYSQL_TZ}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+    platform: linux/x86_64
+  app:
+    restart: unless-stopped
+    build:
+      context: ../..
+      dockerfile: deploy/local/Dockerfile
+    container_name: app
+    # image: deveunjilee/app:latest
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app/src
+    platform: linux/x86_64
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - '80:80' # 호스트의 80 포트를 컨테이너의 80 포트에 매핑 (HTTP) > caddy에서 Let's Encrypt 인증서 발급받을 때 필요, http > https로 리다이렉션 할 때도 필요
+      - '443:443' # 호스트의 443 포트를 컨테이너의 443 포트에 매핑 (HTTPS)
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile # 현재 디렉터리의 Caddyfile을 컨테이너 내부 설정 파일로 연결
+      - ./caddy_data:/data # SSL 인증서 등 Caddy 내부 데이터 저장 위치 (persistent volume)
+      - ./caddy_config:/config # Caddy의 내부 설정 저장 위치 (persistent volume)
