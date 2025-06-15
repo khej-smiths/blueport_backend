@@ -37,7 +37,7 @@ import { Portfolio } from './resume/entities/portfolio.entity';
       isGlobal: true, // 해당 모듈을 전역에서 접근할 수 있도록 isGlobal: true로 설정
       envFilePath: '.env.dev', // 환경변수 파일
       ...(process.env.NODE_ENV === 'LOCAL' && {
-        envFilePath: 'deploy/local/.env.local',
+        envFilePath: './deploy/local/.env',
       }),
       // 환경변수 셋팅 확인
       validationSchema: Joi.object({
@@ -59,6 +59,8 @@ import { Portfolio } from './resume/entities/portfolio.entity';
         // cloudflare
         CLOUDFLARE_ACCOUNT_ID: Joi.string().required(), // cloudflare 계정
         CLOUDFLARE_API_TOKEN: Joi.string().required(), // cloudflare api 토큰
+        // APP_PORT
+        APP_PORT: Joi.number().required(),
       }),
     }),
     // ===== 2. GraphQL 설정 모듈 ===== //
