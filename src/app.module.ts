@@ -36,10 +36,13 @@ import { Portfolio } from './resume/entities/portfolio.entity';
     ConfigModule.forRoot({
       isGlobal: true, // 해당 모듈을 전역에서 접근할 수 있도록 isGlobal: true로 설정
       envFilePath: '.env.dev', // 환경변수 파일
+      ...(process.env.NODE_ENV === 'LOCAL' && {
+        envFilePath: 'deploy/local/.env.local',
+      }),
       // 환경변수 셋팅 확인
       validationSchema: Joi.object({
         // 환경
-        NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+        NODE_ENV: Joi.string().valid('LOCAL', 'DEV', 'PROD').required(),
         // 로그 stacktrace 포함 여부
         INCLUDE_STACKTRACE: Joi.boolean().required(),
         // mysql
