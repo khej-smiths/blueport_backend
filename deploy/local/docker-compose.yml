@@ -1,18 +1,4 @@
 services:
-  db:
-    restart: unless-stopped # 수동으로 중지하지 않는 한 자동으로 재시작
-    image: mysql:8.0
-    container_name: mysql
-    ports:
-      - ${MYSQL_PORT}:${MYSQL_PORT}
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      TZ: ${MYSQL_TZ}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    volumes:
-      - ./db/mysql/data:/var/lib/mysql
-      - ./db/mysql/init:/docker-entrypoint-initdb.d
-    platform: linux/x86_64
   app:
     restart: unless-stopped
     build:
