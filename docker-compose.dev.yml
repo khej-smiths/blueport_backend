@@ -1,15 +1,12 @@
 services:
-  app:
+  dev-app:
     restart: unless-stopped
     build:
-      context: ../..
-      dockerfile: deploy/local/Dockerfile
+      context: .
+      dockerfile: ./Dockerfile.dev
     container_name: app
-    # image: deveunjilee/app:latest
     ports:
       - '${APP_PORT}:${APP_PORT}'
-    depends_on:
-      - db
     volumes:
       - ./src:/app/src
     platform: linux/x86_64
