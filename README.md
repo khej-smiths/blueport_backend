@@ -43,6 +43,11 @@ $ yarn run start:prod
 ```
 
 3. 주의사항: 이미지 빌드 할 때, 환경변수, 브랜치 등등을 잘 확인해야함
+4. 참고사항 1. 환경변수별 도커 컴포즈 띄우기
+
+```bash
+    docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d --build
+```
 
 ## 기존 컨테이너와 이미지 모두 깨끗하게 삭제하고 싶을 때
 
