@@ -48,3 +48,6 @@ db/
 caddy_config
 caddy_data
 Caddyfile
+
+# db 셋팅
+init.sql
