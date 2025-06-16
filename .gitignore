@@ -42,7 +42,7 @@ schema.gql
 db/
 
 # 환경변수
-.env
+.env.*
 
 # caddy
 caddy_config
