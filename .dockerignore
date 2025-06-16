@@ -1,5 +1,14 @@
 # 불필요한 파일이 도커 이미지에 빌드 되는 것을 방지
 .git
-Dockerfile
+Dockerfile.*
 node_modules
 dist
+.vscode
+test
+init.sql
+.eslintrc.js
+.gitignore
+.prettierrc
+Caddyfile
+*.docker-compose.*
+README.md
