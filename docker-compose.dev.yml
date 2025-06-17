@@ -1,6 +1,6 @@
 services:
   dev-app:
-    image: ${DOCKER_IMAGE_NAME}/dev-app:latest
+    image: ${DOCKER_USERNAME}/dev-app:latest
     restart: unless-stopped
     build:
       context: .
