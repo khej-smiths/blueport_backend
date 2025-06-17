@@ -13,20 +13,20 @@ services:
     platform: linux/x86_64
     environment:
       # 환경변수 0. docker-compose
-      - APP_PORT=${secrets.APP_PORT}
-      - DOCKER_USERNAME=${secrets.DOCKER_USERNAME}
+      - APP_PORT=${APP_PORT}
+      - DOCKER_USERNAME=${DOCKER_USERNAME}
       # 앱에서 쓰는 환경변수 1. DB
       - INCLUDE_STACKTRACE=true
-      - MYSQL_HOST=${secrets.MYSQL_HOST}
-      - MYSQL_PORT=${secrets.MYSQL_PORT}
-      - MYSQL_USERNAME=${secrets.MYSQL_USERNAME}
-      - MYSQL_PASSWORD=${secrets.MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${secrets.MYSQL_DATABASE}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       # 앱에서 쓰는 환경변수 2. jwt
-      - JWT_SECRET=${secrets.JWT_SECRET}
-      - JWT_EXPIRES_IN=${secrets.JWT_EXPIRES_IN}
-      - JWT_ISSUER=${secrets.JWT_ISSUER}
-      - JWT_SUBJECT=${secrets.JWT_SUBJECT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_SUBJECT=${JWT_SUBJECT}
       # 앱에서 쓰는 환경변수 3. cloudflare
-      - CLOUDFLARE_ACCOUNT_ID=${secrets.CLOUDFLARE_ACCOUNT_ID}
-      - CLOUDFLARE_API_TOKEN=${secrets.CLOUDFLARE_API_TOKEN}
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
