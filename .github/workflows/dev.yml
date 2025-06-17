@@ -25,6 +25,9 @@ jobs:
           docker compose -f docker-compose.dev.yml build
           docker tag dev-app:latest ${{ secrets.DOCKER_USERNAME}}/dev-app:latest
           docker push ${{ secrets.DOCKER_USERNAME}}/dev-app:latest
+        env:
+          DOCKER_IMAGE_NAME: ${{secrets.DOCKER_IMAGE_NAME}}
+          APP_PORT: ${{secrets.APP_PORT}}
 
       - name: 원격 서버에 배포
         uses: appleboy/ssh-action@v1.0.3 # 원격 서버에 SSH로 접속하여 명령 실행
