@@ -1,10 +1,11 @@
 services:
-  dev-app:
+  prod-app:
+    image: ${DOCKER_IMAGE_NAME}/prod-app:latest
     restart: unless-stopped
     build:
       context: .
       dockerfile: ./Dockerfile.prod
-    container_name: app
+    container_name: prod-app
     ports:
       - '${APP_PORT}:${APP_PORT}'
     volumes:

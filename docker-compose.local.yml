@@ -5,7 +5,6 @@ services:
       context: .
       dockerfile: ./Dockerfile.local
     container_name: app
-    # image: deveunjilee/app:latest
     ports:
       - '${APP_PORT}:${APP_PORT}'
     volumes:
