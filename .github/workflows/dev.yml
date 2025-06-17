@@ -30,19 +30,19 @@ jobs:
           DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
           # 앱에서 쓰는 환경변수 1. DB
           INCLUDE_STACKTRACE: true
-          MYSQL_HOST: ${{secrets.MYSQL_HOST}}
-          MYSQL_PORT: ${{secrets.MYSQL_PORT}}
-          MYSQL_USERNAME: ${{secrets.MYSQL_USERNAME}}
-          MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
-          MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+          MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           # 앱에서 쓰는 환경변수 2. jwt
-          JWT_SECRET: ${{secrets.JWT_SECRET}}
-          JWT_EXPIRES_IN: ${{secrets.JWT_EXPIRES_IN}}
-          JWT_ISSUER: ${{secrets.JWT_ISSUER}}
-          JWT_SUBJECT: ${{secrets.JWT_SUBJECT}}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_SUBJECT: ${{ secrets.JWT_SUBJECT }}
           # 앱에서 쓰는 환경변수 3. cloudflare
-          CLOUDFLARE_ACCOUNT_ID: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
-          CLOUDFLARE_API_TOKEN: ${{secrets.CLOUDFLARE_API_TOKEN}}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: 원격 서버에 배포
         uses: appleboy/ssh-action@v1.0.3 # 원격 서버에 SSH로 접속하여 명령 실행
@@ -60,5 +60,5 @@ jobs:
             docker compose -f docker-compose.dev.yml up -d  # 새 이미지 기반으로 컨테이너 실행
         env:
           # docker-compose.dev.yml에서 쓰는 env
-          APP_PORT: ${{secrets.APP_PORT}}
-          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          APP_PORT: ${{ secrets.APP_PORT }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
