@@ -51,11 +51,10 @@ jobs:
           username: ${{ secrets.REMOTE_USER }} # SSH 접속 유저명
           key: ${{ secrets.SSH_PRIVATE_KEY }} # 개인 키 (서버에 공개 키 등록 필요)
           script: |
-
             cd /home/ubuntu/blog-backend  # Git 저장소가 위치한 경로
             git checkout dev     # 혹시 다른 브랜치일 수도 있으니 dev로 변경
             git pull smith dev  # 최신 코드 가져오기
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/dev-app:latest  # 최신 도커 이미지 가져오기
             docker compose down  # 기존 컨테이너 중지 및 정리
-            docker compose up -d  # 새 이미지 기반으로 컨테이너 실행
+            docker compose -f docker-compose.dev.yml up -d  # 새 이미지 기반으로 컨테이너 실행
