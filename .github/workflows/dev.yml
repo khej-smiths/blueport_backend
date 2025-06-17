@@ -27,6 +27,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME}}/dev-app:latest
         env:
           APP_PORT: ${{secrets.APP_PORT}}
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
 
       - name: 원격 서버에 배포
         uses: appleboy/ssh-action@v1.0.3 # 원격 서버에 SSH로 접속하여 명령 실행
