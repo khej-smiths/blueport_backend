@@ -1,0 +1,13 @@
+services:
+  dev-app:
+    image: ${DOCKER_IMAGE_NAME}/dev-app:latest
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    container_name: dev-app
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - ./src:/app/src
+    platform: linux/x86_64

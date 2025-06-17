@@ -1,33 +1,4 @@
 services:
-  db:
-    restart: unless-stopped # 수동으로 중지하지 않는 한 자동으로 재시작
-    image: mysql:8.0
-    container_name: mysql
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      TZ: Asia/Seoul
-      MYSQL_DATABASE: blog
-    volumes:
-      - ./db/mysql/data:/var/lib/mysql
-      - ./db/mysql/init:/docker-entrypoint-initdb.d
-    platform: linux/x86_64
-  app:
-    restart: unless-stopped
-    build:
-      context: . # 현재 디렉토리의
-      dockerfile: Dockerfile # 도커파일 빌드
-    container_name: app
-    image: deveunjilee/app:latest
-    ports:
-      - '7777:7777'
-    depends_on:
-      - db
-    volumes:
-      - ./src:/app/src
-    platform: linux/x86_64
-
   caddy:
     image: caddy:latest
     container_name: caddy

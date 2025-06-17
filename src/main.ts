@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -26,6 +27,9 @@ async function bootstrap() {
 
   // TODO 유저 조회, 변경 추가 필요
 
-  await app.listen(7777);
+  const configService = app.get(ConfigService);
+  const port = configService.get<number>('APP_PORT')!;
+
+  await app.listen(port);
 }
 bootstrap();

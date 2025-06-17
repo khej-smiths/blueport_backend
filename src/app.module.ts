@@ -35,11 +35,17 @@ import { Portfolio } from './resume/entities/portfolio.entity';
     // ===== 1. 환경변수 설정 모듈 ===== //
     ConfigModule.forRoot({
       isGlobal: true, // 해당 모듈을 전역에서 접근할 수 있도록 isGlobal: true로 설정
-      envFilePath: '.env.dev', // 환경변수 파일
+      // 환경변수 파일
+      envFilePath:
+        process.env.NODE_ENV === 'LOCAL'
+          ? '.env.local'
+          : process.env.NODE_ENV === 'DEV'
+            ? '.env.dev'
+            : '.env.prod',
       // 환경변수 셋팅 확인
       validationSchema: Joi.object({
         // 환경
-        NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+        NODE_ENV: Joi.string().valid('LOCAL', 'DEV', 'PROD').required(),
         // 로그 stacktrace 포함 여부
         INCLUDE_STACKTRACE: Joi.boolean().required(),
         // mysql
@@ -56,6 +62,8 @@ import { Portfolio } from './resume/entities/portfolio.entity';
         // cloudflare
         CLOUDFLARE_ACCOUNT_ID: Joi.string().required(), // cloudflare 계정
         CLOUDFLARE_API_TOKEN: Joi.string().required(), // cloudflare api 토큰
+        // APP_PORT
+        APP_PORT: Joi.number().required(),
       }),
     }),
     // ===== 2. GraphQL 설정 모듈 ===== //

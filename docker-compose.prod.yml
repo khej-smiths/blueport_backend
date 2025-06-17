@@ -1,0 +1,13 @@
+services:
+  prod-app:
+    image: ${DOCKER_IMAGE_NAME}/prod-app:latest
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
+    container_name: prod-app
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - ./src:/app/src
+    platform: linux/x86_64

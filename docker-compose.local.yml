@@ -1,0 +1,12 @@
+services:
+  dev-app:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile.local
+    container_name: app
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - ./src:/app/src
+    platform: linux/x86_64
