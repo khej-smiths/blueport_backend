@@ -22,7 +22,7 @@ jobs:
 
       - name: docker-compose 파일을 이용해 이미지 빌드
         run: |
-          docker-compose -f docker-compose.dev.yml build
+          docker compose -f docker-compose.dev.yml build
           docker tag dev-app:latest ${{ secrets.DOCKER_USERNAME}}/dev-app:latest
           docker push ${{ secrets.DOCKER_USERNAME}}/dev-app:latest
 
