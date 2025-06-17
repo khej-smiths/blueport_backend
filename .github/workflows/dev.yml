@@ -55,10 +55,10 @@ jobs:
             git checkout dev     # 혹시 다른 브랜치일 수도 있으니 dev로 변경
             git pull smith dev  # 최신 코드 가져오기
 
+            # .env 파일 생성
+            echo "APP_PORT=${{ secrets.APP_PORT }}" > .env.dev
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env.dev
+
             docker pull ${{ secrets.DOCKER_USERNAME }}/dev-app:latest  # 최신 도커 이미지 가져오기
             docker compose down  # 기존 컨테이너 중지 및 정리
             docker compose -f docker-compose.dev.yml up -d  # 새 이미지 기반으로 컨테이너 실행
-        env:
-          # docker-compose.dev.yml에서 쓰는 env
-          APP_PORT: ${{ secrets.APP_PORT }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
