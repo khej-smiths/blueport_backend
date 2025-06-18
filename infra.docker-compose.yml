@@ -10,3 +10,5 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile # 현재 디렉터리의 Caddyfile을 컨테이너 내부 설정 파일로 연결
       - ./caddy_data:/data # SSL 인증서 등 Caddy 내부 데이터 저장 위치 (persistent volume)
       - ./caddy_config:/config # Caddy의 내부 설정 저장 위치 (persistent volume)
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
