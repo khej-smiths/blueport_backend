@@ -29,20 +29,25 @@ $ yarn run start:prod
     $ docker login
 
     #3. 빌드한 이미지를 docker-hub에 푸시
-    $ docker push deveunjilee/app:latest
+    $ docker push ${DOCKER_IMAGE_NAME}/app:latest
 ```
 
 2. aws lightsail에서 docker-hub 이미지를 가져온 후 띄우기
 
 ```bash
     # docker-hub에서 빌드된 이미지 가져오기
-    $ docker pull deveunjilee/app:latest
+    $ docker pull ${DOCKER_IMAGE_NAME}/app:latest
 
     # 인스턴스에서 도커 띄우기
     $ docker-compose up -d app
 ```
 
 3. 주의사항: 이미지 빌드 할 때, 환경변수, 브랜치 등등을 잘 확인해야함
+4. 참고사항 1. 환경변수별 도커 컴포즈 띄우기
+
+```bash
+    docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d --build
+```
 
 ## 기존 컨테이너와 이미지 모두 깨끗하게 삭제하고 싶을 때
 

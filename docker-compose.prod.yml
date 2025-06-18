@@ -1,0 +1,32 @@
+services:
+  dev-app:
+    image: ${DOCKER_USERNAME}/prod-app:latest
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
+    container_name: prod-app
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    volumes:
+      - ./src:/app/src
+    platform: linux/x86_64
+    environment:
+      # 환경변수 0. docker-compose
+      - APP_PORT=${APP_PORT}
+      - DOCKER_USERNAME=${DOCKER_USERNAME}
+      # 앱에서 쓰는 환경변수 1. DB
+      - INCLUDE_STACKTRACE=true
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      # 앱에서 쓰는 환경변수 2. jwt
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_SUBJECT=${JWT_SUBJECT}
+      # 앱에서 쓰는 환경변수 3. cloudflare
+      - CLOUDFLARE_ACCOUNT_ID=${CLOUDFLARE_ACCOUNT_ID}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}

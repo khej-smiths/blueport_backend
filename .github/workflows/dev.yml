@@ -1,0 +1,79 @@
+name: Deploy to Server on dev push
+
+on:
+  push:
+    branches:
+      - dev # dev 브랜치에 푸시될 때만 워크플로우 실행
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # GitHub Actions에서 사용할 러너 환경
+    environment: dev
+
+    steps:
+      - name: 현재 저장소의 코드를 가져옴
+        uses: actions/checkout@v3
+
+      - name: 도커 허브 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} # GitHub Secrets에 저장된 도커 ID
+          password: ${{ secrets.DOCKER_PASSWORD }} # GitHub Secrets에 저장된 도커 비밀번호
+
+      - name: docker-compose 파일을 이용해 이미지 빌드
+        run: |
+          docker compose -f docker-compose.dev.yml build
+          docker push ${{ secrets.DOCKER_USERNAME}}/dev-app:latest
+        env:
+          # docker-compose.dev.yml에서 쓰는 env
+          APP_PORT: ${{secrets.APP_PORT}}
+          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+          # 앱에서 쓰는 환경변수 1. DB
+          INCLUDE_STACKTRACE: true
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+          MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          # 앱에서 쓰는 환경변수 2. jwt
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+          JWT_SUBJECT: ${{ secrets.JWT_SUBJECT }}
+          # 앱에서 쓰는 환경변수 3. cloudflare
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: 원격 서버에 배포
+        uses: appleboy/ssh-action@v1.0.3 # 원격 서버에 SSH로 접속하여 명령 실행
+        with:
+          host: ${{ secrets.REMOTE_HOST }} # 원격 서버 IP 또는 도메인
+          username: ${{ secrets.REMOTE_USER }} # SSH 접속 유저명
+          key: ${{ secrets.SSH_PRIVATE_KEY }} # 개인 키 (서버에 공개 키 등록 필요)
+          script: |
+            cd /home/ubuntu/dev-blog-backend  # Git 저장소가 위치한 경로
+            git checkout smith/dev     # 혹시 다른 브랜치일 수도 있으니 dev로 변경
+            git pull smith dev  # 최신 코드 가져오기
+
+            # 환경변수 0. docker-compose
+            echo "APP_PORT=${{ secrets.APP_PORT }}" > .env.dev
+            echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env.dev
+            # 앱에서 쓰는 환경변수 1. DB
+            echo "INCLUDE_STACKTRACE=true" >> .env.dev
+            echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env.dev
+            echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env.dev
+            echo "MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}" >> .env.dev
+            echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env.dev
+            echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env.dev
+            # 앱에서 쓰는 환경변수 2. jwt
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.dev
+            echo "JWT_EXPIRES_IN=${{ secrets.JWT_EXPIRES_IN }}" >> .env.dev
+            echo "JWT_ISSUER=${{ secrets.JWT_ISSUER }}" >> .env.dev
+            echo "JWT_SUBJECT=${{ secrets.JWT_SUBJECT }}" >> .env.dev
+            # 앱에서 쓰는 환경변수 3. cloudflare
+            echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> .env.dev
+            echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env.dev
+
+            docker pull ${{ secrets.DOCKER_USERNAME }}/dev-app:latest  # 최신 도커 이미지 가져오기
+            docker compose down  # 기존 컨테이너 중지 및 정리
+            docker compose -f docker-compose.dev.yml --env-file .env.dev up -d  # 새 이미지 기반으로 컨테이너 실행

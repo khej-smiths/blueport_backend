@@ -23,4 +23,4 @@ EXPOSE 7777
 
 # Command to run the application
 # CMD ["node", "dist/main"]
-CMD ["yarn", "run", "start:dev"]
+CMD ["yarn", "run", "start:local"]
