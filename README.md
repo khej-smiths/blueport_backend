@@ -13,6 +13,117 @@ GraphQL을 사용하여 API를 제공하며, MySQL을 데이터베이스로 사�
 - 파일 업로드 기능
 - 로깅 시스템
 
+## 📘 ERD 구조도
+
+```mermaid
+      erDiagram
+        User ||--o{ Post : writes
+        User ||--o| Blog : has
+        User ||--o| Resume : has
+        Resume ||--o{ Education : contains
+        Resume ||--o{ Career : contains
+        Resume ||--o{ Project : contains
+        Resume ||--o{ Portfolio : contains
+
+        User {
+            uuid id PK
+            string email UK
+            string password
+            string name
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Blog {
+            uuid id PK
+            string name
+            string domain
+            string greeting
+            string photo
+            string introduction
+            json skills
+            string email
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Post {
+            uuid id PK
+            string title
+            string content
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Resume {
+            uuid id PK
+            uuid owner_id FK
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Education {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string name
+            string major
+            decimal grade
+            string description
+            string graduation_status
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Career {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string company
+            string department
+            string position
+            string description
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Project {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string name
+            int personnel
+            json skill_list
+            string description
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Portfolio {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string type
+            string url
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+```
+
 ## 기술 스택
 
 - **프레임워크**: NestJS
@@ -31,8 +142,10 @@ GraphQL을 사용하여 API를 제공하며, MySQL을 데이터베이스로 사�
 2. 예시
 
 ```
+
 main 브래치에서 user 작업을 한 경우
 feature/main/user
+
 ```
 
 ### 작업 순서
@@ -44,7 +157,9 @@ feature/main/user
 5. prod 브랜치가 배포된 이후 깃 태그 추가
 
 ```
+
     git tag -a v0.0.1 {깃 해시} -m "{메세지}"
+
 ```
 
 ### 깃 태그 규칙
