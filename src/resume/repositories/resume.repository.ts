@@ -1,4 +1,4 @@
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { Resume } from '../entities/resume.entity';
 import { Injectable } from '@nestjs/common';
 
@@ -36,6 +36,18 @@ export class ResumeRepository extends Repository<Resume> {
     return await this.find({
       where: { id: input.id },
       ...(input.relations && { relations: input.relations }),
+    });
+  }
+
+  /** 이력서 id 조회 by 옵션 소유주 id */
+  async readResumeIdListByOption(option: {
+    ownerIdList?: Array<string>;
+  }): Promise<Array<Resume>> {
+    return await this.find({
+      select: ['id', 'ownerId'],
+      where: {
+        ...(option.ownerIdList && { ownerId: In(option.ownerIdList) }),
+      },
     });
   }
 }
