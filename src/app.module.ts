@@ -130,7 +130,10 @@ import { Portfolio } from './resume/entities/portfolio.entity';
           },
           cors: {
             // 프론트 서버의 오리진
-            origin: ['http://localhost:3000'],
+            origin:
+              process.env.NODE_ENV === 'PROD'
+                ? ['https://blue-port.co.kr']
+                : ['http://localhost:3000'],
             // 쿠키, 인증헤더 등을 사용할 수 있게 할 것인지
             credentials: true,
           },
@@ -166,9 +169,8 @@ import { Portfolio } from './resume/entities/portfolio.entity';
           // 이력서 - 포트폴리오
           Portfolio,
         ],
-        // TODO dev 배포이후에는 삭제해야함
-        synchronize: true,
-        logging: true,
+        synchronize: process.env.NODE_ENV === 'PROD' ? false : true,
+        logging: process.env.NODE_ENV === 'PROD' ? false : true,
       }),
     }),
     // ===== 4. 이벤트 모듈 ===== //

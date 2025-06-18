@@ -7,7 +7,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
       // 프론트 서버의 오리진
-      origin: ['http://localhost:3000'],
+      origin:
+        process.env.NODE_ENV === 'PROD'
+          ? ['https://blue-port.co.kr']
+          : ['http://localhost:3000'],
       // 쿠키, 인증헤더 등을 사용할 수 있게 할 것인지
       credentials: true,
     },
