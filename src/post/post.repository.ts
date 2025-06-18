@@ -102,7 +102,7 @@ export class PostRepository extends Repository<Post> {
     return [
       await queryRunner.manager.softDelete(Post, {
         id: option.id,
-        writerId: writer.id,
+        ownerId: writer.id,
       }),
       queryRunner,
     ];
