@@ -42,7 +42,7 @@ abstract class IUser extends CommonEntity {
   })
   password: string;
 
-  @OneToMany(() => Post, (post) => post.writer, { nullable: true })
+  @OneToMany(() => Post, (post) => post.owner, { nullable: true })
   @Field(() => [Post], { nullable: true })
   postList?: Array<Post>;
 
