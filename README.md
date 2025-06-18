@@ -1,72 +1,243 @@
-## Installation
+# Blue-Port 블로그 백엔드
 
-```bash
-$ yarn install
+> 블로그 서비스와 이력 관리 서비스를 같이 제공하는 커리어 관리 전용 블로그
+
+## 📝 프로젝트 소개
+
+이 프로젝트는 NestJS를 기반으로 한 블로그 백엔드 서버입니다.  
+GraphQL을 사용하여 API를 제공하며, MySQL을 데이터베이스로 사용합니다.
+
+## ✨ 주요 기능
+
+- 👤 사용자 인증 및 권한 관리
+- 📝 블로그 포스트 관리
+- 📄 이력서 관리 (학력, 경력, 프로젝트, 포트폴리오)
+- 📤 파일 업로드 기능
+- 📊 로깅 시스템
+
+## 📘 ERD 구조도
+
+```mermaid
+      erDiagram
+        User ||--o{ Post : writes
+        User ||--o| Blog : has
+        User ||--o| Resume : has
+        Resume ||--o{ Education : contains
+        Resume ||--o{ Career : contains
+        Resume ||--o{ Project : contains
+        Resume ||--o{ Portfolio : contains
+
+        User {
+            uuid id PK
+            string email UK
+            string password
+            string name
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Blog {
+            uuid id PK
+            string name
+            string domain
+            string greeting
+            string photo
+            string introduction
+            json skills
+            string email
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Post {
+            uuid id PK
+            string title
+            string content
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Resume {
+            uuid id PK
+            uuid owner_id FK
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Education {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string name
+            string major
+            decimal grade
+            string description
+            string graduation_status
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Career {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string company
+            string department
+            string position
+            string description
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Project {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string name
+            int personnel
+            json skill_list
+            string description
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Portfolio {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string type
+            string url
+            date created_at
+            date updated_at
+            date deleted_at
+        }
 ```
 
-## Running the app
+## 🛠 기술 스택
+
+| 카테고리      | 기술             |
+| ------------- | ---------------- |
+| 프레임워크    | NestJS           |
+| API           | GraphQL (Apollo) |
+| 데이터베이스  | MySQL            |
+| 인증          | JWT              |
+| 파일 스토리지 | Cloudflare       |
+| 컨테이너화    | Docker           |
+| 로깅          | 커스텀 로거      |
+
+## 🌿 브랜치 및 깃 전략
+
+### 브랜치명 규칙
+
+- **규칙**: `feature/{prod/main/dev}/{work}`
+- **예시**: main 브랜치에서 user 작업을 한 경우
+  ```
+  feature/main/user
+  ```
+
+### 작업 순서
+
+1. main 브랜치에서 작업 브랜치를 생성
+2. 작업한 브랜치를 dev에 병합
+3. 프론트/백엔드 작업 완료 시 main 브랜치에 병합
+4. main 브랜치를 prod 브랜치에 병합
+5. prod 브랜치 배포 후 깃 태그 추가
+   ```bash
+   git tag -a v0.0.1 {깃 해시} -m "{메세지}"
+   ```
+
+### 깃 태그 규칙
+
+`v{MAJOR}.{MINOR}.{PATCH}`
+
+- **MAJOR**: 호환되지 않는 API 변경
+- **MINOR**: 기능 추가 (호환 유지)
+- **PATCH**: 버그 수정 (API 변경 없음)
+
+## 🚀 운영 및 배포
+
+### 사용 기술
+
+- Docker Compose
+- Docker Hub
+- GitHub Actions
+
+### 배포 순서
+
+1. dev 브랜치 푸시 시 GitHub Actions에서 Docker 이미지 빌드
+2. 빌드된 이미지를 Docker Hub에 업로드
+3. AWS Lightsail 인스턴스 접근 후 이미지 가져오기
+4. Docker 이미지 실행
+
+## 📋 개발 규칙
+
+1. 주석은 최대한 라인마다 작성
+2. Entity 역할 클래스는 Abstract Class로 선언하고, GQL InputType/ObjectType 클래스 구현
+3. API 및 함수 이름은 CRUD 패턴 준수
+
+## 💡 기술 노트
+
+1. **SWC 컴파일러**: tsc보다 빠른 컴파일 속도
+2. **로깅**: Async Local Storage를 활용한 request별 로그 관리
+3. **에러 처리**: Wrapper 함수에서 통합 에러 처리
+
+## 🚀 실행 방법
 
 ```bash
-# development
+# 개발 환경
 $ yarn run start
 
-# watch mode
+# 개발 모드 (자동 재시작)
 $ yarn run start:dev
 
-# production mode
+# 프로덕션 모드
 $ yarn run start:prod
 ```
 
-## 운영정보
+## ⚙️ 환경 설정
 
-1. 로컬에서 도커 이미지 빌드 후 docker-hub에 푸시
+프로젝트는 다음 환경을 지원합니다:
 
-```bash
-    # 1. docker-compose를 이용해 이미지 빌드
-    $ docker-compose build app
+| 환경  | 설정 파일    |
+| ----- | ------------ |
+| LOCAL | `.env.local` |
+| DEV   | `.env.dev`   |
+| PROD  | `.env.prod`  |
 
-    # 2. docker login
-    $ docker login
-
-    #3. 빌드한 이미지를 docker-hub에 푸시
-    $ docker push ${DOCKER_IMAGE_NAME}/app:latest
-```
-
-2. aws lightsail에서 docker-hub 이미지를 가져온 후 띄우기
+## 🔧 유용한 Docker 명령어
 
 ```bash
-    # docker-hub에서 빌드된 이미지 가져오기
-    $ docker pull ${DOCKER_IMAGE_NAME}/app:latest
+# 컨테이너와 이미지 전체 삭제
+$ docker-compose down --rmi all
 
-    # 인스턴스에서 도커 띄우기
-    $ docker-compose up -d app
-```
+# 특정 환경 설정으로 이미지 빌드 및 실행
+$ docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d --build
 
-3. 주의사항: 이미지 빌드 할 때, 환경변수, 브랜치 등등을 잘 확인해야함
-4. 참고사항 1. 환경변수별 도커 컴포즈 띄우기
+# 인스턴스에서 도커 실행
+$ docker-compose up -d app
 
-```bash
-    docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d --build
-```
+# Docker Hub에서 이미지 가져오기
+$ docker pull ${DOCKER_IMAGE_NAME}/app:latest
 
-## 기존 컨테이너와 이미지 모두 깨끗하게 삭제하고 싶을 때
+# 이미지 빌드
+$ docker-compose build app
 
-```
-docker-compose down --rmi all
-```
+# Docker Hub 로그인
+$ docker login
 
-## Rule
-
-```
-- 주석은 최대한 라인마다 작성
-- Entity의 역할을 하는 클래스는 Abstract Class로 선언하고 클래스를 상속받아 Gql의 InputType 클래스와 ObjectType 클래스를 구현
-- API 및 함수 이름은 최대한 CRUD를 살려서 선정
-```
-
-## Note
-
-```
-1. swc compiler - tsc보다 속도가 빠른 swc 컴파일러 적용
-2. log - Async Local Storage를 이용해 request 별 로그를 작성하고, 각 함수를 감싸는 wrapper용 함수를 만들어 IO 로그의 중복 최소화
-3. error - 각 클래스를 감싸는 wrapper 함수에서 함수의 전체 error를 감싸서 처리하고 있기 때문에, 특별히 따로 잡아야할 에러가 있는게 아니라면 전체를 관통하는 에러처리는 필요없음
+# 이미지 푸시
+$ docker push ${DOCKER_IMAGE_NAME}/app:latest
 ```
