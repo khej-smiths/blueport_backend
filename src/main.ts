@@ -8,7 +8,7 @@ async function bootstrap() {
     cors: {
       // 프론트 서버의 오리진
       origin:
-        process.env.NODE_ENV === 'prod'
+        process.env.NODE_ENV === 'PROD'
           ? ['https://blue-port.co.kr']
           : ['http://localhost:3000'],
       // 쿠키, 인증헤더 등을 사용할 수 있게 할 것인지
