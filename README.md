@@ -1,134 +1,243 @@
-# blue-port 블로그 백엔드
+# Blue-Port 블로그 백엔드
+
+> 블로그 서비스와 이력 관리 서비스를 같이 제공하는 커리어 관리 전용 블로그
+
+## 📝 프로젝트 소개
 
 이 프로젝트는 NestJS를 기반으로 한 블로그 백엔드 서버입니다.  
 GraphQL을 사용하여 API를 제공하며, MySQL을 데이터베이스로 사용합니다.
 
-**블로그 서비스와 이력 관리 서비스를 같이 제공하는 커리어 관리 전용 블로그**
+## ✨ 주요 기능
 
-## 주요 기능
+- 👤 사용자 인증 및 권한 관리
+- 📝 블로그 포스트 관리
+- 📄 이력서 관리 (학력, 경력, 프로젝트, 포트폴리오)
+- 📤 파일 업로드 기능
+- 📊 로깅 시스템
 
-- 사용자 인증 및 권한 관리
-- 블로그 포스트 관리
-- 이력서 관리 (학력, 경력, 프로젝트, 포트폴리오)
-- 파일 업로드 기능
-- 로깅 시스템
+## 📘 ERD 구조도
 
-## 기술 스택
+```mermaid
+      erDiagram
+        User ||--o{ Post : writes
+        User ||--o| Blog : has
+        User ||--o| Resume : has
+        Resume ||--o{ Education : contains
+        Resume ||--o{ Career : contains
+        Resume ||--o{ Project : contains
+        Resume ||--o{ Portfolio : contains
 
-- **프레임워크**: NestJS
-- **API**: GraphQL (Apollo)
-- **데이터베이스**: MySQL
-- **인증**: JWT
-- **파일 스토리지**: Cloudflare
-- **컨테이너화**: Docker
-- **로깅**: 커스텀 로거
+        User {
+            uuid id PK
+            string email UK
+            string password
+            string name
+            date created_at
+            date updated_at
+            date deleted_at
+        }
 
-## 브랜치 및 깃 버전 전략
+        Blog {
+            uuid id PK
+            string name
+            string domain
+            string greeting
+            string photo
+            string introduction
+            json skills
+            string email
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Post {
+            uuid id PK
+            string title
+            string content
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Resume {
+            uuid id PK
+            uuid owner_id FK
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Education {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string name
+            string major
+            decimal grade
+            string description
+            string graduation_status
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Career {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string company
+            string department
+            string position
+            string description
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Project {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string name
+            int personnel
+            json skill_list
+            string description
+            string start_at
+            string end_at
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+
+        Portfolio {
+            uuid id PK
+            uuid resume_id FK
+            int order
+            string type
+            string url
+            date created_at
+            date updated_at
+            date deleted_at
+        }
+```
+
+## 🛠 기술 스택
+
+| 카테고리      | 기술             |
+| ------------- | ---------------- |
+| 프레임워크    | NestJS           |
+| API           | GraphQL (Apollo) |
+| 데이터베이스  | MySQL            |
+| 인증          | JWT              |
+| 파일 스토리지 | Cloudflare       |
+| 컨테이너화    | Docker           |
+| 로깅          | 커스텀 로거      |
+
+## 🌿 브랜치 및 깃 전략
 
 ### 브랜치명 규칙
 
-1. 규칙: feature/{prod/main/dev}/{work}
-2. 예시
-
-```
-main 브래치에서 user 작업을 한 경우
-feature/main/user
-```
+- **규칙**: `feature/{prod/main/dev}/{work}`
+- **예시**: main 브랜치에서 user 작업을 한 경우
+  ```
+  feature/main/user
+  ```
 
 ### 작업 순서
 
-1. main 브랜치에서 작업 브랜치를 딴다.
-2. 작업한 브랜치를 dev에 병합한다.
-3. 해당 내용의 프론트, 백 모두 작업이 완료된 경우 작업한 브랜치를 main 브랜치에 병합
+1. main 브랜치에서 작업 브랜치를 생성
+2. 작업한 브랜치를 dev에 병합
+3. 프론트/백엔드 작업 완료 시 main 브랜치에 병합
 4. main 브랜치를 prod 브랜치에 병합
-5. prod 브랜치가 배포된 이후 깃 태그 추가
-
-```
-    git tag -a v0.0.1 {깃 해시} -m "{메세지}"
-```
+5. prod 브랜치 배포 후 깃 태그 추가
+   ```bash
+   git tag -a v0.0.1 {깃 해시} -m "{메세지}"
+   ```
 
 ### 깃 태그 규칙
 
-v{MAJOR}.{MINOR}.{PATCH}
+`v{MAJOR}.{MINOR}.{PATCH}`
 
-1. MAJOR: 호환되지 않는 API 변경(기존 사용자 코드가 깨지는 경우)
-2. MINOR: 기능 추가(호환 유지, 새 기능 추가, 기존 기능 위치)
-3. PATCH: 버그 수정(사소한 수정, API 변경 없음)
+- **MAJOR**: 호환되지 않는 API 변경
+- **MINOR**: 기능 추가 (호환 유지)
+- **PATCH**: 버그 수정 (API 변경 없음)
 
-## 운영 및 배포 방식
+## 🚀 운영 및 배포
 
 ### 사용 기술
 
-docker-compose, docker-hub, github-action
+- Docker Compose
+- Docker Hub
+- GitHub Actions
 
-### 순서
+### 배포 순서
 
-1. dev 브랜치가 푸시되면, github-action에서 docker-compose로 docker 이미지를 빌드한다.
-2. github-action에서 빌드된 이미지를 docker-hub에 업로드한다.
-3. github-action에서 aws lightsail 인스턴스에 접근한 후, docker-hub에 로그인하여 해당 이미지를 가져온다.
-4. github-action에서 aws lightsail 인스턴스에 접근해서 가져온 docker 이미지를 띄운다.
+1. dev 브랜치 푸시 시 GitHub Actions에서 Docker 이미지 빌드
+2. 빌드된 이미지를 Docker Hub에 업로드
+3. AWS Lightsail 인스턴스 접근 후 이미지 가져오기
+4. Docker 이미지 실행
 
-## Rule
+## 📋 개발 규칙
 
 1. 주석은 최대한 라인마다 작성
-2. Entity의 역할을 하는 클래스는 Abstract Class로 선언하고 클래스를 상속받아 Gql의 InputType 클래스와 ObjectType 클래스를 구현
-3. API 및 함수 이름은 최대한 CRUD를 살려서 선정
+2. Entity 역할 클래스는 Abstract Class로 선언하고, GQL InputType/ObjectType 클래스 구현
+3. API 및 함수 이름은 CRUD 패턴 준수
 
-## Note
+## 💡 기술 노트
 
-1. swc compiler - tsc보다 속도가 빠른 swc 컴파일러 적용
-2. log - Async Local Storage를 이용해 request 별 로그를 작성하고, 각 함수를 감싸는 wrapper용 함수를 만들어 IO 로그의 중복 최소화
-3. error - 각 클래스를 감싸는 wrapper 함수에서 함수의 전체 error를 감싸서 처리하고 있기 때문에, 특별히 따로 잡아야할 에러가 있는게 아니라면 전체를 관통하는 에러처리는 필요없음
+1. **SWC 컴파일러**: tsc보다 빠른 컴파일 속도
+2. **로깅**: Async Local Storage를 활용한 request별 로그 관리
+3. **에러 처리**: Wrapper 함수에서 통합 에러 처리
 
-## Running the app
+## 🚀 실행 방법
 
 ```bash
-# development
+# 개발 환경
 $ yarn run start
 
-# watch mode
+# 개발 모드 (자동 재시작)
 $ yarn run start:dev
 
-# production mode
+# 프로덕션 모드
 $ yarn run start:prod
 ```
 
-## 환경 설정
+## ⚙️ 환경 설정
 
-프로젝트는 다음과 같은 환경을 지원합니다:
+프로젝트는 다음 환경을 지원합니다:
 
-- LOCAL: 로컬 개발 환경
-- DEV: 개발 서버 환경
-- PROD: 프로덕션 환경
+| 환경  | 설정 파일    |
+| ----- | ------------ |
+| LOCAL | `.env.local` |
+| DEV   | `.env.dev`   |
+| PROD  | `.env.prod`  |
 
-각 환경별로 다음과 같은 설정 파일이 필요합니다:
-
-- `.env.local`
-- `.env.dev`
-- `.env.prod`
-
-## 기타사항
+## 🔧 유용한 Docker 명령어
 
 ```bash
-# 기존 컨테이너와 이미지 모두 깨끗하게 삭제하고 싶을 때
+# 컨테이너와 이미지 전체 삭제
 $ docker-compose down --rmi all
 
-# 특정 docker-compose 파일과 env 파일을 이용해 이미지를 빌드하고 백그라운드로 돌리기
-docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d --build
+# 특정 환경 설정으로 이미지 빌드 및 실행
+$ docker-compose -f docker-compose.dev.yml --env-file .env.dev up -d --build
 
-# 인스턴스에서 도커 띄우기
+# 인스턴스에서 도커 실행
 $ docker-compose up -d app
 
-# docker-hub에서 빌드된 이미지 가져오기
+# Docker Hub에서 이미지 가져오기
 $ docker pull ${DOCKER_IMAGE_NAME}/app:latest
 
-# docker-compose를 이용해 이미지 빌드
+# 이미지 빌드
 $ docker-compose build app
 
-# docker login
+# Docker Hub 로그인
 $ docker login
 
-# 빌드한 이미지를 docker-hub에 푸시
+# 이미지 푸시
 $ docker push ${DOCKER_IMAGE_NAME}/app:latest
-
 ```
