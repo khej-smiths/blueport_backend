@@ -27,6 +27,7 @@ export class UserDataLoaderService {
         where: {
           id: In(userIdList),
         },
+        relations: ['blog'],
       });
       return userIdList.map((userId) => {
         return users.find((user) => user.id === userId) ?? new Error();
