@@ -123,8 +123,12 @@ abstract class IBlog extends CommonEntity {
 
 @ObjectType()
 @Entity('blog')
-@Unique('unique_domain_for_blog', ['domain']) // email을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
-export class Blog extends IBlog {}
+@Unique('unique_domain_for_blog', ['domain']) // domain을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
+export class Blog extends IBlog {
+  // graphql에서만 사용
+  @Field(() => String, { description: '연결된 이력서의 Id', nullable: true })
+  resumeId?: string;
+}
 
 @InputType()
 export class BlogInputType extends IBlog {}
