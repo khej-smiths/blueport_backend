@@ -60,13 +60,16 @@ abstract class IUser extends CommonEntity {
 @Entity('user')
 @Unique('unique_email_for_user', ['email']) // email을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
 export class User extends IUser {
-  // TODO beforeInsert, beforeUpdate 비밀번호 암호화
   @BeforeInsert()
   @BeforeUpdate()
   /**
+   *
+   * 비밀번호 생성 및 업데이트 시 비밀번호 암호화
+   *
    * 해싱과 암호화의 차이
    *  - 해싱: 일방향 > 원래 값으로 복원 불가
    *  - 암호화: 양방향 > 암호화된 데이터가 복호화 필요할경우
+   *
    */
   async hashPassword() {
     if (this.password) {
