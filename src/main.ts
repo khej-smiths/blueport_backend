@@ -28,8 +28,6 @@ async function bootstrap() {
   // TODO input 이미지 저장 API(8MB)
   // TODO 이미지 업로드는 백이 프록시 역할 예정. 단, 사용하지 않은 이미지를 어떻게 처리할지는 추가 확인 필요
 
-  // TODO 유저 조회, 변경 추가 필요
-
   const configService = app.get(ConfigService);
   const port = configService.get<number>('APP_PORT')!;
 
