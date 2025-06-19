@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 import argon2 from 'argon2';
 import { Resume } from 'src/resume/entities/resume.entity';
-import { Length, Matches } from 'class-validator';
+import { IsEmail, Length, Matches } from 'class-validator';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -24,18 +24,15 @@ abstract class IUser extends CommonEntity {
   @Column({ type: 'varchar', length: 256, comment: '유저의 이름' })
   name: string;
 
-  // TODO 이메일 형태 체크
   @Field(() => String, { description: '유저의 이메일' })
   @Column({
     type: 'varchar',
     length: 256,
     comment: '유저의 이메일',
   })
+  @IsEmail()
   email: string;
 
-  // TODO 비밀번호 정규식 체크
-  // 8자 이상 20자 이하 영문, 숫자, 특수문자가 각각 한개씩 >> /^(?=.[A-Za-z])(?=.\d)(?=.[!@#$%^&()-+=[]{};':"\|,.<>/?~])[A-Za-z\d!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~]{8,20}$/;
-  // @Field(() => String, { description: '유저의 비밀번호' })
   @Column({
     type: 'varchar',
     length: 256,
