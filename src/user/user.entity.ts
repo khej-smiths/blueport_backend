@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import argon2 from 'argon2';
 import { Resume } from 'src/resume/entities/resume.entity';
+import { Length, Matches } from 'class-validator';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
@@ -77,8 +78,15 @@ export class User extends IUser {
 
 @InputType()
 export class UserInputType extends IUser {
-  // TODO 비밀번호 정규식 체크
-  // 8자 이상 20자 이하 영문, 숫자, 특수문자가 각각 한개씩 >> /^(?=.[A-Za-z])(?=.\d)(?=.[!@#$%^&()-+=[]{};':"\|,.<>/?~])[A-Za-z\d!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~]{8,20}$/;
   @Field(() => String, { description: '유저의 비밀번호' })
+  @Length(8, 20, { message: '비밀번호는 8자 이상 20자 이하이어야 합니다.' })
+  @Matches(
+    // 8자 이상 20자 이하 영문, 숫자, 특수문자가 각각 한개씩
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?`~])[A-Za-z\d!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?`~]{8,20}$/,
+    {
+      message:
+        '비밀번호는 영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.',
+    },
+  )
   password: string;
 }
