@@ -20,8 +20,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // TODO orm 바꾸기
-  // TODO 도커, 환경변수 파일들 셋팅 다시하기(gitignore, 파일명 등등)
-  // TODO mysql 볼륨은 외부에 미리 셋팅하기
   // TODO 나중에 비번 재설정 로직 필요함
   // TODO 회원탈퇴
   // TODO input class-validator 적용
