@@ -102,10 +102,13 @@ export class UserService {
 
   // TODO 비밀번호 업데이트의 경우 유저 인증 필요
   async updateUser(user: User, input: UpdateUserInputDto): Promise<User> {
-    const ERR_NO_UPDATE = 'ERR_NO_UPDATE';
+    // 함수에서 나타날 수 있는 에러 케이스
+    const ERR_NO_UPDATE = 'ERR_NO_UPDATE'; // 업데이트에 실패한 경우
 
+    // 유저 업데이트
     const result = await this.userRepository.updateUser(user.id, input);
 
+    // 업데이트에 실패한 경우 에러 처리
     if (result.affected === 0) {
       throw new CustomGraphQLError('업데이트를 하지 못했습니다.', {
         extensions: {
@@ -114,6 +117,7 @@ export class UserService {
       });
     }
 
+    // 기존 유저에 업데이트한 정보를 추가해서 유저 리턴
     return {
       ...user,
       ...(input.name && { name: input.name }),
