@@ -14,14 +14,14 @@ import {
 } from 'typeorm';
 import argon2 from 'argon2';
 import { Resume } from 'src/resume/entities/resume.entity';
-import { IsEmail, Length, Matches } from 'class-validator';
+import { IsEmail, Length, Matches, Min } from 'class-validator';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
 abstract class IUser extends CommonEntity {
-  // TODO 길이 체크
   @Field(() => String, { description: '유저의 이름' })
   @Column({ type: 'varchar', length: 256, comment: '유저의 이름' })
+  @Min(1)
   name: string;
 
   @Field(() => String, { description: '유저의 이메일' })
