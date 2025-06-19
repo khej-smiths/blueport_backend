@@ -41,15 +41,15 @@ abstract class IUser extends CommonEntity {
   password: string;
 
   @OneToMany(() => Post, (post) => post.writer, { nullable: true })
-  @Field(() => [Post], { nullable: true })
+  @Field(() => [Post], { nullable: true, description: '작성한 게시글 목록' })
   postList?: Array<Post>;
 
   @OneToOne(() => Blog, (blog) => blog.owner, { nullable: true })
-  @Field(() => Blog, { nullable: true })
+  @Field(() => Blog, { nullable: true, description: '유저의 블로그' })
   blog?: Relation<Blog>;
 
   @OneToOne(() => Resume, (resume) => resume.owner, { nullable: true })
-  @Field(() => Resume, { nullable: true })
+  @Field(() => Resume, { nullable: true, description: '유저의 이력서' })
   resume?: Relation<Resume>;
 }
 
