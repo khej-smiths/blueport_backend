@@ -6,6 +6,7 @@ import { EducationRepository } from './repositories/education.repository';
 import { CareerRepository } from './repositories/career.repository';
 import { ProjectRepository } from './repositories/project.repository';
 import { PortfolioRepository } from './repositories/portfolio.repository';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   providers: [
@@ -17,5 +18,6 @@ import { PortfolioRepository } from './repositories/portfolio.repository';
     ProjectRepository,
     PortfolioRepository,
   ],
+  imports: [UserModule],
 })
 export class ResumeModule {}
