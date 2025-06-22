@@ -43,16 +43,6 @@ abstract class IBlog extends CommonEntity {
   @IsString()
   greeting: string;
 
-  @Field(() => String, { description: '프로필 사진' })
-  @Column({
-    type: 'varchar',
-    length: 255,
-    comment: '프로필 사진',
-    name: 'photo',
-  })
-  @IsString()
-  photo: string;
-
   @Field(() => String, { description: '자기소개' })
   @Column({
     type: 'varchar',
@@ -65,6 +55,18 @@ abstract class IBlog extends CommonEntity {
   /////////////////////////////
   // ===== 옵셔널 필드 ===== //
   /////////////////////////////
+
+  @Field(() => String, { description: '프로필 사진', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    comment: '프로필 사진',
+    name: 'photo',
+    nullable: true,
+  })
+  @IsString()
+  @IsOptional()
+  photo?: string;
 
   @Field(() => [String], {
     description: '기술 스택, 100개 제한',
@@ -81,7 +83,7 @@ abstract class IBlog extends CommonEntity {
   @IsOptional()
   skills?: Array<string>;
 
-  @Field(() => String, { description: '이메일', nullable: true })
+  @Field(() => String, { description: '연락용 이메일', nullable: true })
   @Column({
     type: 'varchar',
     length: 255,
@@ -123,8 +125,12 @@ abstract class IBlog extends CommonEntity {
 
 @ObjectType()
 @Entity('blog')
-@Unique('unique_domain_for_blog', ['domain']) // email을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
-export class Blog extends IBlog {}
+@Unique('unique_domain_for_blog', ['domain']) // domain을 unique키로 설정했고 중복인 경우 create에서 에러 메세지를 따로 처리하고 있다
+export class Blog extends IBlog {
+  // graphql에서만 사용
+  @Field(() => String, { description: '연결된 이력서의 Id', nullable: true })
+  resumeId?: string;
+}
 
 @InputType()
 export class BlogInputType extends IBlog {}

@@ -71,10 +71,10 @@ export class PostResolver {
     return await this.postService.deletePost(input, writer);
   }
 
-  @ResolveField('writer', () => User, {
+  @ResolveField('owner', () => User, {
     description: '게시글 작성자',
   })
   async readUser(@Parent() post: Post): Promise<User> {
-    return this.userDataLoaderService.getUsersByIds.load(post.writerId);
+    return this.userDataLoaderService.getUsersByIds.load(post.ownerId);
   }
 }
