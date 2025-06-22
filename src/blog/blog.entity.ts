@@ -43,16 +43,6 @@ abstract class IBlog extends CommonEntity {
   @IsString()
   greeting: string;
 
-  @Field(() => String, { description: '프로필 사진' })
-  @Column({
-    type: 'varchar',
-    length: 255,
-    comment: '프로필 사진',
-    name: 'photo',
-  })
-  @IsString()
-  photo: string;
-
   @Field(() => String, { description: '자기소개' })
   @Column({
     type: 'varchar',
@@ -65,6 +55,18 @@ abstract class IBlog extends CommonEntity {
   /////////////////////////////
   // ===== 옵셔널 필드 ===== //
   /////////////////////////////
+
+  @Field(() => String, { description: '프로필 사진', nullable: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    comment: '프로필 사진',
+    name: 'photo',
+    nullable: true,
+  })
+  @IsString()
+  @IsOptional()
+  photo?: string;
 
   @Field(() => [String], {
     description: '기술 스택, 100개 제한',
@@ -81,7 +83,7 @@ abstract class IBlog extends CommonEntity {
   @IsOptional()
   skills?: Array<string>;
 
-  @Field(() => String, { description: '이메일', nullable: true })
+  @Field(() => String, { description: '연락용 이메일', nullable: true })
   @Column({
     type: 'varchar',
     length: 255,
