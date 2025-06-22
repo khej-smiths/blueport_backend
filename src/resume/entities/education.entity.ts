@@ -61,6 +61,16 @@ abstract class IEducation extends CommonEntity {
   grade?: number;
 
   @Column({
+    type: 'decimal',
+    precision: 3, // 전체 자리수(정수 + 소수)
+    scale: 2, // 소수점 이하 자리수
+    comment: '기준 학점',
+    nullable: true,
+  })
+  @Field(() => Float, { description: '학점', nullable: true })
+  standardGrade?: number;
+
+  @Column({
     type: 'varchar',
     length: 255,
     comment: '졸업 상태',
