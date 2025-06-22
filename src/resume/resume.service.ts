@@ -125,7 +125,7 @@ export class ResumeService {
 
     // 이력서 조회
     const resumeList = await this.resumeRepository.readResumeList({
-      id: input.id,
+      option: input,
       relations: [
         'educationList',
         'careerList',

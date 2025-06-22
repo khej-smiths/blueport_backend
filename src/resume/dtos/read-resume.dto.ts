@@ -1,5 +1,7 @@
-import { InputType, PickType } from '@nestjs/graphql';
+import { InputType, PartialType, PickType } from '@nestjs/graphql';
 import { ResumeInputType } from '../entities/resume.entity';
 
 @InputType()
-export class ReadResumeInputDto extends PickType(ResumeInputType, ['id']) {}
+export class ReadResumeInputDto extends PartialType(
+  PickType(ResumeInputType, ['id', 'ownerId']),
+) {}

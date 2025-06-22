@@ -29,6 +29,7 @@ abstract class IResume extends CommonEntity {
   // 이력서 주인 전체 정보
   @OneToOne(() => User, (user) => user.resume)
   @JoinColumn({ name: 'owner_id' })
+  @Field(() => User, { description: '게시글 작성자 전체 정보' })
   owner: Relation<User>;
 
   @OneToMany(() => Education, (edu) => edu.resume, { nullable: true })
