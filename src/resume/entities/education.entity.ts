@@ -60,10 +60,6 @@ abstract class IEducation extends CommonEntity {
   @Field(() => Float, { description: '학점', nullable: true })
   grade?: number;
 
-  @Column({ type: 'varchar', length: 255, comment: '기타', nullable: true })
-  @Field(() => String, { description: '기타', nullable: true })
-  description?: string;
-
   @Column({
     type: 'varchar',
     length: 255,
