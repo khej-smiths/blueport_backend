@@ -17,7 +17,6 @@ export class UpdateEducationInputDto extends IntersectionType(
     'name',
     'major',
     'grade',
-    'description',
     'graduationStatus',
     'startAt',
     'endAt',
@@ -55,7 +54,7 @@ export class UpdateProjectInputDto extends IntersectionType(
 
 @InputType()
 export class UpdatePortfolioInputDto extends IntersectionType(
-  PickType(PortfolioInputType, ['order', 'type', 'url']),
+  PickType(PortfolioInputType, ['order', 'url']),
   PartialType(PickType(PortfolioInputType, ['id'])),
 ) {}
 
