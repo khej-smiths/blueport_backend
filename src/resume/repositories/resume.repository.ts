@@ -1,6 +1,7 @@
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { Resume } from '../entities/resume.entity';
 import { Injectable } from '@nestjs/common';
+import { ReadResumeInputDto } from '../dtos/read-resume.dto';
 
 @Injectable()
 export class ResumeRepository extends Repository<Resume> {
@@ -32,9 +33,17 @@ export class ResumeRepository extends Repository<Resume> {
   /**
    * 이력서 목록 조회
    */
-  async readResumeList(input: { id: string; relations?: Array<string> }) {
+  async readResumeList(input: {
+    option: ReadResumeInputDto;
+    relations?: Array<string>;
+  }) {
     return await this.find({
-      where: { id: input.id },
+      ...(input.option && {
+        where: {
+          id: input.option.id,
+          ownerId: input.option.ownerId,
+        },
+      }),
       ...(input.relations && { relations: input.relations }),
     });
   }
