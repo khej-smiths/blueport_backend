@@ -21,7 +21,7 @@ import { IsEmail, Length, Matches, Min } from 'class-validator';
 abstract class IUser extends CommonEntity {
   @Field(() => String, { description: '유저의 이름' })
   @Column({ type: 'varchar', length: 256, comment: '유저의 이름' })
-  @Min(1)
+  @Length(1)
   name: string;
 
   @Field(() => String, { description: '유저의 이메일' })
