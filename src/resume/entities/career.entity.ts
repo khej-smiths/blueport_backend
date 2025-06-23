@@ -51,6 +51,7 @@ abstract class ICareer extends CommonEntity {
     type: 'varchar',
     length: 255,
     comment: '시작날짜. 날짜의 형태: yyyy.MM',
+    name: 'start_at',
   })
   @Field(() => String, { description: '시작날짜. 날짜의 형태: yyyy.MM' })
   @Matches(/^\d{4}\.(0[1-9]|1[0-2])$/, {
@@ -64,6 +65,7 @@ abstract class ICareer extends CommonEntity {
     length: 255,
     comment: '끝난 날짜. 날짜의 형태: yyyy.MM',
     nullable: true,
+    name: 'end_at',
   })
   @Field(() => String, {
     description: '끝난 날짜. 없는 경우 현재 진행중. 날짜의 형태: yyyy.MM',

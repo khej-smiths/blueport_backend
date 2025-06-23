@@ -169,7 +169,9 @@ import { Portfolio } from './resume/entities/portfolio.entity';
           // 이력서 - 포트폴리오
           Portfolio,
         ],
-        synchronize: process.env.NODE_ENV === 'PROD' ? false : true,
+        synchronize: ['prod', 'dev'].includes(process.env.NODE_ENV as string)
+          ? false
+          : true,
         logging: process.env.NODE_ENV === 'PROD' ? false : true,
       }),
     }),
