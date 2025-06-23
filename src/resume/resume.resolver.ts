@@ -35,8 +35,10 @@ export class ResumeResolver {
     return await this.resumeService.createResume(user, input);
   }
 
-  @Query(() => Resume, { description: '이력서 조회' })
-  async readResume(@Args(input) input: ReadResumeInputDto): Promise<Resume> {
+  @Query(() => Resume, { description: '이력서 조회', nullable: true })
+  async readResume(
+    @Args(input) input: ReadResumeInputDto,
+  ): Promise<Resume | null> {
     return await this.resumeService.readResume(input);
   }
 
