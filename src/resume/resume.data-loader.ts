@@ -1,12 +1,11 @@
 import { Injectable, Scope } from '@nestjs/common';
 import DataLoader from 'dataloader';
-import { User } from './user.entity';
-import { UserRepository } from './user.repository';
-import { In } from 'typeorm';
+import { ResumeRepository } from 'src/resume/repositories/resume.repository';
+import { Resume } from 'src/resume/entities/resume.entity';
 
 @Injectable({ scope: Scope.REQUEST })
-export class UserDataLoaderService {
-  constructor(private readonly userRepository: UserRepository) {}
+export class ResumeDataLoaderService {
+  constructor(private readonly resumeRepository: ResumeRepository) {}
 
   /**
    * @ref https://blog.siner.io/2021/12/11/graphql-dataloader/
@@ -21,16 +20,14 @@ export class UserDataLoaderService {
    * @ref https://medium.com/zigbang/dataloader%EB%A1%9C-non-graphql%ED%99%98%EA%B2%BD%EC%97%90%EC%84%9C-%ED%99%9C%EC%9A%A9%ED%95%98%EA%B8%B0-e6619010f60b
    * @ref https://www.korecmblog.com/blog/node-js-event-loop
    */
-  readonly getUsersByIds = new DataLoader<string, User>(
-    async (userIdList: Array<string>) => {
-      const users: Array<User> = await this.userRepository.readUserList({
-        where: {
-          id: In(userIdList),
-        },
-        relations: ['blog'],
-      });
-      return userIdList.map((userId) => {
-        return users.find((user) => user.id === userId) ?? new Error();
+  readonly getResumeIdsByOwnerIds = new DataLoader<string, string | null>(
+    async (ownerIdList: Array<string>) => {
+      const resumeList: Array<Resume> =
+        await this.resumeRepository.readResumeIdListByOption({ ownerIdList });
+      return ownerIdList.map((ownerId) => {
+        return (
+          resumeList.find((resume) => resume.ownerId === ownerId)?.id ?? null
+        );
       });
     },
   );

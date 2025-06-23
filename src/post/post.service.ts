@@ -264,7 +264,7 @@ export class PostService {
     const post = postList[0];
 
     // 게시글의 작성자는 본인이어야한다
-    if (post.writerId !== input.editorId) {
+    if (post.ownerId !== input.editorId) {
       throw new CustomGraphQLError(
         '본인이 작성한 게시글만 업데이트/삭제할 수 있습니다.',
         {

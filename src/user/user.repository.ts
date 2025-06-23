@@ -31,6 +31,12 @@ export class UserRepository extends Repository<User> {
     return userList;
   }
 
+  /**
+   * @description 유저 업데이트
+   * @param id
+   * @param input name, password
+   * @returns
+   */
   async updateUser(
     id: string,
     input: UpdateUserInputDto,

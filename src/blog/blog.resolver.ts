@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { input } from 'src/common/consts';
 import { Blog } from './blog.entity';
 import { BlogService } from './blog.service';
@@ -12,10 +19,14 @@ import { User } from 'src/user/user.entity';
 import { UpdateBlogInputDto } from './dtos/update-blog.dto';
 import { ReadBlogInputDto } from './dtos/read-blog.dto';
 import { ReadBlogListInputDto } from './dtos/read-blog-list.dto';
+import { ResumeDataLoaderService } from '../resume/resume.data-loader';
 
 @Resolver(() => Blog)
 export class BlogResolver {
-  constructor(private readonly blogService: BlogService) {}
+  constructor(
+    private readonly blogService: BlogService,
+    private readonly resumeDataLoaderService: ResumeDataLoaderService,
+  ) {}
 
   @AccessRole('USER')
   @Mutation(() => Blog, { description: '블로그 생성' })
@@ -50,4 +61,14 @@ export class BlogResolver {
   }
 
   // TODO 블로그 삭제
+
+  @ResolveField('resumeId', () => String, {
+    description: '블로그 주인의 이력서 Id',
+    nullable: true,
+  })
+  async readUser(@Parent() blog: Blog): Promise<string | null> {
+    return this.resumeDataLoaderService.getResumeIdsByOwnerIds.load(
+      blog.ownerId,
+    );
+  }
 }
