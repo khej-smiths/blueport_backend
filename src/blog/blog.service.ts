@@ -75,6 +75,9 @@ export class BlogService {
     };
   }
 
+  /**
+   * 블로그 조회
+   */
   async readBlog(input: ReadBlogInputDto): Promise<Blog> {
     const ERR_NO_BLOG = 'ERR_NO_BLOG'; // 조회할 블로그가 없는 경우
     const ERR_MULTIPLE_BLOG = 'ERR_MULTIPLE_BLOG'; // 조회할 블로그가 여러 개인 경우

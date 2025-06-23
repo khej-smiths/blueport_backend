@@ -10,7 +10,7 @@ export class CreateEducationInputDto extends PickType(EducationInputType, [
   'name',
   'major',
   'grade',
-  'description',
+  'standardGrade',
   'graduationStatus',
   'startAt',
   'endAt',
@@ -41,7 +41,6 @@ export class CreateProjectInputDto extends PickType(ProjectInputType, [
 @InputType()
 export class CreatePortfolioInputDto extends PickType(PortfolioInputType, [
   'order',
-  'type',
   'url',
 ]) {}
 
