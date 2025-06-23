@@ -19,7 +19,13 @@ abstract class IPost extends CommonEntity {
   hashtagList?: Array<string>;
 
   @Field(() => Int, { description: '조회수' })
-  @Column({ type: 'int', unsigned: true, default: 0, comment: '조회수' })
+  @Column({
+    type: 'int',
+    unsigned: true,
+    default: 0,
+    comment: '조회수',
+    name: 'view_count',
+  })
   viewCount: number;
 
   @Column({ type: 'uuid', name: 'owner_id', comment: '게시글 작성자의 id' })

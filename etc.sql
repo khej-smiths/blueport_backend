@@ -3,6 +3,29 @@
 -- 250624 배포 DB 수정 사항 --
 ------------------------------
 ------------------------------
+-- src/post/post.entity.ts
+ALTER TABLE post RENAME COLUMN viewCount TO view_count;
+
+-- src/resume/entities/career.entity.ts
+ALTER TABLE career RENAME COLUMN startAt TO start_at;
+ALTER TABLE career RENAME COLUMN endAt TO end_at;
+
+-- src/resume/entities/education.entity.ts
+ALTER TABLE education RENAME COLUMN standardGrade TO standard_grade;
+ALTER TABLE education RENAME COLUMN startAt TO start_at;
+ALTER TABLE education RENAME COLUMN endAt TO end_at;
+
+-- src/resume/entities/project.entity.ts
+ALTER TABLE project RENAME COLUMN skillList TO skill_list;
+ALTER TABLE project RENAME COLUMN startAt TO start_at;
+ALTER TABLE project RENAME COLUMN endAt TO end_at;
+
+
+------------------------------
+------------------------------
+-- 250624 배포 DB 수정 사항 --
+------------------------------
+------------------------------
 
 ---------------------------------------
 -- 1. blog 수정사항: photo(nullable) --
