@@ -2,8 +2,51 @@ import { validate } from 'class-validator';
 import { User, UserInputType } from '../user.entity';
 import argon2 from 'argon2';
 
+/**
+ * gql @Field 데코레이터는 e2e 테스트로 커버할 수 있음
+ */
+
 describe('User Entity', () => {
-  describe('비밀번호 관련', () => {
+  describe('name 관련', () => {
+    it('name값은 최소 1글자 이상', async () => {
+      const input = new UserInputType();
+
+      input.email = 'test@example.com';
+      input.password = '123abc123!';
+
+      const errors = await validate(input);
+
+      // 에러 객체의 길이가 1 이상이어 함
+      expect(errors.length).toBeGreaterThan(0);
+      // 에러의 내용이 길이와 관련된것이어햠
+      expect(errors[0].constraints).toHaveProperty('isLength');
+      // @Length 데코레이터의 에러 문구와 일치해야함
+      expect(errors[0].constraints!.isLength).toEqual(
+        'name must be longer than or equal to 1 characters',
+      );
+    });
+  });
+
+  describe('email 관련', () => {
+    it('email 필드의 형태는 email이어야한다.', async () => {
+      const input = new UserInputType();
+
+      input.name = '홍길동';
+      input.email = 'test';
+      input.password = '123abc123!';
+
+      const errors = await validate(input);
+
+      // 에러 객체의 길이가 1 이상이어 함
+      expect(errors.length).toBeGreaterThan(0);
+      // 에러의 내용이 길이와 관련된것이어햠
+      expect(errors[0].constraints).toHaveProperty('isEmail');
+      // @Length 데코레이터의 에러 문구와 일치해야함
+      expect(errors[0].constraints!.isEmail).toEqual('email must be an email');
+    });
+  });
+
+  describe('password 관련', () => {
     it('hashPassword: 비밀번호가 해싱되어야 한다', async () => {
       const user = new User();
       user.password = 'Test1234!';
@@ -110,13 +153,7 @@ describe('User Entity', () => {
     });
   });
 
-  // name 관련
-
-  // email 관련
-
   // postList 관련
-
   // blog 관련
-
   // resume 관련
 });
