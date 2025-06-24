@@ -1,10 +1,18 @@
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 import { Resume } from '../entities/resume.entity';
 import { Injectable } from '@nestjs/common';
+import { ReadResumeInputDto } from '../dtos/read-resume.dto';
+import { CustomGraphQLError } from 'src/common/error';
+import { Wrapper } from 'src/logger/log.decorator';
+import { LoggerStorage } from 'src/logger/logger-storage';
 
 @Injectable()
+@Wrapper()
 export class ResumeRepository extends Repository<Resume> {
-  constructor(private dataSource: DataSource) {
+  constructor(
+    private dataSource: DataSource,
+    private readonly als: LoggerStorage,
+  ) {
     super(Resume, dataSource.createEntityManager());
   }
 
@@ -32,10 +40,41 @@ export class ResumeRepository extends Repository<Resume> {
   /**
    * 이력서 목록 조회
    */
-  async readResumeList(input: { id: string; relations?: Array<string> }) {
+  async readResumeList(input: {
+    option: ReadResumeInputDto;
+    relations?: Array<string>;
+  }) {
+    const ERR_AT_LEAST_ONE_FIELD = 'ERR_AT_LEAST_ONE_FIELD'; // 입력한 input 옵션이 없는 경우
+
+    if (Object.keys(input.option).length === 0) {
+      throw new CustomGraphQLError(
+        '이력서 조회를 위한 옵션을 다시 확인해주세요.',
+        {
+          extensions: { code: ERR_AT_LEAST_ONE_FIELD },
+        },
+      );
+    }
+
     return await this.find({
-      where: { id: input.id },
+      ...(input.option && {
+        where: {
+          id: input.option.id,
+          ownerId: input.option.ownerId,
+        },
+      }),
       ...(input.relations && { relations: input.relations }),
+    });
+  }
+
+  /** 이력서 id 조회 by 옵션 소유주 id */
+  async readResumeIdListByOption(option: {
+    ownerIdList?: Array<string>;
+  }): Promise<Array<Resume>> {
+    return await this.find({
+      select: ['id', 'ownerId'],
+      where: {
+        ...(option.ownerIdList && { ownerId: In(option.ownerIdList) }),
+      },
     });
   }
 }

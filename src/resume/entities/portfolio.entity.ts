@@ -9,42 +9,12 @@ import { CommonEntity } from 'src/common/common.entity';
 import { Column, Entity, JoinColumn, ManyToOne, Relation } from 'typeorm';
 import { Resume } from './resume.entity';
 
-// 포트폴리오 타입
-export enum PORTFOLIO_TYPE {
-  LINK = 'LINK',
-  FILE = 'FILE',
-}
-registerEnumType(PORTFOLIO_TYPE, {
-  name: 'PORTFOLIO_TYPE',
-  description: '포트폴리오 타입',
-  valuesMap: {
-    LINK: {
-      description: '링크',
-    },
-    FILE: {
-      description: '파일',
-    },
-  },
-});
-
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
 abstract class IPortfolio extends CommonEntity {
   @Column({ type: 'int', unsigned: true, comment: '정렬 순서' })
   @Field(() => Int, { description: '정렬 순서' })
   order: number;
-
-  @Column({
-    type: 'varchar',
-    length: 255,
-    comment: '포트폴리오 타입',
-    nullable: true,
-  })
-  @Field(() => PORTFOLIO_TYPE, {
-    description: '포트폴리오 타입',
-    nullable: true,
-  })
-  type?: PORTFOLIO_TYPE;
 
   @Column({ type: 'varchar', length: 255, comment: '포트폴리오 url' })
   @Field(() => String, { description: '포트폴리오 url' })

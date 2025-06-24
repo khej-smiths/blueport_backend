@@ -40,7 +40,7 @@ export class PostRepository extends Repository<Post> {
   ): Promise<Post> {
     const creation = await this.create({
       ...option,
-      writerId: userInfo.id,
+      ownerId: userInfo.id,
       blogId: userInfo.blogId,
     });
     const post = await this.save(creation);
@@ -79,7 +79,7 @@ export class PostRepository extends Repository<Post> {
   ): Promise<UpdateResult> {
     const { id, ...content } = option;
 
-    return await this.update({ id: option.id, writerId: writer.id }, content);
+    return await this.update({ id: option.id, ownerId: writer.id }, content);
   }
 
   async increaseViewCount(postId: string): Promise<UpdateResult> {
@@ -102,7 +102,7 @@ export class PostRepository extends Repository<Post> {
     return [
       await queryRunner.manager.softDelete(Post, {
         id: option.id,
-        writerId: writer.id,
+        ownerId: writer.id,
       }),
       queryRunner,
     ];
