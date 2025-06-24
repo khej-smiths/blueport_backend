@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import { UserRepository } from './user.repository';
+import { UserRepository } from '../user.repository';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from './user.entity';
+import { User } from '../user.entity';
 
 /**
  * describe: 테스트 그룹(묶음)을 만들 때 사용

@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { UserRepository } from './user.repository';
+import { UserService } from '../user.service';
+import { UserRepository } from '../user.repository';
 import { DataSource, UpdateResult } from 'typeorm';
 import { LoggerStorage } from 'src/logger/logger-storage';
-import { CreateUserInputDto } from './dtos/create-user.dto';
-import { User } from './user.entity';
+import { CreateUserInputDto } from '../dtos/create-user.dto';
+import { User } from '../user.entity';
 import { CustomGraphQLError } from 'src/common/error';
-import { UpdateUserInputDto } from './dtos/update-user.dto';
+import { UpdateUserInputDto } from '../dtos/update-user.dto';
 
 describe('UserService', () => {
   let userService: UserService;
