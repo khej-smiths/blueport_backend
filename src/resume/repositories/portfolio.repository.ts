@@ -45,17 +45,21 @@ export class PortfolioRepository extends Repository<Portfolio> {
     }
   }
 
-  async deletePortfolioList(
-    idList: Array<string>,
+  /**
+   * 이력서 id를 기준으로 전체 포트폴리오 삭제
+   */
+  async deletePortfolioListByOption(
+    option: {
+      where: { resumeId: string };
+    },
     transactionEntityManager?: EntityManager,
-  ): Promise<DeleteResult> {
+  ) {
     let result: DeleteResult;
-    if (transactionEntityManager) {
-      result = await transactionEntityManager.delete(Portfolio, idList);
-    } else {
-      result = await this.delete(idList);
-    }
 
-    return result;
+    if (transactionEntityManager) {
+      result = await transactionEntityManager.delete(Portfolio, option.where);
+    } else {
+      result = await this.delete(option.where);
+    }
   }
 }

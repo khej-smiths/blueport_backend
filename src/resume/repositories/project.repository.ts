@@ -45,17 +45,21 @@ export class ProjectRepository extends Repository<Project> {
     }
   }
 
-  async deleteProjectList(
-    idList: Array<string>,
+  /**
+   * 이력서 id를 기준으로 전체 프로젝트 삭제
+   */
+  async deleteProjectListByOption(
+    option: {
+      where: { resumeId: string };
+    },
     transactionEntityManager?: EntityManager,
-  ): Promise<DeleteResult> {
+  ) {
     let result: DeleteResult;
-    if (transactionEntityManager) {
-      result = await transactionEntityManager.delete(Project, idList);
-    } else {
-      result = await this.delete(idList);
-    }
 
-    return result;
+    if (transactionEntityManager) {
+      result = await transactionEntityManager.delete(Project, option.where);
+    } else {
+      result = await this.delete(option.where);
+    }
   }
 }

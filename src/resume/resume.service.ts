@@ -190,7 +190,6 @@ export class ResumeService {
           >; // 수정될 목록
           updatedIdList: Array<string>; // 수정될 id 목록
           deleteFn: Function;
-          updateFn: Function;
           createFn: Function;
         }
       > = {
@@ -199,8 +198,7 @@ export class ResumeService {
           addedList: [],
           updatedList: [],
           updatedIdList: [],
-          deleteFn: this.educationRepository.deleteEducationList,
-          updateFn: this.educationRepository.updateEducationList,
+          deleteFn: this.educationRepository.deleteEducationListByOption,
           createFn: this.educationRepository.createEducationList,
         },
         careerList: {
@@ -208,8 +206,7 @@ export class ResumeService {
           addedList: [],
           updatedList: [],
           updatedIdList: [],
-          deleteFn: this.careerRepository.deleteCareerList,
-          updateFn: this.careerRepository.updateCareerList,
+          deleteFn: this.careerRepository.deleteCareerListByOption,
           createFn: this.careerRepository.createCareerList,
         },
         projectList: {
@@ -217,8 +214,7 @@ export class ResumeService {
           addedList: [],
           updatedList: [],
           updatedIdList: [],
-          deleteFn: this.projectRepository.deleteProjectList,
-          updateFn: this.projectRepository.updateProjectList,
+          deleteFn: this.projectRepository.deleteProjectListByOption,
           createFn: this.projectRepository.createProjectList,
         },
         portfolioList: {
@@ -226,74 +222,28 @@ export class ResumeService {
           addedList: [],
           updatedList: [],
           updatedIdList: [],
-          deleteFn: this.portfolioRepository.deletePortfolioList,
-          updateFn: this.portfolioRepository.updatePortfolioList,
+          deleteFn: this.portfolioRepository.deletePortfolioListByOption,
           createFn: this.portfolioRepository.createPortfolioList,
         },
       };
 
       for await (const field of Object.keys(meta) as Array<keyof typeof meta>) {
-        const {
-          deletedIdList,
-          addedList,
-          updatedList,
-          updatedIdList,
-          deleteFn,
-          updateFn,
-          createFn,
-        } = meta[field];
-
-        if (!input[field] || input[field].length === 0) {
-          // input으로 들어온 배열이 없거나, 배열의 길이가 0인 경우 해당 필드 전체 내역을 삭제
-          deletedIdList.push(
-            ...(user.resume[field] as Array<any>)?.map((elem) => elem.id),
-          );
-        } else {
-          // input으로 들어온 배열이 유의미하게 있는 경우 > 수정 / 신설 / 삭제 구분해서 처리
-          for (const elem of input[field]) {
-            if (elem.id) {
-              // id가 있는 경우 > 업데이트
-              updatedIdList.push(elem.id);
-              updatedList.push(elem);
-            } else {
-              // id가 없는 경우 > 신설
-              addedList.push(elem);
-            }
-          }
-
-          // input으로 들어온 필드가 원래 이력서에도 있는 경우, id값을 확인해서 삭제 케이스 확인
-          if (user.resume[field]) {
-            for (const originalElem of user.resume[field]!) {
-              if (!updatedIdList.includes(originalElem.id)) {
-                // 새로 입력받은 데이터에 id가 없는 경우, 원 배열에서 삭제
-                deletedIdList.push(originalElem.id);
-              }
-            }
-          }
-        }
-
-        // 원래 데이터에서 삭제해야하는 경우
-        if (deletedIdList.length > 0) {
-          await deleteFn(deletedIdList, queryRunner.manager);
-        }
-
-        // 원래 데이터에서 업데이트해야하는 경우
-        if (updatedList.length > 0) {
-          await updateFn(updatedList, queryRunner.manager);
-        }
-
-        // 신설해야하는 경우
-        if (addedList.length > 0) {
-          await createFn(
-            addedList.map((elem) => {
-              return {
-                resumeId: user.resume!.id,
-                ...elem,
-              };
-            }),
-            queryRunner.manager,
-          );
-        }
+        // 1. 기존 데이터 삭제
+        await meta[field].deleteFn(
+          {
+            where: {
+              resumeId: user.resume.id,
+            },
+          },
+          queryRunner.manager,
+        );
+        // 2. 입력받은 input 데이터를 새로 입력
+        await meta[field].createFn(
+          input[field]?.map((elem) => {
+            return { ...elem, resumeId: user.resume!.id };
+          }),
+          queryRunner.manager,
+        );
       }
     } catch (error) {
       await queryRunner.rollbackTransaction();

@@ -45,17 +45,21 @@ export class CareerRepository extends Repository<Career> {
     }
   }
 
-  async deleteCareerList(
-    idList: Array<string>,
+  /**
+   * 이력서 id를 기준으로 전체 경력 삭제
+   */
+  async deleteCareerListByOption(
+    option: {
+      where: { resumeId: string };
+    },
     transactionEntityManager?: EntityManager,
-  ): Promise<DeleteResult> {
+  ) {
     let result: DeleteResult;
-    if (transactionEntityManager) {
-      result = await transactionEntityManager.delete(Career, idList);
-    } else {
-      result = await this.delete(idList);
-    }
 
-    return result;
+    if (transactionEntityManager) {
+      result = await transactionEntityManager.delete(Career, option.where);
+    } else {
+      result = await this.delete(option.where);
+    }
   }
 }
