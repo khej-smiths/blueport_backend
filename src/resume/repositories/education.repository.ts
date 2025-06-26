@@ -45,17 +45,21 @@ export class EducationRepository extends Repository<Education> {
     }
   }
 
-  async deleteEducationList(
-    idList: Array<string>,
+  /**
+   * 이력서 id를 기준으로 전체 학력 삭제
+   */
+  async deleteEducationListByOption(
+    option: {
+      where: { resumeId: string };
+    },
     transactionEntityManager?: EntityManager,
-  ): Promise<DeleteResult> {
+  ) {
     let result: DeleteResult;
-    if (transactionEntityManager) {
-      result = await transactionEntityManager.delete(Education, idList);
-    } else {
-      result = await this.delete(idList);
-    }
 
-    return result;
+    if (transactionEntityManager) {
+      result = await transactionEntityManager.delete(Education, option.where);
+    } else {
+      result = await this.delete(option.where);
+    }
   }
 }
