@@ -1,12 +1,11 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { IsOptional, Matches } from 'class-validator';
 import { CommonEntity } from 'src/common/common.entity';
-import { Column, Entity, JoinColumn, ManyToOne, Relation } from 'typeorm';
-import { Resume } from './resume.entity';
+import { Column, Entity } from 'typeorm';
 
 @ObjectType({ isAbstract: true })
 @InputType({ isAbstract: true })
-abstract class IProject extends CommonEntity {
+abstract class IProject {
   @Column({ type: 'int', unsigned: true, comment: '정렬 순서' })
   @Field(() => Int, { description: '정렬 순서' })
   order: number;
@@ -69,20 +68,9 @@ abstract class IProject extends CommonEntity {
     message: ' must be in the format yyyy.MM',
   })
   endAt?: string;
-
-  // ============================ //
-  // ===== 관계 표시용 필드 ===== //
-  // ============================ //
-  @Column({ type: 'uuid', name: 'resume_id', comment: '연결된 이력서의 id' })
-  resumeId: string;
-
-  @ManyToOne(() => Resume, (resume) => resume.educationList)
-  @JoinColumn({ name: 'resume_id' })
-  resume: Relation<Resume>;
 }
 
 @ObjectType()
-@Entity('project')
 export class Project extends IProject {}
 
 @InputType()
