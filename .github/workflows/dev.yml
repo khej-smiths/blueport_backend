@@ -74,6 +74,8 @@ jobs:
             echo "CLOUDFLARE_ACCOUNT_ID=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" >> .env.dev
             echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env.dev
 
+            docker system prune -a # 사용되지 않는 이미지, 네트워크, 캐시 삭제
+
             docker pull ${{ secrets.DOCKER_USERNAME }}/dev-app:latest  # 최신 도커 이미지 가져오기
             docker compose down  # 기존 컨테이너 중지 및 정리
             docker compose -f docker-compose.dev.yml --env-file .env.dev up -d  # 새 이미지 기반으로 컨테이너 실행
