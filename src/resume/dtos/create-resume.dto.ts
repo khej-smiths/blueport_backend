@@ -3,6 +3,8 @@ import { EducationInputType } from '../entities/education.entity';
 import { CareerInputType } from '../entities/career.entity';
 import { ProjectInputType } from '../entities/project.entity';
 import { PortfolioInputType } from '../entities/portfolio.entity';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 
 @InputType()
 export class CreateEducationInputDto extends PickType(EducationInputType, [
@@ -12,6 +14,7 @@ export class CreateEducationInputDto extends PickType(EducationInputType, [
   'grade',
   'standardGrade',
   'graduationStatus',
+  'standardGrade',
   'startAt',
   'endAt',
 ]) {}
@@ -50,23 +53,31 @@ export class CreateResumeInputDto {
     nullable: true,
     description: '학력',
   })
+  @ValidateNested({ each: true })
+  @Type(() => CreateEducationInputDto)
   educationList?: Array<CreateEducationInputDto>;
 
   @Field(() => [CreateCareerInputDto], {
     nullable: true,
     description: '경력',
   })
+  @ValidateNested({ each: true })
+  @Type(() => CreateCareerInputDto)
   careerList?: Array<CreateCareerInputDto>;
 
   @Field(() => [CreateProjectInputDto], {
     nullable: true,
     description: '프로젝트',
   })
+  @ValidateNested({ each: true })
+  @Type(() => CreateProjectInputDto)
   projectList?: Array<CreateProjectInputDto>;
 
   @Field(() => [CreatePortfolioInputDto], {
     nullable: true,
     description: '포트폴리오',
   })
+  @ValidateNested({ each: true })
+  @Type(() => CreatePortfolioInputDto)
   portfolioList?: Array<CreatePortfolioInputDto>;
 }

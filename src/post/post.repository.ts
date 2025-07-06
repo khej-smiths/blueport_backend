@@ -107,4 +107,19 @@ export class PostRepository extends Repository<Post> {
       queryRunner,
     ];
   }
+
+  /**
+   * @description 게시글의 해시태그 목록만 가져와서 리턴(중복 제거)
+   */
+  async readHashtagList(): Promise<Array<string>> {
+    const hashtagSet = new Set();
+
+    await (
+      await this.find({ select: ['hashtagList'] })
+    ).forEach((elem) =>
+      elem.hashtagList?.forEach((hashtag) => hashtagSet.add(hashtag)),
+    );
+
+    return [...hashtagSet] as Array<string>;
+  }
 }
