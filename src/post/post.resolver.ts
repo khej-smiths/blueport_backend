@@ -77,4 +77,9 @@ export class PostResolver {
   async readUser(@Parent() post: Post): Promise<User> {
     return this.userDataLoaderService.getUsersByIds.load(post.ownerId);
   }
+
+  @Query(() => [String], { description: '게시글의 해시태그 목록 전달하기' })
+  async readHashtagList(): Promise<Array<string>> {
+    return this.postService.readHashtagList();
+  }
 }

@@ -277,4 +277,11 @@ export class PostService {
 
     return post;
   }
+
+  /**
+   * @description 게시글의 해시태그 목록 가져오기
+   */
+  async readHashtagList(): Promise<Array<string>> {
+    return await this.postRepository.readHashtagList();
+  }
 }
