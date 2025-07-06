@@ -1,3 +1,4 @@
+import { EntityManager } from 'typeorm';
 import { CustomLogger } from './logger';
 
 function getPrefixAndCustomLoggerAndPrefixLogAndBinding(
@@ -14,7 +15,11 @@ function getPrefixAndCustomLoggerAndPrefixLogAndBinding(
   // 해당 클래스에 logger가 있을 경우, input을 로그로 남긴다.
   if (customLogger) {
     customLogger.customLog(
-      { input: args },
+      {
+        input: (args as Array<any>).filter((elem) => {
+          return !(elem instanceof EntityManager);
+        }),
+      },
       { className: target.name, methodName: method },
     );
   }

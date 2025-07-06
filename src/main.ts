@@ -17,7 +17,11 @@ async function bootstrap() {
   });
 
   // transform: 네트워크를 통해 넘어오는 페이로드를 지정한 dto 타입에 맞게 객체를 변환
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
 
   // TODO orm 바꾸기
   // TODO 나중에 비번 재설정 로직 필요함
