@@ -1,3 +1,16 @@
+--------------------------------
+--------------------------------
+-- 250706 배포 DB 수정 사항 --
+--------------------------------
+--------------------------------
+
+ALTER TABLE resume
+ADD COLUMN career_list JSON,
+ADD COLUMN education_list JSON,
+ADD COLUMN project_list JSON,
+ADD COLUMN portfolio_list JSON;
+
+
 ------------------------------
 ------------------------------
 -- 250624 배포 DB 수정 사항 --
@@ -103,3 +116,4 @@ ALTER TABLE education DROP COLUMN description;
 ALTER TABLE education ADD COLUMN standardGrade varchar(255) NULL;
 -- 3-4. 필드 삭제(portfolio.type)
 ALTER TABLE portfolio DROP COLUMN type;
+
