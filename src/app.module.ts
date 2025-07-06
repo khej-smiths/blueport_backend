@@ -22,10 +22,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { UploadModule } from './upload/upload.module';
 import { ResumeModule } from './resume/resume.module';
 import { Resume } from './resume/entities/resume.entity';
-import { Education } from './resume/entities/education.entity';
-import { Career } from './resume/entities/career.entity';
-import { Project } from './resume/entities/project.entity';
-import { Portfolio } from './resume/entities/portfolio.entity';
 
 @Module({
   imports: [
@@ -160,14 +156,6 @@ import { Portfolio } from './resume/entities/portfolio.entity';
           Post,
           // 이력서
           Resume,
-          // 이력서 - 학력
-          Education,
-          // 이력서 - 경력
-          Career,
-          // 이력서 - 프로젝트
-          Project,
-          // 이력서 - 포트폴리오
-          Portfolio,
         ],
         synchronize: ['PROD', 'DEV'].includes(process.env.NODE_ENV as string)
           ? false

@@ -4,21 +4,11 @@ import { Wrapper } from 'src/logger/log.decorator';
 import { CreateResumeInputDto } from './dtos/create-resume.dto';
 import { LoggerStorage } from 'src/logger/logger-storage';
 import { ResumeRepository } from './repositories/resume.repository';
-import { EducationRepository } from './repositories/education.repository';
 import { DataSource } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { CustomGraphQLError } from 'src/common/error';
-import { CareerRepository } from './repositories/career.repository';
-import {
-  UpdateCareerInputDto,
-  UpdateEducationInputDto,
-  UpdatePortfolioInputDto,
-  UpdateProjectInputDto,
-  UpdateResumeInputDto,
-} from './dtos/update-resume.dto';
+import { UpdateResumeInputDto } from './dtos/update-resume.dto';
 import { ReadResumeInputDto } from './dtos/read-resume.dto';
-import { ProjectRepository } from './repositories/project.repository';
-import { PortfolioRepository } from './repositories/portfolio.repository';
 
 @Injectable()
 @Wrapper()
@@ -26,11 +16,6 @@ export class ResumeService {
   constructor(
     private readonly als: LoggerStorage,
     private readonly resumeRepository: ResumeRepository,
-    private readonly educationRepository: EducationRepository,
-    private readonly careerRepository: CareerRepository,
-    private readonly projectRepository: ProjectRepository,
-    private readonly portfolioRepository: PortfolioRepository,
-    private readonly dataSource: DataSource,
   ) {}
   /**
    * 이력서 생성
@@ -39,79 +24,25 @@ export class ResumeService {
     // 이 함수에서 발생하는 에러 케이스 정리
     const ERR_ALREADY_RESUME = 'ERR_ALREADY_RESUME'; // 이미 생성된 이력서가 있는 경우
 
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     let resume: Resume;
 
     try {
       // Resume 생성
-      resume = await this.resumeRepository.createResume(
-        { ownerId: user.id },
-        queryRunner.manager,
-      );
-
-      // 학력 생성
-      if (input.educationList) {
-        const educationList =
-          await this.educationRepository.createEducationList(
-            input.educationList.map((elem) => {
-              return { resumeId: resume.id, ...elem };
-            }),
-            queryRunner.manager,
-          );
-        resume.educationList = educationList;
-      }
-
-      // 경력 추가
-      if (input.careerList) {
-        const careerList = await this.careerRepository.createCareerList(
-          input.careerList.map((elem) => {
-            return { resumeId: resume.id, ...elem };
-          }),
-          queryRunner.manager,
-        );
-        resume.careerList = careerList;
-      }
-
-      // 프로젝트 추가
-      if (input.projectList) {
-        const projectList = await this.projectRepository.createProjectList(
-          input.projectList.map((elem) => {
-            return { resumeId: resume.id, ...elem };
-          }),
-          queryRunner.manager,
-        );
-        resume.projectList = projectList;
-      }
-
-      // 포트폴리오 추가
-      if (input.portfolioList) {
-        const portfolioList =
-          await this.portfolioRepository.createPortfolioList(
-            input.portfolioList.map((elem) => {
-              return { resumeId: resume.id, ...elem };
-            }),
-            queryRunner.manager,
-          );
-        resume.portfolioList = portfolioList;
-      }
+      resume = await this.resumeRepository.createResume({
+        ownerId: user.id,
+        educationList: input.educationList,
+        careerList: input.careerList,
+        projectList: input.projectList,
+        portfolioList: input.portfolioList,
+      });
     } catch (error) {
-      await queryRunner.rollbackTransaction();
-
       if (error.code === 'ER_DUP_ENTRY') {
         error = new CustomGraphQLError('이미 작성된 이력서가 있습니다.', {
           extensions: { code: ERR_ALREADY_RESUME },
         });
       }
-
       throw error;
-    } finally {
-      await queryRunner.release();
     }
-
     return resume;
   }
 
@@ -125,12 +56,6 @@ export class ResumeService {
     // 이력서 조회
     const resumeList = await this.resumeRepository.readResumeList({
       option: input,
-      relations: [
-        'educationList',
-        'careerList',
-        'projectList',
-        'portfolioList',
-      ],
     });
 
     let resume: Resume | null;
@@ -166,90 +91,18 @@ export class ResumeService {
       });
     }
 
-    const queryRunner = this.dataSource.createQueryRunner();
+    const updateResult = await this.resumeRepository.updateResume({
+      id: user.resume.id,
+      educationList: input.educationList,
+      careerList: input.careerList,
+      projectList: input.projectList,
+      portfolioList: input.portfolioList,
+    });
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const meta: Record<
-        'educationList' | 'careerList' | 'projectList' | 'portfolioList',
-        {
-          deletedIdList: Array<string>; // 삭제될 id 목록
-          addedList: Array<
-            | UpdateEducationInputDto
-            | UpdateCareerInputDto
-            | UpdateProjectInputDto
-            | UpdatePortfolioInputDto
-          >; // 추가될 목록
-          updatedList: Array<
-            | UpdateEducationInputDto
-            | UpdateCareerInputDto
-            | UpdateProjectInputDto
-            | UpdatePortfolioInputDto
-          >; // 수정될 목록
-          updatedIdList: Array<string>; // 수정될 id 목록
-          deleteFn: Function;
-          createFn: Function;
-        }
-      > = {
-        educationList: {
-          deletedIdList: [],
-          addedList: [],
-          updatedList: [],
-          updatedIdList: [],
-          deleteFn: this.educationRepository.deleteEducationListByOption,
-          createFn: this.educationRepository.createEducationList,
-        },
-        careerList: {
-          deletedIdList: [],
-          addedList: [],
-          updatedList: [],
-          updatedIdList: [],
-          deleteFn: this.careerRepository.deleteCareerListByOption,
-          createFn: this.careerRepository.createCareerList,
-        },
-        projectList: {
-          deletedIdList: [],
-          addedList: [],
-          updatedList: [],
-          updatedIdList: [],
-          deleteFn: this.projectRepository.deleteProjectListByOption,
-          createFn: this.projectRepository.createProjectList,
-        },
-        portfolioList: {
-          deletedIdList: [],
-          addedList: [],
-          updatedList: [],
-          updatedIdList: [],
-          deleteFn: this.portfolioRepository.deletePortfolioListByOption,
-          createFn: this.portfolioRepository.createPortfolioList,
-        },
-      };
-
-      for await (const field of Object.keys(meta) as Array<keyof typeof meta>) {
-        // 1. 기존 데이터 삭제
-        await meta[field].deleteFn(
-          {
-            where: {
-              resumeId: user.resume.id,
-            },
-          },
-          queryRunner.manager,
-        );
-        // 2. 입력받은 input 데이터를 새로 입력
-        await meta[field].createFn(
-          input[field]?.map((elem) => {
-            return { ...elem, resumeId: user.resume!.id };
-          }),
-          queryRunner.manager,
-        );
-      }
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
+    if (updateResult.affected === 0) {
+      throw new CustomGraphQLError('이력서 수정에 실패했습니다.', {
+        extensions: { code: ERR_NO_RESUME },
+      });
     }
 
     return (await this.readResume({ id: user.resume.id })) as Resume;

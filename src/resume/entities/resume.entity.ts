@@ -32,21 +32,19 @@ abstract class IResume extends CommonEntity {
   @Field(() => User, { description: '게시글 작성자 전체 정보' })
   owner: Relation<User>;
 
-  @OneToMany(() => Education, (edu) => edu.resume, { nullable: true })
+  @Column({ type: 'json', name: 'education_list', nullable: true })
   @Field(() => [Education], { nullable: true, description: '학력' })
   educationList?: Array<Education>;
 
-  @OneToMany(() => Career, (career) => career.resume, { nullable: true })
+  @Column({ type: 'json', name: 'career_list', nullable: true })
   @Field(() => [Career], { nullable: true, description: '경력' })
   careerList?: Array<Career>;
 
-  @OneToMany(() => Project, (project) => project.resume, { nullable: true })
+  @Column({ type: 'json', name: 'project_list', nullable: true })
   @Field(() => [Project], { nullable: true, description: '프로젝트' })
   projectList?: Array<Project>;
 
-  @OneToMany(() => Portfolio, (portfolio) => portfolio.resume, {
-    nullable: true,
-  })
+  @Column({ type: 'json', name: 'portfolio_list', nullable: true })
   @Field(() => [Portfolio], { nullable: true, description: '포트폴리오' })
   portfolioList?: Array<Portfolio>;
 }
