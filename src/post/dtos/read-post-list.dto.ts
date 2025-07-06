@@ -24,4 +24,7 @@ export class ReadPostListInputDto extends IPagination {
     nullable: true,
   })
   blogId?: string;
+
+  @Field(() => [String], { nullable: true, description: '게시글의 해시태그' })
+  hashtagList?: Array<string>;
 }

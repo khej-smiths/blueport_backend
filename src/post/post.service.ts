@@ -12,6 +12,7 @@ import { DeletePostInputDto } from './dtos/delete-post.dto';
 import { LoggerStorage } from 'src/logger/logger-storage';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EVENT_INCREASE_VIEW_COUNT } from './post.event-listener';
+import { Raw } from 'typeorm';
 
 @Injectable()
 @Wrapper()
@@ -144,9 +145,17 @@ export class PostService {
           viewCount: 'DESC',
         }),
       },
-      ...(input.blogId && {
+      ...((input.blogId || input.hashtagList) && {
         where: {
-          blogId: input.blogId,
+          ...(input.blogId && { blogId: input.blogId }),
+          ...(input.hashtagList && {
+            hashtagList: Raw(
+              () =>
+                // hashtagList로 넘어온 값 중 하나라도 해시태그에 있는 게시글을 조회
+                // JSON_OVERLAPS: 두 JSON 문서를 비교하고, 키-값 쌍이나 배열 요소가 공통으로 있으면 TRUE(1), 그렇지 않으면 FALSE(0)를 반환합니다.
+                `JSON_OVERLAPS(hashtag_list, '${JSON.stringify(input.hashtagList)}')`,
+            ),
+          }),
         },
       }),
     });
